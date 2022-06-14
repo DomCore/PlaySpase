@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+	<form th:action="@{/home}" method="get">
+		<button class="btn btn-md btn-warning btn-block" type="Submit">Назад</button>
+	</form>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<form autocomplete="off" action="#" th:action="@{/admin/create/game}"
+							th:object="${game}" method="post" class="form-horizontal"
+							role="form">
+					<h2 th:if="id == null">Новая игра</h2>
+					<h2 th:if="id != null">Редактировать</h2>
+					<input type="hidden" name="id" id="id" th:value="*{id}">
+
+					<div class="form-group">
+						<div class="col-sm-9">
+							<input type="text" th:field="*{name}" placeholder="Название игры"
+										 class="form-control"/> <label
+							th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+							class="validation-message"></label>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-9">
+								<div class="container1">
+									<button class="add_form_field">Добавить тег &nbsp;
+										<span style="font-size:16px; font-weight:bold;">+ </span>
+									</button>
+									<div><input type="text" th:field="*{tags}" name="tags" placeholder="Теги для поиска игры"></div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-9">
+								<button type="submit" class="btn btn-primary btn-block">Добавить игру</button>
+							</div>
+						</div>
+
+						<h2><span class="text-success" th:utext="${adminMessage}"></span></h2>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function () {
+    var max_fields = 10;
+    var wrapper = $(".container1");
+    var add_button = $(".add_form_field");
+
+    var x = 1;
+    $(add_button).click(function (e) {
+      e.preventDefault();
+      if (x < max_fields) {
+        x++;
+        $(wrapper).append('<div><input type="text" th:field="*{tags}" name="tags" id="tags"/><a href="#" class="delete">Delete</a></div>'); //add input box
+      } else {
+        alert('You Reached the limits')
+      }
+    });
+
+    $(wrapper).on("click", ".delete", function (e) {
+      e.preventDefault();
+      $(this).parent('div').remove();
+      x--;
+    })
+  });
+</script>
