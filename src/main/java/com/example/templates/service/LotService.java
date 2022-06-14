@@ -26,4 +26,13 @@ public class LotService {
   public List<Lot> getByCategoryId(Integer id)  {
     return lotRepository.getByCategoryId(id);
   }
+  public Lot getById(Integer id)  {
+    return lotRepository.getById(id);
+  }
+  public List<Lot> getBySeller_id(Integer id)  {
+    return lotRepository.getBySeller_id(id);
+  }
+  public void deleteByCategoryId(Integer id)  {
+    lotRepository.deleteByCategoryId(id);
+  }
 }

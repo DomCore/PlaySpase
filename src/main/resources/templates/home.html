@@ -41,10 +41,15 @@
 							 alt="Admin"/>
 				</div>
 			</div>
+			<form th:action="@{/user/watch/myLots}" method="get">
+				<button class="btn btn-md btn-danger btn-block2">Мои лоты
+				</button>
+			</form>
 			<form th:action="@{/user/search}" method="get">
 				<input type="text" id="name" name="name"/>
 				<button class="btn btn-md btn-danger btn-block2">Найти игру</button>
 			</form>
+			<a th:href="@{/user/testpage}">TEST</a>
 			<label>Games</label>
 			<div style="background-color: chartreuse; border-radius: 10px;" th:each="item : ${gameWrappers}">
 				<a th:if="${admin} != null" th:href="@{/admin/edit/game(id=${item.getGame().getId()})}">Редактировать игру</a>

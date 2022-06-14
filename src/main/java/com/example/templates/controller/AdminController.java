@@ -7,11 +7,13 @@ import javax.validation.Valid;
 
 import com.example.templates.model.Category;
 import com.example.templates.model.Game;
+import com.example.templates.model.Lot;
 import com.example.templates.model.StringAndListWrapper;
 import com.example.templates.model.User;
 import com.example.templates.service.CategoryService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
+import com.example.templates.service.LotService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,8 @@ public class AdminController {
   private HomeService homeService;
   @Autowired
   private UserService userService;
+  @Autowired
+  private LotService lotService;
   @Autowired
   private CategoryService categoryService;
 
@@ -171,9 +175,13 @@ public class AdminController {
       modelAndView.setViewName("category");
     } else {
       if (category.getId() != null) {
-        Category c = category;
-        categoryService.deleteCategoryById(category.getId());
-        categoryService.saveCategory(c);
+        if (!category.equals(categoryService.findById(category.getId()))) {
+          categoryService.saveCategory(category);
+          category = categoryService.findById(category.getId());
+          Collections.reverse(category.getSubTemplates());
+          categoryService.saveCategory(category);
+          lotService.deleteByCategoryId(category.getId());
+        }
       } else {
         categoryService.saveCategory(category);
       }

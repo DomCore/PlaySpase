@@ -21,19 +21,20 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3">
-				<h2 th:text="${category}"></h2>
 				<div class="form-group">
 					<div class="col-sm-9">
-						<div style="background-color: antiquewhite; border-radius: 10px;margin: 10px;" th:each="lot : *{lots}">
+						<div style="background-color: antiquewhite; border-radius: 10px; margin: 10px;"  th:each="lot : *{lots}">
 							<div th:each="item : *{lot.keys}">
 								<label th:text="*{item}"></label>
 								<label th:text="*{lot.values.get(lot.keys.indexOf(item))}"></label>
 							</div>
+							<a th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 </body>
 </html>
