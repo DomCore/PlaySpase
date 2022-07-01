@@ -24,10 +24,18 @@ public class LoginController {
     @Autowired
     private HomeService homeService;
 
-    @GetMapping(value={"/", "/login"})
+    @GetMapping(value =  "/login")
     public ModelAndView login(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
+        return modelAndView;
+    }
+    @GetMapping(value="/")
+    public ModelAndView main(){
+        ModelAndView modelAndView = new ModelAndView();
+        homeService.fillGames(modelAndView,false);
+        homeService.checkAuth(modelAndView);
+        modelAndView.setViewName("main");
         return modelAndView;
     }
     @GetMapping(value="/emailExists")
@@ -54,26 +62,27 @@ public class LoginController {
         if (usernameExists) {
             bindingResult
                     .rejectValue("userName", "error.user",
-                            "There is already a user registered with the user name provided");
+                            "Имя занято");
         }
         if (emailExists) {
             bindingResult
                 .rejectValue("email", "error.user",
-                    "There is already a user registered with the email provided");
+                    "Почта занята");
         }
-        if (user.getPassword().length() < 6) {
+        if (user.getPassword().length() < 1) {
             bindingResult
                 .rejectValue("password", "error.user",
-                    "Password too short");
+                    "Пароль слишком короткий");
         }
 
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName("registration");
         } else {
             userService.saveUser(user, "USER");
-            modelAndView.addObject("successMessage", "User has been registered successfully");
+            modelAndView.addObject("successMessage", "Аккаунт успешно создан");
             modelAndView.addObject("user", new User());
-            modelAndView.setViewName("registration");
+            homeService.configureHome(modelAndView,user);
+            modelAndView.setViewName("home");
 
         }
         return modelAndView;

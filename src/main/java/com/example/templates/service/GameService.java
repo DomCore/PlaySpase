@@ -25,7 +25,7 @@ public class GameService {
   }
 
   public void editGame(Game g) {
-    gameRepository.editGame(g.getName(), g.getTags(), g.getId());
+    gameRepository.editGame(g.getName(), g.getTags(), g.getId(), g.getLogo(), g.isTop());
   }
   public void deleteGameById(Integer g) {
     gameRepository.deleteGameById(g);
@@ -36,5 +36,11 @@ public class GameService {
 
   public List<Game> getAllGames() {
     return gameRepository.getAll();
+  }
+  public List<Game> getAllTop() {
+    return gameRepository.getAllTop();
+  }
+  public List<Game> getAllDownTop() {
+    return gameRepository.getAllDownTop();
   }
 }

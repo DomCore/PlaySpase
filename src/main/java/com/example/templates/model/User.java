@@ -41,4 +41,13 @@ public class User {
     private Set<Role> roles;
     @Enumerated(EnumType.STRING)
     private Provider provider;
+    @Column(name = "logo",nullable = true, length = 64)
+    private String logo;
+
+    @Transient
+    public String getPhotosImagePath() {
+        if (logo == null || id == null || logo.equals("")) return "/user_logos/default.png";
+
+        return "/user_logos/" + id + "/" + logo;
+    }
 }

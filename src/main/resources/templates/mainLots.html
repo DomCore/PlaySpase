@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
+
+</head>
+<body>
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="buttons">
+	<form th:action="@{/user/create/lot}" method="get">
+		<input type="hidden" name="id" th:value="${category.getId()}">
+		<button class="button main-b" th:text="'Продать ' + ${category.getName()}"></button>
+		<a  class="button sub" th:each="cat : ${categories}"  th:if="${categories != null && cat != category}"
+				th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
+	</form>
+</div>
+<table th:if="${lots != null}" id="myTable">
+	<thead>
+	<tr th:if="${lots.get(0).getSeller() != null}" th:each="lot : ${lots.get(0)}">
+		<th scope="col" th:each="item : *{lot.keys}" th:text="*{item}"></th>
+		<th scope="col">Продавец</th>
+		<th scope="col">Цена</th>
+		<th scope="col"></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr  th:each="lot : ${lots}">
+		<td th:each="item : *{lot.keys}" th:text="*{lot.values.get(lot.keys.indexOf(item))}"></td>
+		<td ><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
+		<td th:text="*{lot.getCost()}"></td>
+		<td class="transparent"><a th:href="@{/user/watch/currentLot(id=*{lot.id})}" class="link">Просмотр</a></td>
+	</tr>
+	</tbody>
+</table>
+
+</body>
+</html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+
+<script type="text/javascript" th:src="@{/scripts/lots.js}"></script>
+

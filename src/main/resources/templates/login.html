@@ -4,38 +4,58 @@
 
 <head>
     <title>PlaySpase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 </head>
-
-<body>
-<form th:action="@{/registration}" method="get">
-    <button class="btn btn-md btn-warning btn-block" type="Submit">Go To Registration Page</button>
-</form>
-
-<div class="container">
-    <img th:src="@{/images/login.jpg}" class="img-responsive center-block" width="300" height="300" alt="Logo"/>
-    <form th:action="@{/login}" method="POST" class="form-signin">
-        <h3 class="form-signin-heading" th:text="Welcome"></h3>
-        <br/>
-
-        <input value="1" type="text" id="user_name" name="user_name" placeholder="User Name"
-               class="form-control"/> <br/>
-        <input value="1" type="password" th:placeholder="Password"
-               id="password" name="password" class="form-control"/> <br/>
-
-        <div align="center" th:if="${param.error}">
-            <p style="font-size: 20px; color: #FF1C19;">User Name or Password invalid, please verify</p>
+<nav class="nav">
+    <div class="container">
+        <div class="logo">
+            <a href="/" class="header__logo-link">
+                <img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+            </a>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit"
-                th:text="Login"></button>
-    </form>
-
-    <div>
-        <h4><a th:href="@{/oauth2/authorization/google}">Login with Google</a></h4>
+        <div id="mainListDiv" class="main_list">
+            <ul class="navlinks">
+                <li><a th:href="@{/}" class="header__item">Главная</a></li>
+                <li><a th:href="@{/login}" class="header__item">Вход</a></li>
+                <li><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+            </ul>
+        </div>
+        <span class="navTrigger">
+                <i></i>
+                <i></i>
+            </span>
     </div>
+</nav>
+<body>
+<div class="login-box">
+    <h2>PlaySpase</h2>
+    <form th:action="@{/login}" method="POST" id="login">
+        <div class="user-box">
+            <input type="text" value="1" id="user_name" name="user_name" placeholder="Имя пользователя" required="">
+            <label>Имя пользователя</label>
+        </div>
+        <div class="user-box">
+            <label >Пароль</label>
+            <input type="password"  value="1" id="password" name="password" placeholder="Пароль" required="">
+        </div>
+        <div class="user-box error" th:if="${param.error}">
+            <p>User Name or Password invalid, please verify</p>
+        </div>
+        <a class="left" href="#" onclick="document.getElementById('login').submit()">Войти</a>
+        <a class="right" th:href="@{/registration}">Создать аккаунт</a>
+        <div>
+            <h4><a class="alien" th:href="@{/oauth2/authorization/google}">Войти с помощью Google</a></h4>
+        </div>
+    </form>
 </div>
 </body>
 </html>
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->

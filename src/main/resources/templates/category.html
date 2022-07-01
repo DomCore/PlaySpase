@@ -1,92 +1,117 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 			xmlns:th="http://www.thymeleaf.org">
-
 <head>
 	<title>PlaySpase</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lot.css}"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
-
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
-
 <body>
-<div class="container">
-	<form th:action="@{/home}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Назад</button>
-	</form>
+<nav class="nav">
 	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<form autocomplete="off" action="#" th:action="@{/admin/create/category}"
-							th:object="${category}" method="post" class="form-horizontal"
-							role="form">
-					<h2>Новая категория</h2>
-
-					<div class="form-group">
-						<div class="col-sm-9">
-							<input type="text" th:field="*{name}" placeholder="Название категории"
-										 class="form-control" required/> <label
-							th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
-							class="validation-message"></label>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-9">
-								<label>К какой игре добавить категорию</label>
-								<select name="select" th:field="*{game_id}" required>
-									<option value="0" hidden selected>Выберите игру...</option>
-									<option th:each="game : ${games}" th:value="${game.getId()}" th:text="${game.getName()}">
-									</option>
-								</select>
-								<label
-									th:if="${#fields.hasErrors('game_id')}" th:errors="*{game_id}"
-									class="validation-message"></label>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-9">
-								<div class="container1">
-									<button class="add_form_field">Добавить поле
-										<span style="font-size:16px; font-weight:bold;">+ </span>
-									</button>
-									<button class="add_form_field2">Создать список в данном поле &nbsp;
-										<span style="font-size:16px; font-weight:bold;">+ </span>
-									</button>
-									<div>
-										<input type="text" style="background-color: aquamarine;width: 50%;" th:field="*{templates}" name="templates" required></div>
-									<label
-										th:if="${#fields.hasErrors('templates')}" th:errors="*{templates}"
-										class="validation-message"></label>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-9">
-								<button type="submit" name="button" class="btn btn-primary btn-block">Добавить</button>
-							</div>
-						</div>
-
-						<h2><span class="text-success" th:utext="${adminMessage}"></span></h2>
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
 					</div>
-				</form>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="login-box">
+	<h2>Новая категория</h2>
+	<form autocomplete="off" action="#" th:action="@{/admin/create/category}"
+				th:object="${category}" method="post" class="form-horizontal"
+				role="form">
+
+		<div class="user-box">
+			<label>Название</label>
+			<p><input th:field="*{name}" placeholder="Название категории" type="text" required/></p>
+		</div>
+
+		<div class="user-box">
+			<label>К какой игре добавить категорию</label>
+			<p><select name="select" th:field="*{game_id}" required>
+				<option value="0" hidden selected>Выберите игру...</option>
+				<option th:each="game : ${games}" th:value="${game.getId()}" th:text="${game.getName()}">
+				</option>
+			</select></p>
+			<label
+				th:if="${#fields.hasErrors('game_id')}" th:errors="*{game_id}"
+				class="validation-message"></label>
+			<button class="add_form_field1">Добавить поле
+				<span style="font-size:16px; font-weight:bold;">+ </span>
+			</button>
+			<button class="add_form_field2">Создать список в данном поле &nbsp;
+				<span style="font-size:16px; font-weight:bold;">+ </span>
+			</button>
+		</div>
+		<div class="container1">
+			<div class="user-box ">
+				<input class="templates" type="text" th:field="*{templates}" name="templates" required>
+				<label
+					th:if="${#fields.hasErrors('templates')}" th:errors="*{templates}"
+					class="validation-message"></label>
 			</div>
 		</div>
-	</div>
 
+		<button type="submit">Создать категорию</button>
+		<button onclick="history.back()">Отмена</button>
+	</form>
 </div>
+
 </body>
 </html>
 <script>
-
-
   $(document).ready(function () {
     var max_fields = 400;
     var wrapper = $(".container1");
-    var add_button = $(".add_form_field");
+    var add_button = $(".add_form_field1");
     var add_button2 = $(".add_form_field2");
 
     var x = 1;
@@ -95,7 +120,7 @@
       e.preventDefault();
       if (x < max_fields) {
         x++;
-        $(wrapper).append('<div><input style="width: 50%; background-color: aquamarine;" type="text" th:field="*{templates}" name="templates" id="lastTemplate" required/><a href="#" id="lastTemplateD" class="delete">Delete</a></div>'); //add input box
+        $(wrapper).append('<div class="user-box"><input class="templates" type="text" th:field="*{templates}" name="templates" id="lastTemplate" required/><a href="#" id="lastTemplateD" class="delete">Удалить</a></div>'); //add input box
       } else {
         alert('You Reached the limits')
       }
@@ -104,10 +129,7 @@
       e.preventDefault();
       if (x < max_fields) {
         y++;
-        $(wrapper).append('<div><input style="display: none;" type="text" value="SubTemplate" th:field="*{templates}" name="templates" id="templates"/><input style="width: 50%" type="text" th:field="*{subTemplates}" name="subTemplates" id="subTemplates" required/><a href="#" id="lastSubTemplateD" class="delete">Delete</a></div>');
-        /*				document.getElementById('lastSubTemplate').id = "subTemplate"+y.toString();
-								document.getElementById('lastSubTemplateD').id = "subTemplateD"+y.toString();*/
-        /*        document.getElementById("subTemplateD"+y.toString()).addEventListener("click", document.getElementById("subTemplate"+y.toString()).remove());*/
+        $(wrapper).append('<div class="user-box"><input style="display: none;" type="text" value="SubTemplate" th:field="*{templates}" name="templates" id="templates"/><input  class="subTemplates" type="text" th:field="*{subTemplates}" name="subTemplates" id="subTemplates" required/><a href="#" id="lastSubTemplateD" class="delete">Удалить</a></div>');
       } else {
         alert('You Reached the limits')
       }
@@ -121,3 +143,8 @@
   });
 
 </script>
+<!--Head-->
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+
+

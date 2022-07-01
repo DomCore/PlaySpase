@@ -3,91 +3,75 @@
 			xmlns:th="http://www.thymeleaf.org">
 <head>
 	<title>PlaySpase</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
 
 </head>
 <body>
-<form th:action="@{/}" method="get">
-	<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Login Page</button>
-</form>
-
-<div class="container">
-	<div class="row">
-		<div class="col-md-6 col-md-offset-3">
-			<form autocomplete="off" action="#" th:action="@{/registration}"
-						th:object="${user}" method="post" class="form-horizontal"
-						role="form">
-				<h2>Registration Form</h2>
-				<div class="form-group">
-					<div class="col-sm-9">
-						<input type="text" th:field="*{userName}" placeholder="Имя пользователя"
-									 class="form-control"/> <label
-						th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<li><a th:href="@{/}" class="header__item">Главная</a></li>
+				<li><a th:href="@{/login}" class="header__item">Вход</a></li>
+			</ul>
+		</div>
+		<span class="navTrigger">
+                <i></i>
+                <i></i>
+            </span>
+	</div>
+</nav>
+			<div class="login-box">
+				<h2>Регистрация</h2>
+				<form th:action="@{/registration}" th:object="${user}" method="POST" id="registration">
+					<div class="user-box">
+						<input type="text" th:field="*{userName}" placeholder="Имя пользователя" required>
+						<label th:if="!${#fields.hasErrors('userName')}">Имя пользователя</label>
+						<label th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"
 						class="validation-message"></label>
 					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-9">
-						<input type="text" th:field="*{email}" placeholder="Почта"
-									 class="form-control"/> <label
-						th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-						class="validation-message"></label>
+					<div class="user-box">
+						<input type="text" th:field="*{email}" placeholder="Почта" required>
+						<label th:if="!${#fields.hasErrors('email')}">Почта</label>
+						<label th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+									 class="validation-message"></label>
 					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-9">
-						<label>Пароль :
-							<input type="password" th:field="*{password}"
-										 placeholder="Password" id="password" class="form-control" required/> <label
-								th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-								class="validation-message"></label></label>
-						<label>Повторите пароль :
-							<input type="password" name="confirm_password" id="confirm_password"
-										 placeholder="Password" class="form-control" required/> <span id='message'></span></label></label>
+					<div class="user-box">
+						<input type="password" th:field="*{password}" placeholder="Пароль" required>
+						<label th:if="!${#fields.hasErrors('password')}">Пароль</label>
+						<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+									 class="validation-message"></label>
 					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="col-sm-9">
-						<button type="submit" id="submit" class="btn btn-primary btn-block">Register User</button>
+					<div class="user-box">
+						<input type="password" name="confirm_password" id="confirm_password"
+									 placeholder="Пароль" class="form-control" required/> <span id='message'></span></label></label>
+						<label>Повторите пароль</label>
 					</div>
-				</div>
 
-				<h2><span class="text-success" th:utext="${successMessage}"></span></h2>
-
-			</form>
+					<a href="#" onclick="document.getElementById('registration').submit()">Создать аккаунт</a>
+				</form>
+			</div>
 		</div>
 	</div>
 </div>
 
 </body>
 </html>
-<script>
-  $('#password, #confirm_password').on('keyup', function () {
-    if ($('#password').val() == $('#confirm_password').val()) {
-      $('#message').html('Matching').css('color', 'green');
-    } else
-      $('#message').html('Not Matching').css('color', 'red');
-  });
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
 
-    let input = document.querySelector("#password");
-    let input2 = document.querySelector("#confirm_password");
-    let button = document.querySelector("#submit");
+<!--Registration-->
+<script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
+<!--Registration-->
 
-    button.disabled = true; //setting button state to disabled
-
-    input.addEventListener("keyup", stateHandle);
-    input2.addEventListener("keyup", stateHandle);
-
-    function stateHandle() {
-        if ($('#password').val() != $('#confirm_password').val()) {
-            button.disabled = true; //button remains disabled
-        } else {
-            button.disabled = false; //button is enabled
-        }
-    }
-</script>

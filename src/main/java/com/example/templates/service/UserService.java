@@ -6,12 +6,15 @@ import com.example.templates.model.User;
 import com.example.templates.repository.RoleRepository;
 import com.example.templates.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -28,9 +31,11 @@ public class UserService {
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
-
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    public User findById(Integer id) {
+        return userRepository.findById(id);
     }
 
     public User findUserByUserName(String userName) {
@@ -59,6 +64,21 @@ public class UserService {
             saved = true;
         }
         return saved;
+    }
+
+    public User getUser() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = findUserByUserName(auth.getName());
+            if (user == null) {
+                DefaultOidcUser oauthUser = (DefaultOidcUser) auth.getPrincipal();
+                user = findUserByEmail(oauthUser.getEmail());
+            }
+            return user;
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
 }

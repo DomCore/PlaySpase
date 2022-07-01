@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LotWrapper {
   public Lot lot;
+  public String category;
   public List<StringAndListWrapper> list;
 }

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/rules.css}"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
+
+</head>
+
+<body>
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="wrapper">
+	<div class="top">
+		<h1 th:if="${rule.equals('site')}">Правила сайта</h1>
+		<h1 th:if="${rule.equals('sell')}">Правила продавца</h1>
+		<h1 th:if="${rule.equals('buy')}">Правила покупателей</h1>
+		<h2 class="warn">Запрещено<img th:src="@{/images/warn.png}" alt="warn" width="32" height="32"/></h2>
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		1) Обмен денежных средств из одной платёжной системы в другую, перевод денежных средств с одних реквизитов на другие без цели совершения
+		каких-либо заказов. Кардинг, прочие финансовые махинации.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		2) Попытка продать или купить товар без проведения платежа через PlaySpase.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		3) Передача другому пользователю контактных данных (Skype, Discord, ВКонтакте, телефон и др.) любым способом. Использование контактных данных,
+		полученных от другого пользователя. Связь в игре после выполнения заказа.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		4) Попытка покупки или продажи аккаунта PlaySpase.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		5) Реклама, спам, массовая рассылка пользователям.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		6) Мошенничество, обман других пользователей.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		7) Нарушения в чате: обсуждение или реклама торговых интернет-ресурсов, критика других пользователей, оскорбления, политические обсуждения.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		8)Обмен товарами или услугами.
+	</div>
+	<div th:if="${rule.equals('site')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		9) Передача третьим лицам либо разглашение какой-либо информации (имя пользователя, идентификатор игрока, сумма и пр.) с целью нанесения вреда
+		пользователю.
+	</div>
+
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		1)Предлагать покупателю осуществить продажу товара или оказания услуг на прямую, без проведения платежа через PlaySpase. Передача другому пользователю контактных данных (Skype, Discord, ВКонтакте, телефон и др.)
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		2)Дублирование предложений, засорение таблицы предложений. Копирование описаний у других продавцов. Размещение предложений о покупке.
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		3)Продажа товаров, полученных неправомерным путём (взломом, брутом, кардингом и т. д.). Продажа персональных данных. Обучение неправомерной деятельности или продажа информации о ней.
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		4) Просьба к покупателю о подтверждении заказа до его фактического выполнения (при отсутствии признаков обмана).
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		5) Осознанное размещение недействительных предложений либо предложений с недействительной ценой. Игнорирование заказов.
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		6) Проведение лотерей и розыгрышей, продажа «рандома»
+	</div>
+	<div th:if="${rule.equals('sell')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		6) Проведение лотерей и розыгрышей, продажа «рандома»
+	</div>
+
+
+	<div th:if="${rule.equals('buy')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		1) Предлагать продавцу осуществить продажу товара или оказания услуг на прямую, без проведения платежа через PlaySpase. Передача другому пользователю контактных данных (Skype, Discord, ВКонтакте, телефон и др.)
+	</div>
+	<div th:if="${rule.equals('buy')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		2)Подтверждать оплату до получения товара или услуги
+	</div>
+	<div th:if="${rule.equals('buy')}" class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		3)Настойчиво просить продавца снизить цену на товар или услугу, оскорблять.
+	</div>
+	<div class="box sombra">
+		<img th:src="@{/images/rules.png}" alt="warn" width="32" height="32"/>
+		Администрация оставляет за собой право на предупреждение или блокировку Вашего аккаунта за любое из данных нарушений.
+	</div>
+</div>
+</body>
+</html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+

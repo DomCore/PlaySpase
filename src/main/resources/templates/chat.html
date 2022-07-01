@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/chat.css}"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<input type="hidden" id="logo" th:value="${userLogo}" class="form-control"/>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+<div class="wrapper">
+	<div class="container" >
+		<div class="left">
+			<div class="top">
+				<form th:action="@{/user/watch/selectedChats}" method="post">
+					<input type="search" id="chatName" name="chatName" pattern=".*\S.*">
+					<button class="search" type="submit">
+						<span></span>
+					</button>
+				</form>
+			</div>
+			<ul class="people">
+				<li class="person" th:each="chat: ${chats}" th:data-chat="${chat.user}">
+					<img th:src="${chat.logo}" alt="logo" />
+					<span class="name" th:text="${chat.user}"></span>
+					<span class="time" th:text="${chat.time}"></span>
+					<span class="preview" th:id="${chat.user}" th:text="${chat.message}"></span>
+				</li>
+			</ul>
+		</div>
+		<div class="right">
+			<form id="messageForm" name="messageForm" nameForm="messageForm">
+			<div class="top"><span><i class='fa fa-user-circle'></i>: <span class="name" th:if="${chats != null}" th:text="${chats[0].user}"></span></span></div>
+			<div id="messageArea" class="chat" th:each="chat: ${chats}" th:data-chat="${chat.user}">
+				<input type="hidden" id="receiver" th:value="${chat.user}" class="user form-control"/>
+				<div class="conversation-start">
+									<span th:text="${chat.time}"></span>
+								</div>
+				<div class="bubble" th:classappend="${message.getSender_id() == me}? me : you" th:each="message : ${chat.messages}" th:text="${message.getContent()}"></div>
+			</div>
+		<div class="write">
+			<input type="text" id="message"
+						 autocomplete="off" class="form-control"/>
+			<button type="submit" class="send primary">Отправить</i></button>
+		</div>
+			</form>
+	</div>
+</div>
+</div>
+
+</body>
+</html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!--Head-->
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<script type="text/javascript" th:src="@{/scripts/chat.js}"></script>
+

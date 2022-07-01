@@ -1,60 +1,100 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 			xmlns:th="http://www.thymeleaf.org">
-
 <head>
 	<title>PlaySpase</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lot.css}"/>
 
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
-
 <body>
-<div class="container">
-	<form th:action="@{/home}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Назад</button>
-	</form>
+<nav class="nav">
 	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<form autocomplete="off" action="#" th:action="@{/user/edit/lot}" method="post" class="form-horizontal"
-							role="form">
-					<h2>Редактирование лота</h2>
-					<div class="form-group">
-						<div class="col-sm-9">
-							<div th:each="item : *{lot.list}">
-								<label th:text="*{item.string}"></label>
-								<div th:if="*{item.arrString != null}">
-									<select name="subTemplates" id="subTemplates" required>
-										<option th:each="sub : *{item.getArrString()}" th:value="*{sub}" th:text="*{sub}">
-										</option>
-									</select>
-								</div>
-								<div th:if="*{item.getArrString() == null}">
-									<input name="templates" id="templates" type="text" th:value="*{lot.lot.templates.get(lot.list.indexOf(item))}" th:placeholder="*{item.string}" class="form-control"/>
-								</div>
-							</div>
-							<label>Цена</label>
-							<input name="cost" id="cost" th:value="*{lot.lot.cost}" type="text" class="form-control"/>
-						</div>
-						<input type="hidden" name="id" id="id" th:value="*{lot.lot.id}" class="form-control"/>
-						<input type="hidden" name="seller_id" id="seller_id" th:value="*{lot.lot.seller_id}"class="form-control"/>
-						<input type="hidden" name="category_id" id="category_id" th:value="*{lot.lot.category_id}" class="form-control"/>
-						<div class="form-group">
-							<div class="col-sm-9">
-								<button type="submit" class="btn btn-primary btn-block">Сохранить лот</button>
-							</div>
-						</div>
-					</div>
-				</form>
-			</div>
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
 		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
 	</div>
+</nav>
+<div class="login-box">
+	<form autocomplete="off" action="#" th:action="@{/user/edit/lot}" method="post" class="form-horizontal"
+				role="form">
+		<h2>Редактирование лота</h2>
 
+		<div th:each="item : *{lot.list}">
+			<label th:text="*{item.string}"></label>
+			<div class="user-box" th:if="*{item.arrString != null}">
+					<select th:if="*{item.arrString != null}" name="subTemplates" id="subTemplates" required>
+					<option th:each="sub : *{item.getArrString()}" th:value="*{sub}" th:text="*{sub}">
+					</option>
+				</select>
+			</div>
+			<div class="user-box" th:if="*{item.getArrString() == null}">
+					<input name="templates" id="templates" type="text" th:value="*{lot.lot.templates.get(lot.list.indexOf(item))}"
+								 th:placeholder="*{item.string}"/>
+				</div>
+			</div>
+		<div class="user-box">
+			<p><label>Цена</label></p>
+			<p><input name="cost" id="cost" th:value="*{lot.lot.cost}" type="number"/></p>
+		</div>
+		<input type="hidden" name="id" id="id" th:value="*{lot.lot.id}" class="form-control"/>
+		<input type="hidden" name="seller_id" id="seller_id" th:value="*{lot.lot.seller_id}" class="form-control"/>
+		<input type="hidden" name="category_id" id="category_id" th:value="*{lot.lot.category_id}" class="form-control"/>
+<button type="submit">Подтвердить</button>
+		<button onclick="history.back()">Отмена</button>
+</form>
+<h2><span class="text-success" th:utext="${adminMessage}"></span></h2>
 </div>
 </body>
 </html>
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+
+
+

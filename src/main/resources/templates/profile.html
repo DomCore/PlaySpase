@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/profile.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/msger.css}"/>
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/chat3.css}"/>
+
+</head>
+
+<body>
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="user-wrapper">
+	<div class="item">
+		<img th:src="${userObject.getPhotosImagePath()}" alt="user" width="90" height="90" class="user-pic"/>
+		<div class="about">
+			<h2 th:text="${userObject.getUserName()}"></h2>
+		</div>
+		<div class="about status">
+			<h2>Online</h2>
+		</div>
+	</div>
+	<div class="item no-bg">
+		<div class="stars">
+			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5"
+					 stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+			</svg>
+		</div>
+		<div class="about-mark">
+			4.7/5
+		</div>
+	</div>
+	<div class="item suber">
+		<div class="sub">Сделок: 9999999</div>
+		<div class="sub">Общая сумма покупок: 9999999</div>
+			<div class="sub">Общая сумма продаж: 9999999</div>
+	</div>
+	<div class="item no-bg">
+		<input type="hidden" id="logo" th:value="${userLogo}" class="form-control"/>
+		<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+		<input type="hidden" id="receiver" th:value="${userObject.getUserName()}" class="form-control"/>
+
+
+		<div th:classappend="${userObject.getUserName().equals(userName) || userName == null}? blocked : common" id="chat-page">
+			<div class="chat-container">
+
+				<div class="connecting">Connecting...</div>
+				<ul id="messageArea">
+					<li th:if="!${userObject.getUserName().equals(userName)}" th:each="message: ${messages}" class="chat-message">
+						<img th:src="${message.getLogo()}">
+						<span th:text="${message.getSender()}"></span>
+						<p th:text="${message.getContent()}"></p>
+					</li>
+				</ul>
+				<form id="messageForm" name="messageForm" nameForm="messageForm">
+					<div class="form-group">
+						<div class="input-group clearfix">
+							<input type="text" id="message"
+										 autocomplete="off" class="form-control"/>
+							<button type="submit" class="send">Отправить</i></button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="item card no-bg">
+			<div class="lot" th:each="lot : *{lots}">
+				<img th:src="@{/images/lot.png}">
+				<h3 th:utext="*{lot.getCost()}"></h3>
+				<h3 th:utext="*{lot.getSeller()}"></h3>
+				<p th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}" th:if="*{lot.keys.indexOf(item) < 4}"></p>
+				<a  th:if="${user != null && userObject.id == id}" class="uncover" th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
+				<a  th:if="${user != null && userObject.id == id}" class="uncover" th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a>
+				<a  th:if="${user != null && userObject.id != id}" class="uncover" href="#">Купить</a>
+		</div>
+	</div>
+</div>
+
+
+</body>
+</html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/chat-current.js}"></script>

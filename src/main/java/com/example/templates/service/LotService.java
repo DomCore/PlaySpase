@@ -35,4 +35,7 @@ public class LotService {
   public void deleteByCategoryId(Integer id)  {
     lotRepository.deleteByCategoryId(id);
   }
+  public void deleteById(Integer id)  {
+    lotRepository.deleteById(id);
+  }
 }

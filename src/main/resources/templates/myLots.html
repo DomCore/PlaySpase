@@ -4,37 +4,125 @@
 
 <head>
 	<title>PlaySpase</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/games.css}"/>
 
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
-<div class="container">
-	<form th:action="@{/home}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Назад</button>
-	</form>
+<nav class="nav">
 	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<div class="form-group">
-					<div class="col-sm-9">
-						<div style="background-color: antiquewhite; border-radius: 10px; margin: 10px;"  th:each="lot : *{lots}">
-							<div th:each="item : *{lot.keys}">
-								<label th:text="*{item}"></label>
-								<label th:text="*{lot.values.get(lot.keys.indexOf(item))}"></label>
-							</div>
-							<a th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
-						</div>
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
 					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+
+<div class="container_game">
+	<div class="grid-row">
+		<div class="card" th:each="lot : *{lots}">
+			<div class="face face1 lot">
+				<div class="content content1">
+					<img th:src="@{/images/lot.png}">
+					<h3 th:utext="*{lot.getCost()}"></h3>
+					<h3 th:utext="*{lot.getSeller()}"></h3>
+				</div>
+			</div>
+			<div class="face face2 unAuto lot2">
+				<div class="content">
+					<p class="item" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}" th:if="*{lot.keys.indexOf(item) < 4}"></p>
+					<a  class="uncover" th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
+					<a  class="uncover" th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a>
+				</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<!--
+
+
+
+
+<div class="container_body">
+	<div class="grid-row">
+		<div class="grid-item" style="width: fit-content" th:each="lot : *{lots}">
+			<div class="categories">
+				<div>
+					<p class="item" th:text="*{lot.getCost()}"></p>
+					<p class="item" th:text="*{lot.getSeller()}"></p>
+				</div>
+				<div th:each="item : *{lot.keys}">
+					<p class="item" th:text="*{item}"></p>
+					<p class="item my" th:text="*{lot.values.get(lot.keys.indexOf(item))}"></p>
+				</div>
+				<p><a  th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a></p>
+				<p><a  th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a></p>
+			</div>
+			</div>
+		</div>
+	</div>
+-->
+
+
+
+
 </body>
 </html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+<script type="text/javascript">
+  $(document).ready(function () {
+    let box = document.querySelector('.box');
+    let width = box.offsetWidth;
+    let height = box.offsetHeight;
+  });
+</script>

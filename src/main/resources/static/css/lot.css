@@ -1,0 +1,252 @@
+html {
+  height: fit-content;
+  min-height: 100%;
+}
+.login-box {
+/*  z-index: 1;
+  position: relative;
+  margin-top: 100px;
+  margin-bottom: 20px;
+  left: 50%;
+  width: 680px;
+  padding: 40px;
+  transform: translate(-50%);
+  background: rgba(0,0,0,.8)!important;
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0,0,0,.6);
+  border-radius: 10px;*/
+  z-index: 1;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  width: 460px;
+  padding: 40px;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,.8)!important;
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgb(0 0 0 / 60%);
+  border-radius: 10px;
+}
+p {
+  margin: 0;
+  padding: 2px;
+
+}
+input[type=text]:focus, input[type=number]:focus {
+  border-bottom: 2px solid var(--primaryColor) !important;
+  width: 100%;
+}
+
+input[type=password]:focus {
+  border-bottom: 2px solid var(--primaryColor) !important;
+}
+
+.login-box h2 {
+  margin: 0 0 30px;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+  font-size: 24px;
+}
+
+.login-box .user-box {
+  position: relative;
+}
+.alien {
+  font-size: 12px!important;
+}
+
+.error p {
+  color: red;
+}
+
+.login-box .user-box input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 10px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+.login-box label {
+  font-size: 16px;
+  color: var(--primaryColor);
+  pointer-events: none;
+  transition: .5s;
+}
+select {
+  margin: 5px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: solid 2px var(--primaryColor);
+}
+.left {
+  float:left;
+}
+.right {
+  float:right;
+}
+.templates {
+  background: var(--primaryColor)!important;
+  color: black!important;
+  width: 60%!important;
+  border-radius: 1px;
+}
+label {
+  color: white;
+  font-size: 20px;
+}
+.subTemplates {
+  color: black!important;
+  background: white!important;
+  width: 60% !important;
+  border-radius: 1px;
+}
+
+.delete {
+  margin: 10px;
+  color: red;
+  text-decoration: none;
+  border-bottom: solid 2px transparent;
+}
+.delete:hover {
+  border-bottom: solid 2px red;
+}
+
+.login-box form a {
+  display: contents!important;
+}
+
+.login-box form button, .login-box form a {
+  background-color: transparent;
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  color: var(--primaryColor);
+  font-size: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  margin-top: 10px;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+.login-box button:hover, .login-box form a:hover {
+  background: var(--primaryColor);
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px var(--primaryColor),
+  0 0 25px var(--primaryColor),
+  0 0 50px var(--primaryColor),
+  0 0 100px var(--primaryColor);
+}
+
+.login-box a span {
+  position: absolute;
+  display: block;
+}
+
+.login-box a span:nth-child(1) {
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primaryColor));
+  animation: btn-anim1 1s linear infinite;
+}
+
+@keyframes btn-anim1 {
+  0% {
+    left: -100%;
+  }
+  50%,100% {
+    left: 100%;
+  }
+}
+
+.login-box a span:nth-child(2) {
+  top: -100%;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--primaryColor));
+  animation: btn-anim2 1s linear infinite;
+  animation-delay: .25s
+}
+
+@keyframes btn-anim2 {
+  0% {
+    top: -100%;
+  }
+  50%,100% {
+    top: 100%;
+  }
+}
+
+.login-box a span:nth-child(3) {
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(270deg, transparent, var(--primaryColor));
+  animation: btn-anim3 1s linear infinite;
+  animation-delay: .5s
+}
+
+@keyframes btn-anim3 {
+  0% {
+    right: -100%;
+  }
+  50%,100% {
+    right: 100%;
+  }
+}
+
+.login-box a span:nth-child(4) {
+  bottom: -100%;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(360deg, transparent, var(--primaryColor));
+  animation: btn-anim4 1s linear infinite;
+  animation-delay: .75s
+}
+
+@keyframes btn-anim4 {
+  0% {
+    bottom: -100%;
+  }
+  50%,100% {
+    bottom: 100%;
+  }
+}
+
+.templates, .subTemplates {
+  width: 70%;
+  color: black;
+}
+
+.templates {
+  background-color: var(--primaryColor);
+}
+
+.subTemplates {
+  background-color: white;
+}
+
+select option[disabled] {
+  display: none;
+}
+.disabled{
+  display: none;
+}
+
+.enabled {
+  display: block!important;
+}

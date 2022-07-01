@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>template</name>
-	<description>MySQL + Spring Security</description>
+	<description>Playspase</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -39,7 +39,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-reactor-netty</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -99,11 +106,14 @@
 	</dependencies>
 
 	<build>
-		<finalName>login-tutorial</finalName>
+		<finalName>playspase</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<addResources>true</addResources>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>

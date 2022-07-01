@@ -17,11 +17,14 @@ public interface GameRepository extends JpaRepository<Game, Integer> {
 
   @Query("SELECT g FROM Game g WHERE g.id > 0")
   List<Game> getAll();
-
+  @Query("SELECT g FROM Game g WHERE g.top = true")
+  List<Game> getAllTop();
+  @Query("SELECT g FROM Game g WHERE g.top = false")
+  List<Game> getAllDownTop();
   @Modifying
   @Transactional
-  @Query("Update Game g SET g.name = ?1, g.tags=?2 where g.id = ?3")
-  void editGame(String name, String tags, Integer id);
+  @Query("Update Game g SET g.name = ?1, g.tags=?2, g.logo=?4, g.top =?5 where g.id = ?3")
+  void editGame(String name, String tags, Integer id, String logo, boolean top);
 
   @Modifying
   @Transactional

@@ -3,8 +3,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.io.File;
+import java.io.IOException;
 import javax.validation.Valid;
 
+import com.example.templates.configuration.FileUploadUtil;
 import com.example.templates.model.Category;
 import com.example.templates.model.Game;
 import com.example.templates.model.Lot;
@@ -17,10 +20,12 @@ import com.example.templates.service.LotService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -45,6 +50,7 @@ public class AdminController {
     Game game = new Game();
     modelAndView.addObject("game", game);
     modelAndView.setViewName("game");
+    homeService.checkAuth(modelAndView);
     return modelAndView;
   }
   @GetMapping(value="/edit/game")
@@ -53,37 +59,60 @@ public class AdminController {
     Game game = gameService.findById(id);
     modelAndView.addObject("game", game);
     modelAndView.setViewName("game");
+    homeService.checkAuth(modelAndView);
     return modelAndView;
   }
 
   @PostMapping(value="/create/game")
-  public ModelAndView addGame(@Valid Integer id, @Valid Game game, BindingResult bindingResult){
+  public ModelAndView addGame(@Valid MultipartFile image, @Valid Integer id, @Valid Game game, BindingResult bindingResult) throws IOException {
     ModelAndView modelAndView = new ModelAndView();
-
     boolean gameNameExists = gameService.findByName(game.getName()) != null;
     if (gameNameExists & id == null) {
       bindingResult
           .rejectValue("name", "error.game",
               "Такая игра уже есть");
-    }
-    if (bindingResult.hasErrors()) {
       modelAndView.setViewName("game");
-    } else {
-      if (id != null) {
-        gameService.editGame(game);
-      } else {
-        gameService.saveGame(game);
-      }
-      return homeService.goHome();
+      return modelAndView;
     }
-    return modelAndView;
+      if (id != null) {
+        if (image != null) {
+          String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+          game.setLogo(fileName);
+          game.setLogo(game.getLogo());
+          gameService.editGame(game);
+          String uploadDir = "game_logos/" + game.getId();
+          FileUploadUtil.saveFile(uploadDir, fileName, image);
+        } else {
+          gameService.editGame(game);
+        }
+      } else {
+        if (image != null) {
+          String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+          game.setLogo(fileName);
+          gameService.saveGame(game);
+          String uploadDir = "game_logos/" + game.getId();
+          FileUploadUtil.saveFile(uploadDir, fileName, image);
+        }
+      }
+      homeService.checkAuth(modelAndView);
+      return homeService.goHome();
+
   }
-  @GetMapping(value="/delete/game")
+  public boolean deleteDirectory(File directoryToBeDeleted) {
+    File[] allContents = directoryToBeDeleted.listFiles();
+    if (allContents != null) {
+      for (File file : allContents) {
+        deleteDirectory(file);
+      }
+    }
+    return directoryToBeDeleted.delete();
+  }
+  @PostMapping(value="/delete/game")
   public ModelAndView deleteGame(@Valid Integer id){
       gameService.deleteGameById(id);
       return homeService.goHome();
     }
-  @GetMapping(value="/delete/category")
+  @PostMapping(value="/delete/category")
   public ModelAndView deleteCategory(@Valid Integer id){
     categoryService.deleteCategoryById(id);
     return homeService.goHome();
@@ -92,16 +121,17 @@ public class AdminController {
   public ModelAndView addManager(){
     ModelAndView modelAndView = new ModelAndView();
     User user = new User();
-    modelAndView.addObject("user", user);
+    modelAndView.addObject("userTemplate", user);
     modelAndView.addObject("admin", "admin");
     modelAndView.setViewName("createManager");
+    homeService.checkAuth(modelAndView);
     return modelAndView;
   }
   @PostMapping(value="/create/manager")
-  public ModelAndView addManager(@Valid User user, BindingResult bindingResult){
+  public ModelAndView addManager(@Valid User userTemplate, BindingResult bindingResult){
     ModelAndView modelAndView = new ModelAndView();
-    boolean usernameExists = userService.findUserByUserName(user.getUserName()) != null;
-    boolean emailExists = userService.findUserByEmail(user.getEmail()) != null;
+    boolean usernameExists = userService.findUserByUserName(userTemplate.getUserName()) != null;
+    boolean emailExists = userService.findUserByEmail(userTemplate.getEmail()) != null;
     if (usernameExists) {
       bindingResult
           .rejectValue("userName", "error.user",
@@ -112,7 +142,7 @@ public class AdminController {
           .rejectValue("email", "error.user",
               "There is already a user registered with the email provided");
     }
-    if (user.getPassword().length() < 6) {
+    if (userTemplate.getPassword().length() < 6) {
       bindingResult
           .rejectValue("password", "error.user",
               "Password too short");
@@ -121,9 +151,11 @@ public class AdminController {
     if (bindingResult.hasErrors()) {
       modelAndView.setViewName("createManager");
     } else {
-      userService.saveUser(user,"MANAGER");
+      userService.saveUser(userTemplate,"MANAGER");
       modelAndView.addObject("successMessage", "Аккаунт успешно создан");
-      modelAndView.setViewName("createManager");
+      modelAndView.setViewName("home");
+      homeService.fillGames(modelAndView,true);
+      homeService.checkAuth(modelAndView);
     }
     return modelAndView;
   }
@@ -136,6 +168,7 @@ public class AdminController {
     modelAndView.addObject("games", games);
     modelAndView.addObject("category", category);
     modelAndView.setViewName("category");
+    homeService.checkAuth(modelAndView);
     return modelAndView;
   }
   @GetMapping(value="/edit/category")
@@ -148,6 +181,7 @@ public class AdminController {
     modelAndView.addObject("games", games);
     modelAndView.addObject("category", category);
     modelAndView.addObject("templates", templates);
+    homeService.checkAuth(modelAndView);
     modelAndView.setViewName("editCategory");
     return modelAndView;
   }
@@ -155,12 +189,6 @@ public class AdminController {
   @PostMapping(value="/create/category")
   public ModelAndView addCategory(@Valid String templates, @Valid String subTemplates, @Valid Category category, BindingResult bindingResult){
     ModelAndView modelAndView = new ModelAndView();
-    boolean categoryNameExists = categoryService.findByName(category.getName()) != null;
-    if (categoryNameExists && category.getId() == null) {
-      bindingResult
-          .rejectValue("name", "error.category",
-              "Такая категория уже есть");
-    }
     if (category.getGame_id() < 1) {
       bindingResult
           .rejectValue("game_id", "error.category",
@@ -185,7 +213,9 @@ public class AdminController {
       } else {
         categoryService.saveCategory(category);
       }
-      return homeService.goHome();
+      homeService.checkAuth(modelAndView);
+      homeService.fillGames(modelAndView,true);
+      modelAndView.setViewName("home");
     }
     return modelAndView;
   }

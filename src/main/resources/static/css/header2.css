@@ -1,0 +1,480 @@
+html {
+  height: fit-content;
+  min-height: 100%;
+}
+body {
+  margin:0;
+  padding:0;
+  font-family: 'Mulish', sans-serif;
+  background: linear-gradient(rgba(171, 201, 204, 0.51), rgb(33,36,43));
+  --primaryColor: rgba(3, 233, 244, 0.51);
+}
+/* Header styles start */
+.nav {
+  top:0!important;
+  background: black;
+  width: 100%;
+  height: 64px;
+  position: fixed;
+  text-align: center;
+  z-index: 9999;
+}
+
+.nav  div.logo {
+  float: left;
+  width: auto;
+  height: auto;
+  padding-left: 2px;
+}
+
+.nav  div.logo a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 18px;
+}
+
+
+.nav div.main_list {
+  height: 64px;
+  float: right;
+}
+
+.nav div.main_list ul {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.nav div.main_list ul li {
+  width: auto;
+  height: 64px;
+  padding: 0;
+  padding-right: 3rem;
+}
+
+.nav div.main_list ul li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 18px;
+}
+
+.navTrigger {
+  display: none;
+}
+
+.nav {
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+
+.search_box {
+  top: 20px;
+  position: fixed;
+  left: 74px;
+}
+
+.search_box input {
+  background-color: white;
+  color: black;
+  border-bottom: solid 1px var(--primaryColor);
+}
+
+.search_box input:focus {
+  border-bottom: solid 2px var(--primaryColor)!important;
+}
+.near-input {
+  position: absolute!important;
+  left: 350px!important;
+}
+.search_box button {
+  background-color: black;
+  color: var(--primaryColor);
+  font-size: 14px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  letter-spacing: 4px;
+  cursor: pointer;
+}
+.search_box button:hover {
+  border-radius: 10px;
+  background: var(--primaryColor);
+  color: #fff;
+  box-shadow: 0 0 5px var(--primaryColor),
+}
+
+.search_box button:active {
+  opacity: 0.9;
+}
+/* Media qurey section */
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .container_head {
+    margin: 0;
+  }
+  .near-input {
+    left: 0!important;
+    position: relative!important;
+  }
+}
+@media screen and (max-width:768px) {
+  .search_box {
+    margin-left: 10px;
+  }
+  .search_box input {
+    width: 150px;
+  }
+  .near-input {
+    left: 0!important;
+    position: relative!important;
+  }
+}
+@media screen and (max-width:1024px) {
+  .navTrigger {
+    display: block;
+  }
+  .nav div.logo {
+    margin-left: 15px;
+  }
+  .nav div.main_list {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+  }
+  .nav div.show_list {
+    height: auto;
+    display: none;
+  }
+
+  .nav div.main_list ul {
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #111;
+    /*same background color of nav bar*/
+    background-position: center top;
+  }
+  .nav div.main_list ul li {
+    width: 100%;
+    text-align: right;
+  }
+  .nav div.main_list ul li a {
+    float: left;
+    text-align: center;
+    width: 95%;
+    font-size: 3rem;
+    padding: 20px;
+  }
+  .nav div.media_button {
+    display: block;
+  }
+}
+
+li a::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: var(--primaryColor);
+  transition: width .3s;
+}
+li a:hover::after {
+  width: 100%;
+  transition: width .3s;
+}
+
+/* Animation */
+/* Inspiration taken from Dicson https://codemyui.com/simple-hamburger-menu-x-mark-animation/ */
+
+.navTrigger {
+  cursor: pointer;
+  width: 30px;
+  height: 25px;
+  margin: auto;
+  position: absolute;
+  right: 30px;
+  top: 0;
+  bottom: 0;
+}
+
+.navTrigger i {
+  background-color: #fff;
+  border-radius: 2px;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 4px;
+}
+
+.navTrigger i:nth-child(1) {
+  -webkit-animation: outT 0.8s backwards;
+  animation: outT 0.8s backwards;
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
+
+.navTrigger i:nth-child(2) {
+  margin: 5px 0;
+  -webkit-animation: outM 0.8s backwards;
+  animation: outM 0.8s backwards;
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
+
+.navTrigger i:nth-child(3) {
+  -webkit-animation: outBtm 0.8s backwards;
+  animation: outBtm 0.8s backwards;
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
+
+.navTrigger.active i:nth-child(1) {
+  -webkit-animation: inT 0.8s forwards;
+  animation: inT 0.8s forwards;
+}
+
+.navTrigger.active i:nth-child(2) {
+  -webkit-animation: inM 0.8s forwards;
+  animation: inM 0.8s forwards;
+}
+
+.navTrigger.active i:nth-child(3) {
+  -webkit-animation: inBtm 0.8s forwards;
+  animation: inBtm 0.8s forwards;
+}
+
+@-webkit-keyframes inM {
+  50% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(45deg);
+  }
+}
+
+@keyframes inM {
+  50% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+@-webkit-keyframes outM {
+  50% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(45deg);
+  }
+}
+
+@keyframes outM {
+  50% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+@-webkit-keyframes inT {
+  0% {
+    -webkit-transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    -webkit-transform: translateY(9px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translateY(9px) rotate(135deg);
+  }
+}
+
+@keyframes inT {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(9px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(9px) rotate(135deg);
+  }
+}
+
+@-webkit-keyframes outT {
+  0% {
+    -webkit-transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    -webkit-transform: translateY(9px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translateY(9px) rotate(135deg);
+  }
+}
+
+@keyframes outT {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(9px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(9px) rotate(135deg);
+  }
+}
+
+@-webkit-keyframes inBtm {
+  0% {
+    -webkit-transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    -webkit-transform: translateY(-9px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translateY(-9px) rotate(135deg);
+  }
+}
+
+@keyframes inBtm {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-9px) rotate(135deg);
+  }
+}
+
+@-webkit-keyframes outBtm {
+  0% {
+    -webkit-transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    -webkit-transform: translateY(-9px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translateY(-9px) rotate(135deg);
+  }
+}
+
+@keyframes outBtm {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-9px) rotate(135deg);
+  }
+}
+
+.affix {
+  padding: 0;
+  background-color: #111;
+}
+
+
+
+
+
+
+.myH2 {
+  text-align:center;
+  font-size: 4rem;
+}
+.myP {
+  text-align: justify;
+  padding-left:15%;
+  padding-right:15%;
+  font-size: 20px;
+}
+@media all and (max-width:700px){
+  .myP {
+    padding:2%;
+  }
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primaryColor);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primaryColor);
+}
+
+
+.dropbtn {
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  margin-top: -16px;
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: black;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border: solid 1px transparent;
+}
+
+.dropdown-content a:hover {  border: solid 1px var(--primaryColor);}
+.dropdown:hover .dropdown-content {display: block;}
+.user-pic {
+  margin-top: -14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

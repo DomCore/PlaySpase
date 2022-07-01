@@ -1,5 +1,8 @@
 package com.example.templates.repository;
 
+import java.util.List;
+
+import com.example.templates.model.Role;
 import com.example.templates.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
     User findByUserName(String userName);
+    User findById(Integer id);
 }

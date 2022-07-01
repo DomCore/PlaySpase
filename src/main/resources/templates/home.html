@@ -4,75 +4,176 @@
 
 <head>
 	<title>PlaySpase</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
+
 </head>
 
 <body>
-<div class="container">
-
-	<form th:action="@{/logout}" method="get">
-		<button class="btn btn-md btn-danger btn-block" name="registration"
-						type="Submit">Logout
-		</button>
-	</form>
-	<div class="panel-group" style="margin-top:40px">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<span th:utext="${userName}"></span>
-			</div>
-			<div th:if="${admin} != null">
-				<form th:action="@{/admin/create/game}" method="get">
-					<button class="btn btn-md btn-danger btn-block2" name="game">Добавить игру
-					</button>
-				</form>
-				<form th:action="@{/admin/create/category}" method="get">
-					<button class="btn btn-md btn-danger btn-block2">Добавить категорию
-					</button>
-				</form>
-				<form th:action="@{/admin/create/manager}" method="get">
-					<button class="btn btn-md btn-danger btn-block2">Создать акк менеджера
-					</button>
-				</form>
-				<div class="panel-body">
-					<img th:src="@{/images/img.png}" class="img-responsive center-block" width="100" height="100"
-							 alt="Admin"/>
-				</div>
-			</div>
-			<form th:action="@{/user/watch/myLots}" method="get">
-				<button class="btn btn-md btn-danger btn-block2">Мои лоты
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
 				</button>
 			</form>
-			<form th:action="@{/user/search}" method="get">
-				<input type="text" id="name" name="name"/>
-				<button class="btn btn-md btn-danger btn-block2">Найти игру</button>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
+				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="menu" th:if="${user != null && user.equals('ADMIN')}">
+	<div class="line">
+		<h2><span class="text-success" th:utext="${successMessage}"></span></h2>
+	</div>
+	<div class="line">
+		<form th:action="@{/admin/create/game}" method="get">
+			<button>Добавить игру</button>
+		</form>
+		<form th:action="@{/admin/create/category}" method="get">
+			<button>Добавить категорию</button>
+		</form>
+		<form th:action="@{/admin/create/manager}" method="get">
+			<button>Создать акк менеджера</button>
+		</form>
+	</div>
+	<div th:each="item : ${gameWrappers}">
+		<p th:utext="${item.getGame().getName()}"></p>
+		<div class="line">
+			<form th:action="@{/admin/edit/game}" method="get">
+				<input type="hidden" name="id" th:value="${item.getGame().getId()}">
+				<button>Редактировать игру</button>
 			</form>
-			<a th:href="@{/user/testpage}">TEST</a>
-			<label>Games</label>
-			<div style="background-color: chartreuse; border-radius: 10px;" th:each="item : ${gameWrappers}">
-				<a th:if="${admin} != null" th:href="@{/admin/edit/game(id=${item.getGame().getId()})}">Редактировать игру</a>
-				<a th:if="${admin} != null" th:href="@{/admin/delete/game(id=${item.getGame().getId()})}">Удалить игру</a>
-				<p th:utext="${item.getGame().getName()}"></p>
-				<p>Категории: </p>
-				<div th:if="${item.getCategories()} != null" style="background-color: chartreuse; border-radius: 10px;"
-						 th:each="category : ${item.getCategories()}">
-					<a th:href="@{/user/create/lot(id=${category.getId()})}" th:utext="${category.getName()}"></a>
-					<a th:if="${admin} != null" th:href="@{/admin/edit/category(id=${category.getId()})}">Редактировать категорию</a>
-					<a th:if="${admin} != null" th:href="@{/admin/delete/category(id=${category.getId()})}">Удалить категорию</a>
-					<a th:href="@{/user/watch/lots(id=${category.getId()})}">Просмотр лотов</a>
-				</div>
-				<p>Теги: </p>
-				<div style="background-color: chartreuse; border-radius: 10px;" th:each="tag : ${item.getGame().getTagsArray()}">
-					<p th:utext="${tag}"></p>
-				</div>
+			<form th:action="@{/admin/delete/game(id=${item.getGame().getId()})}" method="post">
+				<button>Удалить игру</button>
+			</form>
+		</div>
+		<p class="small">Категории: </p>
+		<div th:if="${item.getCategories()} != null"
+				 th:each="category : ${item.getCategories()}">
+			<div class="line">
+				<form th:action="@{/user/create/lot}" method="get">
+					<input type="hidden" name="id" th:value="${category.getId()}">
+					<button th:utext="${category.getName()}"></button>
+				</form>
+				<form th:action="@{/admin/edit/category}" method="get">
+					<input type="hidden" name="id" th:value="${category.getId()}">
+					<button>Редактировать категорию</button>
+				</form>
+				<form th:action="@{/admin/delete/category(id=${category.getId()})}" method="post">
+					<button>Удалить категорию</button>
+				</form>
+				<form th:action="@{/user/watch/lots}" method="get">
+					<input type="hidden" name="id" th:value="${category.getId()}">
+					<button>Просмотр лотов</button>
+				</form>
 			</div>
-
 		</div>
 	</div>
 </div>
-
-</div>
 </body>
+
+<div class="user-wrapper" th:if="${user != null && user.equals('USER')}">
+	<div class="item">
+		<p>Баланс: 0руб</p>
+		<button class="button-user">Вывести баланс</button>
+		<button class="button-user">Пополнить баланс</button>
+	</div>
+	<div class="item" th:if="${user != null && user.equals('USER')}">
+		<form th:action="@{/user/update/logo}" method="post"  enctype="multipart/form-data">
+				<img th:src="${logo}" alt="glogo" width="90" height="90"/>
+				<input type="file" name="image" accept="image/png, image/jpeg" placeholder="Загрузите фото" required>
+			<button class="button-user">Загрузить</button>
+		</form>
+	</div>
+	<div class="item" th:if="${user != null && user.equals('USER')}">
+		<form th:action="@{/user/update/email}" method="post">
+			<div >
+				<p th:text="${'Ваша почта: ' + email}"></p>
+				<input type="text" name="email" placeholder="Новая почта" class="input" required>
+			</div>
+			<button class="button-user">Сменить почту</button>
+		</form>
+	</div>
+	<div class="item" th:if="${user != null && user.equals('USER')}">
+		<form th:action="@{/user/update/password}" method="post">
+			<div class="user-box">
+				<p>Ваш новый пароль</p>
+				<input type="password" id="password" placeholder="Новый пароль" name="password" class="input" required>
+				<label style="color: #00b0ff" th:text="${successMessage}"></label>
+			</div>
+			<div class="user-box">
+				<p>Повторите пароль</p>
+				<input type="password" name="confirm_password" placeholder="Новый пароль" id="confirm_password"
+						 class="form-control input" required/> <span id='message'></span>
+			</div>
+			<button type="submit" class="button-user">Сменить пароль</button>
+		</form>
+	</div>
+</div>
+
 </html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#c-all').on('change', function () {
+      var $this = $(this),
+        $table = $this.closest('.flex-table'),
+        $checkboxes = $table.find('input[type="checkbox"]');
+      if ($this.is(':checked')) {
+        $checkboxes.prop('checked', true);
+      } else {
+        $checkboxes.prop('checked', false);
+      }
+    });
+  });
+</script>
+<!--Registration-->
+<script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
+<!--Registration-->

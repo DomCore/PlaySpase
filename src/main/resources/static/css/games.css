@@ -1,0 +1,209 @@
+.container_game{
+  max-width: 1335px;
+  margin: 84px auto;
+  display: block;
+  justify-content: space-between;
+}
+.grid-row {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+.container_game .card{
+  margin: 0 0 80px 0;
+  cursor: pointer;
+  text-align: center;
+  height: 150px;
+  flex-basis: 20%;
+  -ms-flex: auto;
+  width: 100px;
+  position: relative;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.container_game .card .face{
+  width: 200px;
+  height: 150px;
+  transition: 0.5s;
+}
+.unAuto {
+  height: inherit!important;
+}
+.container_game .card .face.face1{
+  position: relative;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  transform: translateY(100px);
+}
+
+.container_game .card:hover .face.face1{
+  background: var(--primaryColor);
+  transform: translateY(0);
+}
+
+.container_game .card .face.face1 .content{
+  opacity: 0.7;
+  transition: 0.5s;
+}
+
+.container_game .card:hover .face.face1 .content{
+  opacity: 1;
+}
+
+.container_game .card .face.face1 .content img{
+  max-width: 150px;
+  max-height: 80px;
+}
+
+.container_game .card .face.face1 .content h3{
+  margin: 10px 0 0;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.container_game .card .face.face2{
+  height: auto;
+  min-height: auto;
+  position: relative;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 80%);
+  transform: translateY(-50px);
+}
+
+.container_game .card:hover .face.face2{
+  transform: translateY(0);
+}
+
+.container_game .card .face.face2 .content p{
+  margin: 0;
+  padding: 0;
+}
+
+.container_game .card .face.face2 .content a, p{
+  flex-basis: 20%;
+  margin: 5px;
+  display: flex;
+  text-decoration: none;
+  font-weight: 900;
+  color: #333;
+  border: 1px solid transparent;
+  padding: 1px;
+  border-radius: 3px;
+}
+.container_game .card .face.face2 .content p{
+  flex-basis: 100%;
+}
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.content1 {
+  display:unset!important;
+}
+.container_game .card .face.face2 .content a:hover{
+  border: 1px solid var(--primaryColor);
+  background-color:  var(--primaryColor);
+  color: white;
+}
+
+.uncover {
+  flex-basis: 50%!important;
+}
+.lot {
+  padding: 10px;
+}
+.lot2 {
+  width: 220px!important;
+}
+.top {
+  position: absolute;
+  color: var(--primaryColor);
+  z-index: 10;
+  top: 5px;
+  left: 5px;
+}
+
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {  .container_game .card {
+  flex-basis: 45%;
+}}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {  .container_game .card {
+  flex-basis: 45%;
+}}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {  .container_game .card {
+  flex-basis: 30%;
+}}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {  .container_game .card {
+  flex-basis: 25%;
+}}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {  .container_game .card {
+  flex-basis: 20%;
+}}
+.sup-buttons {
+  position: absolute;
+  left: 50%;
+  top: 90px;
+  transform: translate(-50%,0);
+  width: fit-content;
+}
+
+.sup-buttons button {
+  font-size: 14px;
+  margin-left: 45px;
+  color: white;
+  background-color: #333;
+  border-radius: 4px;
+  border-top: 1px solid white;
+  border-right: 2px solid white;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+
+}
+.sup-buttons button:hover {
+  color: var(--primaryColor);
+  border-top: 1px solid var(--primaryColor);
+  border-right: 2px solid var(--primaryColor);
+}
+
+.sup-buttons svg {
+  width: 30px;
+  stroke: white;
+
+}
+.sup-buttons button:hover svg {
+  stroke: var(--primaryColor);
+}
+.text {
+  opacity: 0.8;
+  position: inherit;
+  margin-top: 15px;
+  text-decoration: none;
+}
+.sup-buttons button:hover text {
+  opacity: 1;
+}
