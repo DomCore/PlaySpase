@@ -20,7 +20,7 @@
 		</div>
 		<div class="search_box">
 			<form th:action="@{/user/search}" method="post">
-				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<input type="search" name="name" pattern=".*\S.*">
 				<button class="search-btn" type="submit">
 					<span>Поиск</span>
 				</button>
@@ -34,7 +34,7 @@
 						<a th:href="@{/user/rules/site}">Правила сайта</a>
 						<a th:href="@{/user/rules/buy}">Правила покупки</a>
 						<a th:href="@{/user/rules/sell}">Правила продажи</a>
-						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+						<a th:href="@{/user/help}">Обратиться в поддержку</a>
 					</div>
 				</div>
 				<li><a th:href="@{/}" class="header__item">Главное</a></li>
@@ -96,12 +96,17 @@
 	<h2><span class="text-success" th:utext="${adminMessage}"></span></h2>
 </div>
 
-</body>
+</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
 <!--Head-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/header.js}"></script>
 <!--Head-->
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
 <script type="text/javascript">
   $(document).ready(function () {
     var max_fields = 10;

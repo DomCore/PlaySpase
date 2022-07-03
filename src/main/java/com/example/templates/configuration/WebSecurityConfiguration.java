@@ -116,7 +116,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
   public void configure(WebSecurity web) throws Exception {
     web
         .ignoring()
-        .antMatchers("/game_logos/**","/user_logos/**","/static/**", "/css/**", "/js/**","/scripts/**", "/images/**", "/css/test.css", ".css", ".svg", "/favicon.ico", "/error");
+        .antMatchers("/game_logos/**","/user_logos/**","/static/**", "/css/**", "/js/**","/scripts/**", "/images/**", "/css/test.css", ".css", ".svg", ".mp3", "/beep.mp3","/favicon.ico", "/error");
   }
 
 }

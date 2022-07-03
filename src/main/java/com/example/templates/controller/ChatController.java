@@ -12,8 +12,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class ChatController {
@@ -37,9 +38,20 @@ public class ChatController {
     chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
     chatMessage.setSender_id(userService.findUserByUserName(chatMessage.getSender()).getId());
     chatMessage.setReceiver_id(userService.findUserByUserName(chatMessage.getReceiver()).getId());
+    chatMessage.setChecked(false);
     chatMessage.setChat_id("{"+Math.min(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"} {"+Math.max(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"}");
     chatMessageService.save(chatMessage);
     return chatMessage;
+  }
+
+  @MessageMapping("/chat.check")
+  @SendTo("/topic/public")
+  public void checkMessage(@Payload ChatMessage chatMessage) {
+    List<ChatMessage> msgs = chatMessageService.findByUsers(userService.findUserByUserName(chatMessage.getSender()).getId(), userService.findUserByUserName(chatMessage.getReceiver()).getId());
+    msgs.forEach(msg -> {
+      msg.setChecked(true);
+      chatMessageService.save(msg);
+    });
   }
 
 }

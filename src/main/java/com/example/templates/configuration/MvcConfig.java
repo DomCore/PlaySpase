@@ -12,9 +12,6 @@ public class MvcConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     exposeDirectory("game_logos/", registry);
     exposeDirectory("user_logos/", registry);
-    registry
-        .addResourceHandler("user_logos/**", "game_logos/**")
-        .addResourceLocations("file:/user_logos/", "file:/game_logos/");
   }
 
   private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {

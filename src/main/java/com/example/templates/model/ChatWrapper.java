@@ -1,9 +1,7 @@
 package com.example.templates.model;
 
-import java.util.Date;
 import java.util.List;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +16,7 @@ public class ChatWrapper implements Comparable<ChatWrapper>{
   public String user;
   public String time;
   public Integer id;
+  public boolean checked;
 
   public ChatWrapper(List<ChatMessage> messages) {
     this.messages = messages;
@@ -59,6 +58,17 @@ public class ChatWrapper implements Comparable<ChatWrapper>{
     this.user = user;
     this.time = time;
     this.id = id;
+  }
+
+  public ChatWrapper(List<ChatMessage> messages, String name, String logo, String message, String user, String time, Integer id, boolean checked) {
+    this.messages = messages;
+    this.name = name;
+    this.logo = logo;
+    this.message = message;
+    this.user = user;
+    this.time = time;
+    this.id = id;
+    this.checked = checked;
   }
 
   @Override

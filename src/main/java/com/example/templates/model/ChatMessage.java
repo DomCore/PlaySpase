@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 public class ChatMessage implements Comparable<ChatMessage>{
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id")
   private Integer id;
   @Column(name = "content")
   private String content;
@@ -34,6 +33,8 @@ public class ChatMessage implements Comparable<ChatMessage>{
   private String sender;
   private String receiver;
   private String logo;
+  @Column(name = "checked")
+  private boolean checked;
   private MessageType type;
 
   public enum MessageType {
@@ -78,6 +79,14 @@ public class ChatMessage implements Comparable<ChatMessage>{
 
   public void setType(MessageType type) {
     this.type = type;
+  }
+
+  public boolean isChecked() {
+    return checked;
+  }
+
+  public void setChecked(boolean read) {
+    this.checked = read;
   }
 
   @Override

@@ -3,6 +3,7 @@ document.querySelector('.person').classList.add('active')
 var stompClient = null;
 var username = null;
 var logo = null;
+var checked = false;
 var receiver = document.querySelector('.user').value.trim();
 
 let friends = {
@@ -25,10 +26,14 @@ friends.all.forEach(f => {
 function setAciveChat(f) {
   friends.list.querySelector('.active').classList.remove('active')
   f.classList.add('active')
+  try {
+    f.classList.remove('blinking');
+  } catch (e){}
   chat.current = chat.container.querySelector('.active-chat')
   chat.person = f.getAttribute('data-chat')
   receiver = chat.person;
   chat.current.classList.remove('active-chat')
+  check();
   chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat')
   friends.name = f.querySelector('.name').innerText
   chat.name.innerHTML = friends.name
@@ -70,7 +75,7 @@ function onConnected() {
     {},
     JSON.stringify({sender: username, receiver: receiver, type: 'JOIN'})
   )
-
+  check();
 }
 
 
@@ -110,6 +115,7 @@ function onMessageReceived(payload) {
         messageElement.classList.add('me');
       } else {
         messageElement.classList.add('you');
+        check();
       }
       var messageText = document.createTextNode(message.content);
       messageElement.appendChild(messageText);
@@ -122,11 +128,46 @@ function onMessageReceived(payload) {
       }
     }
   }
+  if (message.sender !== receiver && message.receiver === username) {
+    document.querySelector('[data-chat="' + message.sender + '"]').classList.add('blinking');
+    beep();
+    document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
+    document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.time').textContent = message.time;
+    var messageElement = document.createElement('div');
+    messageElement.classList.add('bubble');
+    messageElement.classList.add('you');
+    var messageText = document.createTextNode(message.content);
+    messageElement.appendChild(messageText);
+    document.querySelector('[data-chat-main="' + message.sender + '"]').appendChild(messageElement);
+    document.querySelector('[data-chat-main="' + message.sender + '"]').scrollTop = chat.container.querySelector('[data-chat-main="' + chat.person + '"]').scrollHeight;
+  }
 }
 
 
 messageForm.addEventListener('submit', send, true)
 
+function check() {
+  var chatMessage = {
+    sender: username,
+    receiver: receiver,
+    content: messageInput.value,
+    type: 'CHAT',
+    checked: true
+  }
+  return stompClient.send("/app/chat.check", {}, JSON.stringify(chatMessage));
+}
+function isChecked() {
+  var chatMessage = {
+    sender: username,
+    receiver: receiver,
+    content: messageInput.value,
+  }
+  return stompClient.send("/app/chat.check", {}, JSON.stringify(chatMessage));
+}
 
-
+function beep() {
+  var aud = new Audio();
+  aud.src = 'http://codeskulptor-demos.commondatastorage.googleapis.com/descent/gotitem.mp3';
+  aud.play();
+}
 

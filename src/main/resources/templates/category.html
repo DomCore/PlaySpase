@@ -24,7 +24,7 @@
 		</div>
 		<div class="search_box">
 			<form th:action="@{/user/search}" method="post">
-				<input type="search" id="name" name="name" pattern=".*\S.*">
+				<input type="search" name="name" pattern=".*\S.*">
 				<button class="search-btn" type="submit">
 					<span>Поиск</span>
 				</button>
@@ -38,7 +38,7 @@
 						<a th:href="@{/user/rules/site}">Правила сайта</a>
 						<a th:href="@{/user/rules/buy}">Правила покупки</a>
 						<a th:href="@{/user/rules/sell}">Правила продажи</a>
-						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+						<a th:href="@{/user/help}">Обратиться в поддержку</a>
 					</div>
 				</div>
 				<li><a th:href="@{/}" class="header__item">Главное</a></li>
@@ -105,7 +105,7 @@
 	</form>
 </div>
 
-</body>
+</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
 <script>
   $(document).ready(function () {

@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 
 import com.example.templates.configuration.FileUploadUtil;
-import com.example.templates.model.Category;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
 import com.example.templates.model.Game;
@@ -33,9 +31,6 @@ import com.example.templates.service.HomeService;
 import com.example.templates.service.LotService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +56,9 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
+
   private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM");
+
   @GetMapping(value = "/create/lot")
   public ModelAndView addLot(@RequestParam(value = "id", required = false) Integer id) {
     ModelAndView modelAndView = new ModelAndView();
@@ -266,7 +263,8 @@ public class UserController {
           last.getContent().substring(0,Math.min(last.getContent().length(),30)),
           userService.findById(user).getUserName(),
           last.getTime(),
-          last.getId()));
+          last.getId(),
+          last.isChecked()));
     });
     Collections.sort(chats);
     Collections.reverse(chats);
@@ -305,7 +303,8 @@ public class UserController {
           last.getContent().substring(0,Math.min(last.getContent().length(),30)),
           userService.findById(user).getUserName(),
           last.getTime(),
-          last.getId()));
+          last.getId(),
+          last.isChecked()));
     });
     List<ChatWrapper> chatsSelected = chats.stream().filter(c -> c.getUser().contains(chatName)).collect(Collectors.toList());
     if (chatsSelected.size() > 0) {
@@ -315,7 +314,7 @@ public class UserController {
     }
     }
     modelAndView.addObject("me", userService.getUser().getId());
-    modelAndView.setViewName("chat22");
+    modelAndView.setViewName("chat");
     return modelAndView;
   }
   @GetMapping(value = "/help")
@@ -373,7 +372,7 @@ public class UserController {
 
     modelAndView.addObject("chats", chats);
     modelAndView.addObject("me", userService.getUser().getId());
-    modelAndView.setViewName("chat22");
+    modelAndView.setViewName("chat");
     return modelAndView;
   }
   @GetMapping(value = "/watch/lots")

@@ -39,7 +39,7 @@
 						<a th:href="@{/user/rules/site}">Правила сайта</a>
 						<a th:href="@{/user/rules/buy}">Правила покупки</a>
 						<a th:href="@{/user/rules/sell}">Правила продажи</a>
-						<a th:href="@{/user/watch/chats}">Обратиться в поддержку</a>
+						<a th:href="@{/user/help}">Обратиться в поддержку</a>
 					</div>
 				</div>
 				<li><a th:href="@{/}" class="header__item">Главное</a></li>
@@ -51,7 +51,9 @@
 				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
 				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user"
+																																																								width="60" height="60"
+																																																								class="user-pic"/></a></li>
 					<div class="dropdown-content">
 						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
 						<a th:href="@{/home}">Настройки</a>
@@ -65,9 +67,8 @@
 	</div>
 </nav>
 <input type="hidden" id="logo" th:value="${userLogo}" class="form-control"/>
-<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 <div class="wrapper">
-	<div class="container" >
+	<div class="container">
 		<div class="left">
 			<div class="top">
 				<form th:action="@{/user/watch/selectedChats}" method="post">
@@ -78,35 +79,54 @@
 				</form>
 			</div>
 			<ul class="people">
-				<li class="person" th:each="chat: ${chats}" th:data-chat="${chat.user}">
-					<img th:src="${chat.logo}" alt="logo" />
+				<li class="person" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-friend="${chat.user}">
+					<img th:src="${chat.logo}" alt="logo"/>
 					<span class="name" th:text="${chat.user}"></span>
 					<span class="time" th:text="${chat.time}"></span>
 					<span class="preview" th:id="${chat.user}" th:text="${chat.message}"></span>
+					<span class="read" title="Доставлено" th:if="${!chat.checked}"><svg xmlns="http://www.w3.org/2000/svg"
+																																							class="icon icon-tabler icon-tabler-check" width="24"
+																																							height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50"
+																																							fill="none"
+																																							stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M5 12l5 5l10 -10"/>
+</svg></span>
+					<span class="read" title="Прочитано" th:if="${chat.checked}"><svg xmlns="http://www.w3.org/2000/svg"
+																																						class="icon icon-tabler icon-tabler-checks" width="24"
+																																						height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50"
+																																						fill="none"
+																																						stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M7 12l5 5l10 -10"/>
+  <path d="M2 12l5 5m5 -5l5 -5"/>
+</svg></span>
 				</li>
 			</ul>
 		</div>
 		<div class="right">
 			<form id="messageForm" name="messageForm" nameForm="messageForm">
-			<div class="top"><span><i class='fa fa-user-circle'></i>: <span class="name" th:if="${chats != null}" th:text="${chats[0].user}"></span></span></div>
-			<div id="messageArea" class="chat" th:each="chat: ${chats}" th:data-chat="${chat.user}">
-				<input type="hidden" id="receiver" th:value="${chat.user}" class="user form-control"/>
-				<div class="conversation-start">
-									<span th:text="${chat.time}"></span>
-								</div>
-				<div class="bubble" th:classappend="${message.getSender_id() == me}? me : you" th:each="message : ${chat.messages}" th:text="${message.getContent()}"></div>
-			</div>
-		<div class="write">
-			<input type="text" id="message"
-						 autocomplete="off" class="form-control"/>
-			<button type="submit" class="send primary">Отправить</i></button>
-		</div>
+				<div class="top"><span><i class='fa fa-user-circle'></i>: <span class="name" th:if="${chats != null}"
+																																				th:text="${chats[0].user}"></span></span></div>
+
+				<div id="messageArea" class="chat" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-main="${chat.user}">
+					<input type="hidden" id="receiver" th:value="${chat.user}" class="user form-control"/>
+					<div class="conversation-start">
+						<span th:text="${chat.time}"></span>
+					</div>
+					<div class="checked bubble" th:classappend="${(message.getSender_id() ==  me? 'me ': 'you ') + (message.checked ? 'checked': 'unchecked')}"
+							 th:each="message : ${chat.messages}" th:text="${message.getContent()}"></div>
+				</div>
+				<div class="write">
+					<input type="text" id="message"
+								 autocomplete="off" class="form-control"/>
+					<button type="submit" class="send primary">Отправить</button>
+				</div>
 			</form>
+		</div>
 	</div>
 </div>
-</div>
-
-</body>
+</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
 
 <!--Head-->
