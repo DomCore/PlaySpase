@@ -79,7 +79,7 @@
 				</form>
 			</div>
 			<ul class="people">
-				<li class="person" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-friend="${chat.user}">
+				<li class="person blinking" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-friend="${chat.user}">
 					<img th:src="${chat.logo}" alt="logo"/>
 					<span class="name" th:text="${chat.user}"></span>
 					<span class="time" th:text="${chat.time}"></span>

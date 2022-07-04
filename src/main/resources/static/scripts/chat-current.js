@@ -11,7 +11,7 @@ var logo = null;
 var receiver = null;
 
 connect();
-
+messageArea.scrollTop = messageArea.scrollHeight;
 function connect() {
   username = document.querySelector('#name').value.trim();
   receiver = document.querySelector('#receiver').value.trim();
@@ -70,7 +70,10 @@ function onMessageReceived(payload) {
   if (message.sender === receiver && message.receiver === username || message.sender === username && message.receiver === receiver) {
     if (message.type === 'JOIN') {
     } else if (message.type === 'LEAVE') {
-    } else {
+    } else if (message.type === 'CHAT') {
+      if (message.sender === receiver) {
+        smallBeep();
+      }
       var messageElement = document.createElement('li');
       messageElement.classList.add('chat-message');
       var avatarElement = document.createElement('img');
@@ -90,6 +93,10 @@ function onMessageReceived(payload) {
 
   }
 }
-
+function smallBeep() {
+  var aud = new Audio();
+  aud.src = 'https://cdn.pixabay.com/audio/2021/08/04/audio_bb630cc098.mp3';
+  aud.play();
+}
 
 messageForm.addEventListener('submit', send, true)

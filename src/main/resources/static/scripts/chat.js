@@ -113,9 +113,14 @@ function onMessageReceived(payload) {
       messageElement.classList.add('bubble');
       if (message.sender === username) {
         messageElement.classList.add('me');
+        document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.preview').textContent = message.content;
+        document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.time').textContent = message.time;
       } else {
         messageElement.classList.add('you');
         check();
+        smallBeep();
+        document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
+        document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.time').textContent = message.time;
       }
       var messageText = document.createTextNode(message.content);
       messageElement.appendChild(messageText);
@@ -167,7 +172,13 @@ function isChecked() {
 
 function beep() {
   var aud = new Audio();
-  aud.src = 'http://codeskulptor-demos.commondatastorage.googleapis.com/descent/gotitem.mp3';
+  aud.src = 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3';
   aud.play();
 }
 
+
+  function smallBeep() {
+    var aud = new Audio();
+    aud.src = 'https://cdn.pixabay.com/audio/2021/08/04/audio_bb630cc098.mp3';
+    aud.play();
+  }

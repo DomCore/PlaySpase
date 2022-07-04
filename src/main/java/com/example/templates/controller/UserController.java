@@ -83,14 +83,15 @@ public class UserController {
     List<Game> games = gameService.getAllGames();
     List<GameWrapper> categories = new ArrayList<>();
     games.forEach(g -> {
-      categoryService.findByGameId(g.getId()).forEach(c -> categories.add(new GameWrapper(String.valueOf(g.getId()),c)));
+      categoryService.findByGameId(g.getId()).forEach(c -> categories.add(new GameWrapper(String.valueOf(g.getId()), c)));
     });
-    modelAndView.addObject("categories",categories);
-    modelAndView.addObject("games",games);
+    modelAndView.addObject("categories", categories);
+    modelAndView.addObject("games", games);
     homeService.checkAuth(modelAndView);
     modelAndView.setViewName("lot");
     return modelAndView;
   }
+
   @GetMapping(value = "/rules/site")
   public ModelAndView rulesSite() {
     ModelAndView modelAndView = new ModelAndView();
@@ -140,6 +141,7 @@ public class UserController {
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
+
   @PostMapping(value = "/update/logo")
   public ModelAndView updateLogo(@Valid MultipartFile image) throws IOException {
     ModelAndView modelAndView = new ModelAndView();
@@ -155,6 +157,7 @@ public class UserController {
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
+
   @PostMapping(value = "/update/email")
   public ModelAndView updateEmail(@RequestParam(value = "email", required = false) String email) {
     ModelAndView modelAndView = new ModelAndView();
@@ -240,40 +243,41 @@ public class UserController {
     List<ChatMessage> messages = chatMessageService.findByUser(userService.getUser().getId());
     if (messages.size() > 0) {
 
-    List<ChatWrapper> chats = new ArrayList<>();
-    List<String> chatsNames = new ArrayList<>();
-    List<String> finalChatsNames = chatsNames;
-    messages.forEach(m -> {
-      finalChatsNames.add(m.getChat_id());
-    });
-    chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
-    chatsNames.forEach(n -> {
-      String name = "person";
-      Integer user;
-      List<ChatMessage> sub = messages.stream().filter(m -> m.getChat_id().equals(n)).collect(Collectors.toList());
-      ChatMessage last = sub.get(sub.size() -1);
-      if (last.getSender_id().equals(userService.getUser().getId())) {
-        user = last.getReceiver_id();
-      } else {
-        user = last.getSender_id();
-      }
-      chats.add(new ChatWrapper(sub,
-          name + chats.size(),
-          userService.findById(user).getPhotosImagePath(),
-          last.getContent().substring(0,Math.min(last.getContent().length(),30)),
-          userService.findById(user).getUserName(),
-          last.getTime(),
-          last.getId(),
-          last.isChecked()));
-    });
-    Collections.sort(chats);
-    Collections.reverse(chats);
-    modelAndView.addObject("chats", chats);
+      List<ChatWrapper> chats = new ArrayList<>();
+      List<String> chatsNames = new ArrayList<>();
+      List<String> finalChatsNames = chatsNames;
+      messages.forEach(m -> {
+        finalChatsNames.add(m.getChat_id());
+      });
+      chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
+      chatsNames.forEach(n -> {
+        String name = "person";
+        Integer user;
+        List<ChatMessage> sub = messages.stream().filter(m -> m.getChat_id().equals(n)).collect(Collectors.toList());
+        ChatMessage last = sub.get(sub.size() - 1);
+        if (last.getSender_id().equals(userService.getUser().getId())) {
+          user = last.getReceiver_id();
+        } else {
+          user = last.getSender_id();
+        }
+        chats.add(new ChatWrapper(sub,
+            name + chats.size(),
+            userService.findById(user).getPhotosImagePath(),
+            last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
+            userService.findById(user).getUserName(),
+            last.getTime(),
+            last.getId(),
+            last.isChecked()));
+      });
+      Collections.sort(chats);
+      Collections.reverse(chats);
+      modelAndView.addObject("chats", chats);
     }
     modelAndView.addObject("me", userService.getUser().getId());
     modelAndView.setViewName("chat");
     return modelAndView;
   }
+
   @PostMapping(value = "/watch/selectedChats")
   public ModelAndView watchSChats(@Valid String chatName) {
     ModelAndView modelAndView = new ModelAndView();
@@ -283,40 +287,41 @@ public class UserController {
     List<String> chatsNames = new ArrayList<>();
     List<String> finalChatsNames = chatsNames;
     if (messages.size() > 0) {
-    messages.forEach(m -> {
-      finalChatsNames.add(m.getChat_id());
-    });
-    chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
-    chatsNames.forEach(n -> {
-      String name = "person";
-      Integer user;
-      List<ChatMessage> sub = messages.stream().filter(m -> m.getChat_id().equals(n)).collect(Collectors.toList());
-      ChatMessage last = sub.get(sub.size() -1);
-      if (last.getSender_id().equals(userService.getUser().getId())) {
-        user = last.getReceiver_id();
-      } else {
-        user = last.getSender_id();
+      messages.forEach(m -> {
+        finalChatsNames.add(m.getChat_id());
+      });
+      chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
+      chatsNames.forEach(n -> {
+        String name = "person";
+        Integer user;
+        List<ChatMessage> sub = messages.stream().filter(m -> m.getChat_id().equals(n)).collect(Collectors.toList());
+        ChatMessage last = sub.get(sub.size() - 1);
+        if (last.getSender_id().equals(userService.getUser().getId())) {
+          user = last.getReceiver_id();
+        } else {
+          user = last.getSender_id();
+        }
+        chats.add(new ChatWrapper(sub,
+            name + chats.size(),
+            userService.findById(user).getPhotosImagePath(),
+            last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
+            userService.findById(user).getUserName(),
+            last.getTime(),
+            last.getId(),
+            last.isChecked()));
+      });
+      List<ChatWrapper> chatsSelected = chats.stream().filter(c -> c.getUser().contains(chatName)).collect(Collectors.toList());
+      if (chatsSelected.size() > 0) {
+        Collections.sort(chatsSelected);
+        Collections.reverse(chatsSelected);
+        modelAndView.addObject("chats", chatsSelected);
       }
-      chats.add(new ChatWrapper(sub,
-          name + chats.size(),
-          userService.findById(user).getPhotosImagePath(),
-          last.getContent().substring(0,Math.min(last.getContent().length(),30)),
-          userService.findById(user).getUserName(),
-          last.getTime(),
-          last.getId(),
-          last.isChecked()));
-    });
-    List<ChatWrapper> chatsSelected = chats.stream().filter(c -> c.getUser().contains(chatName)).collect(Collectors.toList());
-    if (chatsSelected.size() > 0) {
-      Collections.sort(chatsSelected);
-      Collections.reverse(chatsSelected);
-      modelAndView.addObject("chats", chatsSelected);
-    }
     }
     modelAndView.addObject("me", userService.getUser().getId());
     modelAndView.setViewName("chat");
     return modelAndView;
   }
+
   @GetMapping(value = "/help")
   public ModelAndView help() {
     ModelAndView modelAndView = new ModelAndView();
@@ -333,7 +338,7 @@ public class UserController {
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
       chatMessage.setSender_id(userService.findUserByUserName(chatMessage.getSender()).getId());
       chatMessage.setReceiver_id(userService.findUserByUserName(chatMessage.getReceiver()).getId());
-      chatMessage.setChat_id("{"+Math.min(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"} {"+Math.max(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"}");
+      chatMessage.setChat_id("{" + Math.min(chatMessage.getSender_id(), chatMessage.getReceiver_id()) + "} {" + Math.max(chatMessage.getSender_id(), chatMessage.getReceiver_id()) + "}");
       chatMessageService.save(chatMessage);
       messages.add(chatMessage);
     }
@@ -345,9 +350,9 @@ public class UserController {
       finalChatsNames.add(m.getChat_id());
     });
     chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
-    int index = chatsNames.indexOf("{"+userService.getUser().getId()+"} {364}");
+    int index = chatsNames.indexOf("{" + userService.getUser().getId() + "} {364}");
     if (index == -1) {
-      index = chatsNames.indexOf( "{364} {"+userService.getUser().getId()+"}");
+      index = chatsNames.indexOf("{364} {" + userService.getUser().getId() + "}");
     }
     if (chatsNames.size() > 1)
       Collections.swap(chatsNames, 0, index);
@@ -355,7 +360,7 @@ public class UserController {
       String name = "person";
       Integer user;
       List<ChatMessage> sub = messages.stream().filter(m -> m.getChat_id().equals(n)).collect(Collectors.toList());
-      ChatMessage last = sub.get(sub.size() -1);
+      ChatMessage last = sub.get(sub.size() - 1);
       if (last.getSender_id().equals(userService.getUser().getId())) {
         user = last.getReceiver_id();
       } else {
@@ -364,7 +369,7 @@ public class UserController {
       chats.add(new ChatWrapper(sub,
           name + chats.size(),
           userService.findById(user).getPhotosImagePath(),
-          last.getContent().substring(0,Math.min(last.getContent().length(),30)),
+          last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
           userService.findById(user).getUserName(),
           last.getTime(),
           last.getId()));
@@ -375,6 +380,7 @@ public class UserController {
     modelAndView.setViewName("chat");
     return modelAndView;
   }
+
   @GetMapping(value = "/watch/lots")
   public ModelAndView watchLots(@RequestParam(value = "id", required = false) Integer id) {
     ModelAndView modelAndView = new ModelAndView();
@@ -434,19 +440,26 @@ public class UserController {
   @GetMapping(value = "/profile")
   public ModelAndView watchProfile(@RequestParam(value = "id", required = false) Integer id, @RequestParam(value = "name", required = false) String name) {
     ModelAndView modelAndView = new ModelAndView();
-    if (id != null) {
-      modelAndView = getUserLots(id);
-      modelAndView.addObject("userObject", userService.findById(id));
-    } else if (name != null) {
-      modelAndView = getUserLots(userService.findUserByUserName(name).getId());
-      modelAndView.addObject("userObject", userService.findUserByUserName(name));
+    if (id == null) {
+      id = userService.findUserByUserName(name).getId();
     }
+    modelAndView = getUserLots(id);
+    modelAndView.addObject("userObject", userService.findById(id));
     if (userService.getUser() != null) {
       List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), id);
+      Integer finalId = id;
+      messages.forEach(m -> {
+        if (Objects.equals(m.getSender_id(), finalId)) {
+          m.setLogo(userService.findById(finalId).getPhotosImagePath());
+        } else {
+          m.setLogo(userService.findById(userService.getUser().getId()).getPhotosImagePath());
+        }
+      });
       modelAndView.addObject("messages", messages);
     }
-    modelAndView.setViewName("profile");
+
     homeService.checkAuth(modelAndView);
+    modelAndView.setViewName("profile");
     return modelAndView;
   }
 
@@ -544,7 +557,14 @@ public class UserController {
         new ArrayList<String>(map.keySet()),
         new ArrayList<String>(map.values()));
     modelAndView.addObject("lot", lot);
-    List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(),l.getSeller_id());
+    List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), l.getSeller_id());
+    messages.forEach(m -> {
+      if (Objects.equals(m.getSender_id(),  l.getSeller_id())) {
+        m.setLogo(userService.findById( l.getSeller_id()).getPhotosImagePath());
+      } else {
+        m.setLogo(userService.findById(userService.getUser().getId()).getPhotosImagePath());
+      }
+    });
     modelAndView.addObject("messages", messages);
     modelAndView.addObject("seller", userService.findById(l.getSeller_id()).getUserName());
     homeService.checkAuth(modelAndView);

@@ -460,8 +460,11 @@ ul {
 
 .blinking {
   animation: blinker 2s linear infinite;
+  background-color: var(--primaryColor);
 }
-
+.blinking .span {
+  background-color: var(--primaryColor);
+}
 @keyframes blinker {
   50% {
     border: solid 2px var(--primaryColor);
