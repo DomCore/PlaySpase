@@ -2,7 +2,6 @@ package com.example.templates.model;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,16 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LotsWrapper {
   public Integer id;
-  public String cost;
+  public String status;
+  public int count;
   public String seller;
   public String game;
   public String category;
   public List<String> keys;
   public List<String> values;
 
-  public LotsWrapper(Integer id, String cost, String seller, String game, String category, List<String> keys, List<String> values) {
+  public LotsWrapper(Integer id, String status, String seller, String game, String category, List<String> keys, List<String> values) {
     this.id = id;
-    this.cost = cost;
+    this.status = status;
     this.seller = seller;
     this.game = game;
     this.category = category;
@@ -33,14 +33,15 @@ public class LotsWrapper {
     return game;
   }
 
-  public LotsWrapper(Integer id, String cost, String game, String category, List<String> keys, List<String> values) {
+  public LotsWrapper(Integer id, String seller, String game, String category, List<String> keys, List<String> values) {
     this.id = id;
-    this.cost = cost;
+    this.seller = seller;
     this.game = game;
     this.category = category;
     this.keys = keys;
     this.values = values;
   }
+
 
   public void setGame(String game) {
     this.game = game;
@@ -54,20 +55,39 @@ public class LotsWrapper {
     this.category = category;
   }
 
-  public LotsWrapper(Integer id, String cost, String seller, List<String> keys, List<String> values) {
+  public LotsWrapper(Integer id, String game, String category, List<String> keys, List<String> values) {
     this.id = id;
-    this.cost = cost;
-    this.seller = seller;
+    this.game = game;
+    this.category = category;
+    this.keys = keys;
+    this.values = values;
+  }
+  public LotsWrapper(Integer id, String game, String category, int count, List<String> keys, List<String> values) {
+    this.id = id;
+    this.game = game;
+    this.category = category;
+    this.count = count;
     this.keys = keys;
     this.values = values;
   }
 
-  public String getCost() {
-    return cost;
+  public LotsWrapper(Integer id, String status, int count, String seller, String game, String category, List<String> keys, List<String> values) {
+    this.id = id;
+    this.status = status;
+    this.count = count;
+    this.seller = seller;
+    this.game = game;
+    this.category = category;
+    this.keys = keys;
+    this.values = values;
   }
 
-  public void setCost(String cost) {
-    this.cost = cost;
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   public String getSeller() {

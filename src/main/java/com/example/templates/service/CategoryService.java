@@ -44,7 +44,13 @@ public class CategoryService {
   }
 
   public List<StringAndListWrapper> createTemplates(Integer id) {
-    Category category = findById(id);
+    Category category = null;
+    try {
+      category = findById(id);
+    } catch (Exception e) {
+
+    }
+    if (category != null) {
     String[] temp = category.getTemplates().split(",");
     int subTemp = 0;
     List<StringAndListWrapper> templates = new ArrayList<>();
@@ -65,5 +71,7 @@ public class CategoryService {
       }
     }
     return templates;
+    }
+return null;
   }
 }

@@ -467,7 +467,15 @@ li a:hover::after {
   margin-top: -14px;
 }
 
-
+.ping {
+  position: relative;
+  top: -30px;
+  left: 100px;
+  width: 5px;
+  height: 5px;
+  border-radius: 3px;
+  background-color: #f6ab1f;
+}
 
 
 

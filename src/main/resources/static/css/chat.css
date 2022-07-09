@@ -460,16 +460,14 @@ ul {
 
 .blinking {
   animation: blinker 2s linear infinite;
-  background-color: var(--primaryColor);
 }
-.blinking .span {
-  background-color: var(--primaryColor);
+.blinking .span,.time {
 }
 @keyframes blinker {
   50% {
-    border: solid 2px var(--primaryColor);
-    box-shadow: -1px -7px 73px 3px var(--primaryColor);
-    -webkit-box-shadow: -1px -7px 73px 3px var(--primaryColor);
-    -moz-box-shadow: -1px -7px 73px 3px var(--primaryColor);
+    border: solid 2px #f6ab1f;
+    box-shadow: -1px -7px 73px 3px #f6ab1f;
+    -webkit-box-shadow: -1px -7px 73px 3px #f6ab1f;
+    -moz-box-shadow: -1px -7px 73px 3px #f6ab1f;
   }
 }

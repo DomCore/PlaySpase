@@ -113,6 +113,17 @@ public class HomeService {
       modelAndView.addObject("user", role);
       modelAndView.addObject("id", user.getId());
       modelAndView.addObject("userName", user.getUserName());
+      int charge = user.getBalance_charge();
+      String balance;
+      if (charge < 0) {
+        balance = String.valueOf(user.getBalance() + user.getBalance_charge());
+      } else if (charge > 0){
+        balance = user.getBalance() + " (" + user.getBalance_charge()+")";
+      } else {
+        balance = String.valueOf(user.getBalance());
+      }
+      modelAndView.addObject("userBalance", balance);
+      modelAndView.addObject("checkMessage", user.isHaveMessage());
     }
   }
 

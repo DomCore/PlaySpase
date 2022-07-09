@@ -42,6 +42,10 @@ function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
   if (message.receiver === username && message.type === "CHAT") {
   beep();
+    stompClient.send("/app/chat.haveMessage",
+      {},
+      JSON.stringify({sender: username, receiver: username, type: 'JOIN'})
+    )
   }
 }
 

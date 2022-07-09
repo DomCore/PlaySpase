@@ -46,12 +46,26 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения</a></li>
-				<li th:if="${user != null}"><a href="#" class="header__item">Покупки</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
-				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/watch/myBuysHistory}">История</a>
+					</div>
+				</div>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/watch/myLotsHistory}">История</a>
+					</div>
+				</div>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы
+					<div th:text="${userBalance} +'₽'"></div>
+				</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user"
+																																																								width="60" height="60"
+																																																								class="user-pic"/></a></li>
 					<div class="dropdown-content">
 						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
 						<a th:href="@{/home}">Настройки</a>

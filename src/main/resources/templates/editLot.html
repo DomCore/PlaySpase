@@ -81,6 +81,10 @@
 			<p><label>Цена</label></p>
 			<p><input name="cost" id="cost" th:value="*{lot.lot.cost}" type="number"/></p>
 		</div>
+		<div class="user-box">
+			<p><label>Количество</label></p>
+			<p><input name="count" id="count" th:value="*{lot.lot.count}" type="number" required/></p>
+		</div>
 		<input type="hidden" name="id" id="id" th:value="*{lot.lot.id}" class="form-control"/>
 		<input type="hidden" name="seller_id" id="seller_id" th:value="*{lot.lot.seller_id}" class="form-control"/>
 		<input type="hidden" name="category_id" id="category_id" th:value="*{lot.lot.category_id}" class="form-control"/>

@@ -12,6 +12,8 @@ public class MvcConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     exposeDirectory("game_logos/", registry);
     exposeDirectory("user_logos/", registry);
+    registry.addResourceHandler("game_logos").addResourceLocations("59/2.jpg");
+    registry.addResourceHandler("game_logos").addResourceLocations("/59/2.jpg");
   }
 
   private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
@@ -21,5 +23,7 @@ public class MvcConfig implements WebMvcConfigurer {
     if (dirName.startsWith("../")) dirName = dirName.replace("../", "");
 
     registry.addResourceHandler("/" + dirName + "/**").addResourceLocations("file:/"+ uploadPath + "/");
+    System.out.println("/" + dirName + "/**");
+    System.out.println("file:/"+ uploadPath + "/");
   }
 }

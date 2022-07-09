@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
 			xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<title>PlaySpase</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/lot.css}"/>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/games.css}"/>
 
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
+
 <body>
 <nav class="nav">
 	<div class="container">
@@ -77,88 +76,44 @@
 		<span class="navTrigger"><i></i><i></i></span>
 	</div>
 </nav>
-<div class="login-box">
-	<h2>Новая категория</h2>
-	<form autocomplete="off" action="#" th:action="@{/admin/create/category}"
-				th:object="${category}" method="post" class="form-horizontal"
-				role="form">
 
-		<div class="user-box">
-			<label>Название</label>
-			<p><input th:field="*{name}" placeholder="Название категории" type="text" required/></p>
-		</div>
-
-		<div class="user-box">
-			<label>К какой игре добавить категорию</label>
-			<p><select name="select" th:field="*{game_id}" required>
-				<option value="0" hidden selected>Выберите игру...</option>
-				<option th:each="game : ${games}" th:value="${game.getId()}" th:text="${game.getName()}">
-				</option>
-			</select></p>
-			<label
-				th:if="${#fields.hasErrors('game_id')}" th:errors="*{game_id}"
-				class="validation-message"></label>
-			<button class="add_form_field1">Добавить поле
-				<span style="font-size:16px; font-weight:bold;">+ </span>
-			</button>
-			<button class="add_form_field2">Создать список в данном поле &nbsp;
-				<span style="font-size:16px; font-weight:bold;">+ </span>
-			</button>
-		</div>
-		<div class="container1">
-			<div class="user-box ">
-				<input class="templates" type="text" th:field="*{templates}" name="templates" required>
-				<label
-					th:if="${#fields.hasErrors('templates')}" th:errors="*{templates}"
-					class="validation-message"></label>
+<div class="container_game">
+	<div class="grid-row">
+		<div class="card" th:each="lot : *{lots}">
+			<div class="face face1 lot">
+				<div class="content content1">
+					<img th:src="@{/images/lot.png}">
+					<h3 th:utext="*{lot.getGame()}"></h3>
+					<h3 th:utext="*{lot.getCategory()}"></h3>
+				</div>
+			</div>
+			<div class="face face2 unAuto lot2">
+				<div class="content">
+					<p class="item" th:if="${mode == null || mode.equals('buy')}" ><a  th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{'Продавец: ' + lot.getSeller()}"></a></p>
+					<p class="item" th:if="${mode != null && mode.equals('sell')}" ><a  th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{'Покупатель: ' + lot.getSeller()}"></a></p>
+					<p class="item" th:if="*{lot.getStatus() != null}" th:text="*{'Статус: ' + lot.getStatus()}"></p>
+					<p class="item" th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p>
+					<a  th:if="*{lot.getStatus() == null}" class="uncover green" th:href="@{/user/approve/lot(id=*{lot.id})}">Товар получен ✓</a>
+					<a  th:if="*{lot.getStatus() == null}" class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
+				</div>
+				</div>
 			</div>
 		</div>
-
-		<button type="submit">Создать категорию</button>
-		<button onclick="history.back()">Отмена</button>
-	</form>
-</div>
-
-</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
-</html>
-<script>
-  $(document).ready(function () {
-    var max_fields = 400;
-    var wrapper = $(".container1");
-    var add_button = $(".add_form_field1");
-    var add_button2 = $(".add_form_field2");
-
-    var x = 1;
-    var y = 1;
-    $(add_button).click(function (e) {
-      e.preventDefault();
-      if (x < max_fields) {
-        x++;
-        $(wrapper).append('<div class="user-box"><input class="templates" type="text" th:field="*{templates}" name="templates" id="lastTemplate" required/><a href="#" id="lastTemplateD" class="delete">Удалить</a></div>'); //add input box
-      } else {
-        alert('You Reached the limits')
-      }
-    });
-    $(add_button2).click(function (e) {
-      e.preventDefault();
-      if (x < max_fields) {
-        y++;
-        $(wrapper).append('<div class="user-box"><input style="display: none;" type="text" value="SubTemplate" th:field="*{templates}" name="templates" id="templates"/><input  class="subTemplates" type="text" th:field="*{subTemplates}" name="subTemplates" id="subTemplates" required/><a href="#" id="lastSubTemplateD" class="delete">Удалить</a></div>');
-      } else {
-        alert('You Reached the limits')
-      }
-    });
-
-
-    $(wrapper).on("click", ".delete", function (e) {
-      e.preventDefault();
-      $(this).parent('div').remove();
-    })
-  });
-
-</script>
+	</div>
+</body>
 <!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/header.js}"></script>
 <!--Head-->
-
-
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    let box = document.querySelector('.box');
+    let width = box.offsetWidth;
+    let height = box.offsetHeight;
+  });
+</script>

@@ -49,6 +49,10 @@ public class UserService {
         user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         return userRepository.save(user);
     }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
     public boolean processOAuthPostLogin(DefaultOidcUser userOid) {
         boolean saved = false;
         if (userRepository.findByEmail(userOid.getEmail()) == null) {

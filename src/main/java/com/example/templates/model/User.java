@@ -43,7 +43,12 @@ public class User {
     private Provider provider;
     @Column(name = "logo",nullable = true, length = 64)
     private String logo;
-
+    @Column(name = "balance")
+    private int balance;
+    @Column(name = "balance_charge")
+    private int balance_charge;
+    @Column(name = "haveMessage")
+    private boolean haveMessage;
     @Transient
     public String getPhotosImagePath() {
         if (logo == null || id == null || logo.equals("")) return "/user_logos/default.png";

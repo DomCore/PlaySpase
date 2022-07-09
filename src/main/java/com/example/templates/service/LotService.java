@@ -29,6 +29,9 @@ public class LotService {
   public Lot getById(Integer id)  {
     return lotRepository.getById(id);
   }
+  public int getMaxId()  {
+    return lotRepository.getMaxId();
+  }
   public List<Lot> getBySeller_id(Integer id)  {
     return lotRepository.getBySeller_id(id);
   }
@@ -37,5 +40,9 @@ public class LotService {
   }
   public void deleteById(Integer id)  {
     lotRepository.deleteById(id);
+  }
+
+  public List<Lot> getByBuyer_id(Integer id) {
+    return lotRepository.getByBuyer_id(id);
   }
 }
