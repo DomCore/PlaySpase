@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import javax.validation.Valid;
@@ -18,6 +20,7 @@ import javax.validation.Valid;
 import com.example.templates.configuration.FileUploadUtil;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
+import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Lot;
@@ -27,10 +30,13 @@ import com.example.templates.model.StringAndListWrapper;
 import com.example.templates.model.User;
 import com.example.templates.service.CategoryService;
 import com.example.templates.service.ChatMessageService;
+import com.example.templates.service.FileStorageService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
 import com.example.templates.service.LotService;
+import com.example.templates.service.ProjectService;
 import com.example.templates.service.UserService;
+import java.util.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +51,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-
+  @Autowired
+  private FileStorageService storageService;
   @Autowired
   private LotService lotService;
   @Autowired
@@ -58,6 +65,8 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
+  @Autowired
+  private ProjectService projectService;
 
   private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM");
 
@@ -255,9 +264,10 @@ public class UserController {
         } else {
           user = last.getSender_id();
         }
+
         chats.add(new ChatWrapper(sub,
             name + chats.size(),
-            userService.findById(user).getPhotosImagePath(),
+            userService.getPath(userService.findById(user)),
             last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
             userService.findById(user).getUserName(),
             last.getTime(),
@@ -298,7 +308,7 @@ public class UserController {
         }
         chats.add(new ChatWrapper(sub,
             name + chats.size(),
-            userService.findById(user).getPhotosImagePath(),
+            userService.getPath(userService.findById(user)),
             last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
             userService.findById(user).getUserName(),
             last.getTime(),
@@ -363,7 +373,7 @@ public class UserController {
       }
       chats.add(new ChatWrapper(sub,
           name + chats.size(),
-          userService.findById(user).getPhotosImagePath(),
+          userService.getPath(userService.findById(user)),
           last.getContent().substring(0, Math.min(last.getContent().length(), 30)),
           userService.findById(user).getUserName(),
           last.getTime(),
@@ -435,21 +445,22 @@ public class UserController {
 
 
   @GetMapping(value = "/profile")
-  public ModelAndView watchProfile(@RequestParam(value = "id", required = false) Integer id, @RequestParam(value = "name", required = false) String name) {
+  public ModelAndView watchProfile(@RequestParam(value = "id", required = false) Integer id, @RequestParam(value = "name", required = false) String name) throws UnsupportedEncodingException {
     ModelAndView modelAndView = new ModelAndView();
     if (id == null) {
       id = userService.findUserByUserName(name).getId();
     }
     modelAndView = getUserLots(id);
+    modelAndView.addObject("logo", userService.getPath(userService.findById(id)));
     modelAndView.addObject("userObject", userService.findById(id));
     if (userService.getUser() != null) {
       List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), id);
       Integer finalId = id;
       messages.forEach(m -> {
         if (Objects.equals(m.getSender_id(), finalId)) {
-          m.setLogo(userService.findById(finalId).getPhotosImagePath());
+          m.setLogo(userService.getPath(userService.findById(finalId)));
         } else {
-          m.setLogo(userService.findById(userService.getUser().getId()).getPhotosImagePath());
+          m.setLogo(userService.getPath(userService.findById(userService.getUser().getId())));
         }
       });
       modelAndView.addObject("messages", messages);
@@ -571,9 +582,9 @@ public class UserController {
     List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), l.getSeller_id());
     messages.forEach(m -> {
       if (Objects.equals(m.getSender_id(), l.getSeller_id())) {
-        m.setLogo(userService.findById(l.getSeller_id()).getPhotosImagePath());
+        m.setLogo(userService.getPath(userService.findById(l.getSeller_id())));
       } else {
-        m.setLogo(userService.findById(userService.getUser().getId()).getPhotosImagePath());
+        m.setLogo(userService.getPath(userService.findById(userService.getUser().getId())));
       }
     });
     modelAndView.addObject("messages", messages);
@@ -632,8 +643,8 @@ public class UserController {
       lot.setCount(lot.getCount() - 1);
       lotService.saveLot(lot);
       lotService.saveLot(myLot);
-      user.setBalance_charge(user.getBalance_charge() - Integer.parseInt(lot.getCost()));
-      seller.setBalance_charge(seller.getBalance_charge() + Integer.parseInt(lot.getCost()));
+      user.setBalance(user.getBalance() - Integer.parseInt(lot.getCost()));
+      seller.setBalance_charge(seller.getBalance_charge() + new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
       userService.saveUser(user);
       userService.saveUser(seller);
       modelAndView = getMyBuys("Подтверждение");
@@ -758,10 +769,8 @@ public class UserController {
     lot.setStatus("Продано");
 
     lotService.saveLot(lot);
-    user.setBalance_charge(user.getBalance_charge() + Integer.parseInt(lot.getCost()));
-    seller.setBalance_charge(seller.getBalance_charge() - Integer.parseInt(lot.getCost()));
-    user.setBalance(user.getBalance() - Integer.parseInt(lot.getCost()));
-    seller.setBalance(seller.getBalance() + Integer.parseInt(lot.getCost()));
+    seller.setBalance_charge(seller.getBalance_charge() - new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
+    seller.setBalance(seller.getBalance() + new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
 
     userService.saveUser(user);
     userService.saveUser(seller);

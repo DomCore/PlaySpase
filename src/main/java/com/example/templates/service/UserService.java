@@ -1,6 +1,7 @@
 package com.example.templates.service;
 
 import com.example.templates.OAuth2.Provider;
+import com.example.templates.model.FileDB;
 import com.example.templates.model.Role;
 import com.example.templates.model.User;
 import com.example.templates.repository.RoleRepository;
@@ -13,8 +14,11 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
+
+import java.io.IOException;
 
 @Service
 public class UserService {
@@ -22,7 +26,8 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    @Autowired
+    private FileStorageService storageService;
     @Autowired
     public UserService(UserRepository userRepository,
                        RoleRepository roleRepository,
@@ -83,6 +88,29 @@ public class UserService {
             return null;
         }
 
+    }
+    public String getPath(User user) {
+        try {
+            FileDB file = storageService.getFile(user.getLogo());
+            byte[] encodeBase64 = Base64.getEncoder().encode(file.getData());
+            String base64Encoded = new String(encodeBase64, "UTF-8");
+            user.setPath("data:image/jpeg;base64," + base64Encoded);
+        } catch (Exception e) {
+
+        }
+        return user.getPath() != null ? user.getPath() : getDefaultPath();
+    }
+
+    public String getDefaultPath(){
+        try {
+        FileDB file = storageService.getFile("f4daa6c7-271b-48b3-acbd-b95d238602fa");
+        byte[] encodeBase64 = Base64.getEncoder().encode(file.getData());
+        String base64Encoded = new String(encodeBase64, "UTF-8");
+        return ("data:image/jpeg;base64," + base64Encoded);
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
 }

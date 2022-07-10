@@ -45,6 +45,7 @@ public class ChatController {
     chatMessage.setSender_id(userService.findUserByUserName(chatMessage.getSender()).getId());
     chatMessage.setReceiver_id(userService.findUserByUserName(chatMessage.getReceiver()).getId());
     chatMessage.setChecked(false);
+    chatMessage.setLogo(null);
     chatMessage.setChat_id("{"+Math.min(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"} {"+Math.max(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"}");
     chatMessageService.save(chatMessage);
     User user = userService.findById(chatMessage.getReceiver_id());

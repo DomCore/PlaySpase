@@ -50,9 +50,5 @@ public class User {
     @Column(name = "haveMessage")
     private boolean haveMessage;
     @Transient
-    public String getPhotosImagePath() {
-        if (logo == null || id == null || logo.equals("")) return "/user_logos/default.png";
-
-        return "/user_logos/" + id + "/" + logo;
-    }
+    private String path;
 }

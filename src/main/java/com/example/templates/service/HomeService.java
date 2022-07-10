@@ -1,12 +1,14 @@
 package com.example.templates.service;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.example.templates.model.Category;
+import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Role;
@@ -27,6 +29,10 @@ public class HomeService {
   private GameService gameService;
   @Autowired
   private CategoryService categoryService;
+  @Autowired
+  private FileStorageService storageService;
+  @Autowired
+  private ProjectService projectService;
 
   public void fillGames(ModelAndView modelAndView, boolean forAdmin) {
     List<Game> games;
@@ -43,6 +49,14 @@ public class HomeService {
     games.forEach(g -> g.setTagsArray(List.of(g.getTags().split(","))));
     games.forEach(g -> {
       List<Category> categories;
+      try {
+        FileDB file = storageService.getFile(g.getLogo());
+        byte[] encodeBase64 = Base64.getEncoder().encode(file.getData());
+        String base64Encoded = new String(encodeBase64, "UTF-8");
+        g.setPath("data:image/jpeg;base64," + base64Encoded);
+      } catch (Exception e) {
+
+      }
       categories = categoryService.findByGameId(g.getId());
       if (!forAdmin && categories.size() > 0) {
         gameWrappers.add( new GameWrapper(g,categories));
@@ -61,6 +75,14 @@ public class HomeService {
     }
     games.forEach(g -> {
       List<Category> categories;
+      try {
+        FileDB file = storageService.getFile(g.getLogo());
+        byte[] encodeBase64 = Base64.getEncoder().encode(file.getData());
+        String base64Encoded = new String(encodeBase64, "UTF-8");
+        g.setPath("data:image/jpeg;base64," + base64Encoded);
+      } catch (Exception e) {
+
+      }
       categories = categoryService.findByGameId(g.getId());
       if (categories.size() > 0) {
         gameWrappers.add( new GameWrapper(g,categories));
@@ -100,7 +122,11 @@ public class HomeService {
     configureHome(modelAndView,user);
     modelAndView.addObject("email", user.getEmail());
     modelAndView.addObject("password", user.getPassword());
-    modelAndView.addObject("logo", user.getPhotosImagePath());
+    try {
+      modelAndView.addObject("userlogo", userService.getPath(user));
+    } catch (Exception e) {
+
+    }
     checkAuth(modelAndView);
     return modelAndView;
   }
@@ -109,8 +135,13 @@ public class HomeService {
     User user = userService.getUser();
     if (user != null) {
       String role = (user.getRoles().stream().findAny()).get().getRole();
-      modelAndView.addObject("userLogo", user.getPhotosImagePath());
+      try {
+        modelAndView.addObject("userLogo", userService.getPath(user));
+      } catch (Exception e) {
+
+      }
       modelAndView.addObject("user", role);
+      modelAndView.addObject("tax", projectService.findById(1).getTax());
       modelAndView.addObject("id", user.getId());
       modelAndView.addObject("userName", user.getUserName());
       int charge = user.getBalance_charge();

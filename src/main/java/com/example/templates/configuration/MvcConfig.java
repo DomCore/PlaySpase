@@ -8,12 +8,10 @@ import java.nio.file.Paths;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-  @Override
+/*  @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     exposeDirectory("game_logos/", registry);
     exposeDirectory("user_logos/", registry);
-    registry.addResourceHandler("game_logos").addResourceLocations("59/2.jpg");
-    registry.addResourceHandler("game_logos").addResourceLocations("/59/2.jpg");
   }
 
   private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
@@ -25,5 +23,5 @@ public class MvcConfig implements WebMvcConfigurer {
     registry.addResourceHandler("/" + dirName + "/**").addResourceLocations("file:/"+ uploadPath + "/");
     System.out.println("/" + dirName + "/**");
     System.out.println("file:/"+ uploadPath + "/");
-  }
+  }*/
 }

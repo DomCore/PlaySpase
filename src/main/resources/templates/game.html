@@ -74,8 +74,8 @@
 		</div>
 		<div class="user-box">
 			<p><label>Лого</label></p>
-			<img th:if="*{logo != null}" th:src="${game.getPhotosImagePath()}" alt="glogo" width="100" height="56"/>
-			<p><input type="file"  name="image" accept="image/png, image/jpeg" placeholder="Загрузите логотип"
+			<img th:if="*{logo != null}" th:src="${game.getPath()}" alt="glogo" width="100" height="56"/>
+			<p><input type="file"  name="file" accept="image/png, image/jpeg" placeholder="Загрузите логотип"
 								class="form-control"/></p>
 		</div>
 		<div class="user-box">

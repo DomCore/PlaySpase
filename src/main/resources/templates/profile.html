@@ -81,7 +81,7 @@
 </nav>
 <div class="user-wrapper">
 	<div class="item">
-		<img th:src="${userObject.getPhotosImagePath()}" alt="user" width="90" height="90" class="user-pic"/>
+		<img th:src="${logo}" alt="user" width="90" height="90" class="user-pic"/>
 		<div class="about">
 			<h2 th:text="${userObject.getUserName()}"></h2>
 		</div>
@@ -127,7 +127,8 @@
 			<div class="sub">Общая сумма продаж: 9999999</div>
 	</div>
 	<div class="item no-bg">
-		<input type="hidden" id="logo" th:value="${userLogo}" class="form-control"/>
+		<input type="hidden" id="userLogo" th:value="${userLogo}" class="form-control"/>
+		<input type="hidden" id="logo" th:value="${logo}" class="form-control"/>
 		<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 		<input type="hidden" id="receiver" th:value="${userObject.getUserName()}" class="form-control"/>
 
@@ -138,7 +139,8 @@
 				<div class="connecting">Connecting...</div>
 				<ul id="messageArea">
 					<li th:if="!${userObject.getUserName().equals(userName)}" th:each="message: ${messages}" class="chat-message">
-						<img th:src="${message.getLogo()}">
+						<img th:if="${message.getSender().equals(userName)}" th:src="${userLogo}">
+						<img th:if="!${message.getSender().equals(userName)}" th:src="${logo}">
 						<span th:text="${message.getSender()}"></span>
 						<p th:text="${message.getContent()}"></p>
 					</li>

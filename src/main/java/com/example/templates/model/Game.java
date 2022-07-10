@@ -42,13 +42,9 @@ public class Game implements Comparable<Game>{
   private boolean top;
   @ElementCollection
   private List<String> tagsArray;
-
   @Transient
-  public String getPhotosImagePath() {
-    if (logo == null || id == null) return null;
-
-    return "/game_logos/" + id + "/" + logo;
-  }
+  private String path;
+  @Transient
 
   @Override
   public int compareTo(Game g) {

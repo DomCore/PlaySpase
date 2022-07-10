@@ -85,7 +85,7 @@
 				<div th:if="*{item.getGame().isTop()}" class="top"><img th:src="@{/images/top.png}" alt="top" width="32" height="32"></div>
 				<div class="content content1">
 					<img th:if="*{item.getGame().getLogo() == null}" th:src="@{/images/console.png}">
-					<img th:if="*{item.getGame().getLogo() != null}" th:src="${item.getGame().getPhotosImagePath()}">
+					<img th:if="*{item.getGame().getLogo() != null}" th:src="${item.getGame().getPath()}">
 					<h3 th:utext="${item.getGame().getName()}"></h3>
 				</div>
 			</div>

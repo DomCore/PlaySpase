@@ -8,6 +8,7 @@ var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
 var username = null;
 var logo = null;
+var userLogo = null;
 var receiver = null;
 
 connect();
@@ -16,6 +17,7 @@ function connect() {
   username = document.querySelector('#name').value.trim();
   receiver = document.querySelector('#receiver').value.trim();
   logo = document.querySelector('#logo').value.trim();
+  userLogo = document.querySelector('#userLogo').value.trim();
 
   if (username) {
     var socket = new SockJS('/javatechie');
@@ -77,7 +79,12 @@ function onMessageReceived(payload) {
       var messageElement = document.createElement('li');
       messageElement.classList.add('chat-message');
       var avatarElement = document.createElement('img');
-      avatarElement.src = message.logo;
+      if (message.sender === receiver) {
+        smallBeep();
+        avatarElement.src = logo;
+      } else {
+        avatarElement.src = userLogo;
+      }
       messageElement.appendChild(avatarElement);
       var usernameElement = document.createElement('span');
       var usernameText = document.createTextNode(message.sender);
