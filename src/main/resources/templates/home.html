@@ -81,11 +81,6 @@
 		<form th:action="@{/admin/create/manager}" method="get">
 			<button>Создать акк менеджера</button>
 		</form>
-		<form th:action="@{/admin/create/tax}" method="post">
-			<p th:text="'Текущая коммиссия: ' + ${tax} + '%'"></p>
-			<input type="text" name="tax">
-			<button>Обновить коммисию</button>
-		</form>
 	</div>
 	<div th:each="item : ${gameWrappers}">
 		<p th:utext="${item.getGame().getName()}"></p>

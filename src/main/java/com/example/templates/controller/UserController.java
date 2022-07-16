@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import javax.validation.Valid;
@@ -20,7 +18,6 @@ import javax.validation.Valid;
 import com.example.templates.configuration.FileUploadUtil;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
-import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Lot;
@@ -34,9 +31,7 @@ import com.example.templates.service.FileStorageService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
 import com.example.templates.service.LotService;
-import com.example.templates.service.ProjectService;
 import com.example.templates.service.UserService;
-import java.util.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,8 +60,6 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
-  @Autowired
-  private ProjectService projectService;
 
   private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM");
 
@@ -79,6 +72,7 @@ public class UserController {
       List<StringAndListWrapper> templates = categoryService.createTemplates(id);
       LotWrapper lotWrapper = new LotWrapper(lot, categoryService.findById(id).getName(), templates);
       modelAndView.addObject("category_id", id);
+      modelAndView.addObject("tax", categoryService.findById(id).getTax());
       modelAndView.addObject("lot", lotWrapper);
       homeService.checkAuth(modelAndView);
       modelAndView.setViewName("lot");
@@ -439,6 +433,7 @@ public class UserController {
   @GetMapping(value = "/watch/myLots")
   public ModelAndView watchMyLots() {
     ModelAndView modelAndView = getMyLots();
+    modelAndView.addObject("mode",1);
     modelAndView.setViewName("myLots");
     return modelAndView;
   }
@@ -453,6 +448,24 @@ public class UserController {
     modelAndView = getUserLots(id);
     modelAndView.addObject("logo", userService.getPath(userService.findById(id)));
     modelAndView.addObject("userObject", userService.findById(id));
+    long deals = 0;
+    deals += lotService.getBySeller_id(id).stream().filter(s -> s.getStatus().equals("Продано")).count();
+    deals += lotService.getByBuyer_id(id).stream().filter(s -> s.getStatus().equals("Продано")).count();
+    List<Integer> sold = new ArrayList<>();
+    List<Integer> buyed = new ArrayList<>();
+    lotService.getBySeller_id(id).stream().filter(s -> s.getStatus().equals("Продано")).forEach(s -> {
+      sold.add(Integer.valueOf(s.getCost()));
+    });
+    lotService.getByBuyer_id(id).stream().filter(s -> s.getStatus().equals("Продано")).forEach(s -> {
+      buyed.add(Integer.valueOf(s.getCost()));
+    });
+    Integer sumSold = 0;
+    sumSold += sold.stream().mapToInt(Integer::intValue).sum();
+    Integer sumBuyed = 0;
+    sumBuyed += buyed.stream().mapToInt(Integer::intValue).sum();
+    modelAndView.addObject("deals", deals);
+    modelAndView.addObject("sold", sumSold);
+    modelAndView.addObject("buyed", sumBuyed);
     if (userService.getUser() != null) {
       List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), id);
       Integer finalId = id;
@@ -644,11 +657,12 @@ public class UserController {
       lotService.saveLot(lot);
       lotService.saveLot(myLot);
       user.setBalance(user.getBalance() - Integer.parseInt(lot.getCost()));
-      seller.setBalance_charge(seller.getBalance_charge() + new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
+      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      seller.setBalance_charge(seller.getBalance_charge() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
       userService.saveUser(user);
       userService.saveUser(seller);
       modelAndView = getMyBuys("Подтверждение");
-      modelAndView.setViewName("buys");
+      modelAndView.setViewName("buys2");
 
     } else {
       modelAndView = getLot(id);
@@ -769,8 +783,9 @@ public class UserController {
     lot.setStatus("Продано");
 
     lotService.saveLot(lot);
-    seller.setBalance_charge(seller.getBalance_charge() - new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
-    seller.setBalance(seller.getBalance() + new Double(Integer.parseInt(lot.getCost())*projectService.getCoef()).intValue());
+      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+    seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
+    seller.setBalance(seller.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
 
     userService.saveUser(user);
     userService.saveUser(seller);
@@ -789,9 +804,9 @@ public class UserController {
       lot.setStatus("Возврат");
 
       lotService.saveLot(lot);
-      user.setBalance_charge(user.getBalance_charge() + Integer.parseInt(lot.getCost()));
-      seller.setBalance_charge(seller.getBalance_charge() - Integer.parseInt(lot.getCost()));
-
+      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      user.setBalance(user.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
+      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
       userService.saveUser(user);
       userService.saveUser(seller);
     }

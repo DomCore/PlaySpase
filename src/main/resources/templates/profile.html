@@ -122,9 +122,9 @@
 		</div>
 	</div>
 	<div class="item suber">
-		<div class="sub">Сделок: 9999999</div>
-		<div class="sub">Общая сумма покупок: 9999999</div>
-			<div class="sub">Общая сумма продаж: 9999999</div>
+		<div class="sub" th:text="'Сделок: '+${deals}"></div>
+		<div class="sub" th:text="'Общая сумма покупок: '+${buyed}+'₽'"></div>
+			<div class="sub" th:text="'Общая сумма продаж: '+${sold}+'₽'"></div>
 	</div>
 	<div class="item no-bg">
 		<input type="hidden" id="userLogo" th:value="${userLogo}" class="form-control"/>

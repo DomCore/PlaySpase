@@ -87,7 +87,10 @@
 			<label>Название</label>
 			<p><input th:field="*{name}" placeholder="Название категории" type="text" required/></p>
 		</div>
-
+		<div class="user-box">
+			<label>Комиссия в категории</label>
+			<p><input th:field="*{tax}" placeholder="Комиссия категории" type="number" min="0" step="1" required/></p>
+		</div>
 		<div class="user-box">
 			<label>К какой игре добавить категорию</label>
 			<p><select name="select" th:field="*{game_id}" required>

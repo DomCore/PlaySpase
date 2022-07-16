@@ -8,11 +8,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/games.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/buys.css}"/>
 
 </head>
-
 <body>
 <nav class="nav">
 	<div class="container">
@@ -44,7 +45,9 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения
+					<div th:if="${checkMessage}" class="ping"></div>
+				</a></li>
 				<div class="dropdown">
 					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
 					<div class="dropdown-content">
@@ -77,58 +80,31 @@
 	</div>
 </nav>
 
-<div class="container_game">
-	<div class="grid-row">
-		<div class="card" th:each="lot : *{lots}">
-			<div class="face face1 lot">
-				<div class="content content1">
-					<img th:src="@{/images/lot.png}">
-					<h3 th:utext="*{lot.getGame()}"></h3>
-					<h3 th:utext="*{lot.getCategory()}"></h3>
-				</div>
-			</div>
-			<div class="face face2 unAuto lot2">
-				<div class="content">
-					<p class="item"  th:utext="*{'Количество: ' + lot.getCount()}"></p>
-					<p class="item" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}" th:if="*{lot.keys.indexOf(item) < 3}"></p>
-					<a  class="uncover" th:if="${mode == 0}" th:href="@{/user/approve/lot}">Подтвердить получение</a>
-					<a  class="uncover" th:if="${mode == 1}" th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
-					<a  class="uncover" th:if="${mode == 1}" th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a>
-				</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!--
+<table th:if="${lots != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Игра</th>
+		<th scope="col">Категория</th>
+		<th scope="col" th:if="${mode != null && mode.equals('buy')}">Продавец</th>
+		<th scope="col" th:if="${mode != null && mode.equals('sell')}">Покупатель</th>
+		<th scope="col">Статус</th>
+		<th scope="col">Информация</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="lot : ${lots}">
+		<td th:text="*{lot.getGame()}"></td>
+		<td th:text="*{lot.getCategory()}"></td>
+		<td th:if="${mode != null && mode.equals('buy')}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
+		<td th:if="${mode != null && mode.equals('sell')}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
+		<td th:if="*{lot.getStatus() != null}" th:text="*{lot.getStatus()}"></td>
+		<td><p th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p></td>
+	</tr>
+	</tbody>
+</table>
 
-
-
-
-<div class="container_body">
-	<div class="grid-row">
-		<div class="grid-item" style="width: fit-content" th:each="lot : *{lots}">
-			<div class="categories">
-				<div>
-					<p class="item" th:text="*{lot.getCost()}"></p>
-					<p class="item" th:text="*{lot.getSeller()}"></p>
-				</div>
-				<div th:each="item : *{lot.keys}">
-					<p class="item" th:text="*{item}"></p>
-					<p class="item my" th:text="*{lot.values.get(lot.keys.indexOf(item))}"></p>
-				</div>
-				<p><a  th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a></p>
-				<p><a  th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a></p>
-			</div>
-			</div>
-		</div>
-	</div>
--->
-
-
-
-
-</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+</body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
 
 <!--Head-->
@@ -140,10 +116,6 @@
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
-<script type="text/javascript">
-  $(document).ready(function () {
-    let box = document.querySelector('.box');
-    let width = box.offsetWidth;
-    let height = box.offsetHeight;
-  });
-</script>
+
+<script type="text/javascript" th:src="@{/scripts/lots.js}"></script>
+

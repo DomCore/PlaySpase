@@ -14,7 +14,6 @@ import com.example.templates.model.Category;
 import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
 import com.example.templates.model.Lot;
-import com.example.templates.model.Project;
 import com.example.templates.model.StringAndListWrapper;
 import com.example.templates.model.User;
 import com.example.templates.service.CategoryService;
@@ -22,7 +21,6 @@ import com.example.templates.service.FileStorageService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
 import com.example.templates.service.LotService;
-import com.example.templates.service.ProjectService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,9 +49,6 @@ public class AdminController {
   private CategoryService categoryService;
   @Autowired
   private FileStorageService storageService;
-  @Autowired
-  private ProjectService projectService;
-
   @GetMapping(value = "/create/game")
   public ModelAndView addGame() {
     ModelAndView modelAndView = new ModelAndView();
@@ -68,6 +63,14 @@ public class AdminController {
   public ModelAndView editGame(@Valid Integer id) {
     ModelAndView modelAndView = new ModelAndView();
     Game game = gameService.findById(id);
+    try {
+      FileDB file = storageService.getFile(game.getLogo());
+      byte[] encodeBase64 = Base64.getEncoder().encode(file.getData());
+      String base64Encoded = new String(encodeBase64, "UTF-8");
+      game.setPath("data:image/jpeg;base64," + base64Encoded);
+    } catch (Exception e) {
+
+    }
     modelAndView.addObject("game", game);
     modelAndView.setViewName("game");
     homeService.checkAuth(modelAndView);
@@ -117,19 +120,6 @@ public class AdminController {
     return modelAndView;
   }
 
-  @PostMapping(value = "/create/tax")
-  public ModelAndView addTax(@Valid String tax) {
-    ModelAndView modelAndView = new ModelAndView();
-
-    Project project = projectService.findById(1);
-    project.setTax(tax);
-    projectService.saveProject(project);
-    homeService.fillGames(modelAndView, true);
-    modelAndView.addObject("admin", "admin");
-    modelAndView.setViewName("home");
-    homeService.checkAuth(modelAndView);
-    return modelAndView;
-  }
 
   @PostMapping(value = "/create/manager")
   public ModelAndView addManager(@Valid User userTemplate, BindingResult bindingResult) {

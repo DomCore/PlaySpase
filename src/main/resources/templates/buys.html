@@ -96,10 +96,10 @@
 					<a  th:if="*{lot.getStatus() == null}" class="uncover green" th:href="@{/user/approve/lot(id=*{lot.id})}">Товар получен ✓</a>
 					<a  th:if="*{lot.getStatus() == null}" class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
 				</div>
-				</div>
 			</div>
 		</div>
 	</div>
+</div>
 </body>
 <!--Head-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

@@ -31,8 +31,6 @@ public class HomeService {
   private CategoryService categoryService;
   @Autowired
   private FileStorageService storageService;
-  @Autowired
-  private ProjectService projectService;
 
   public void fillGames(ModelAndView modelAndView, boolean forAdmin) {
     List<Game> games;
@@ -141,7 +139,6 @@ public class HomeService {
 
       }
       modelAndView.addObject("user", role);
-      modelAndView.addObject("tax", projectService.findById(1).getTax());
       modelAndView.addObject("id", user.getId());
       modelAndView.addObject("userName", user.getUserName());
       int charge = user.getBalance_charge();

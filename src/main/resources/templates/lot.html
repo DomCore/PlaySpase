@@ -110,9 +110,9 @@
 			</div>
 			<div class="user-box">
 				<p><label>Цена</label></p>
-				<p><input name="cost" id="cost" type="number" required/></p>
+				<p><input name="cost" id="cost" type="number" min="1" step="1" required/></p>
 				<p><input type="hidden" name="tax" id="tax" th:value="${tax}"/></p>
-				<p ><label th:text="'Коммиссия сервиса:' + ${tax} + '%'"></label></p>
+				<p ><label th:text="'Комиссия сервиса:' + ${tax} + '%'"></label></p>
 				<p ><label id="summary"></label></p>
 			</div>
 
