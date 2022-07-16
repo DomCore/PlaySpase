@@ -641,6 +641,7 @@ public class UserController {
     User user = userService.getUser();
     Lot lot = lotService.getById(id);
     User seller = userService.findById(lot.getSeller_id());
+    Date date = new Date();
     ModelAndView modelAndView;
     if (user.getBalance() >= Integer.parseInt(lot.getCost())) {
       Lot myLot = new Lot();
@@ -649,6 +650,7 @@ public class UserController {
       myLot.setStatus("Подтверждение");
       myLot.setSeller_id(lot.getSeller_id());
       myLot.setBuyer_id(user.getId());
+      myLot.setDate(sdf.format(new Timestamp(date.getTime())));
       myLot.setCategory_id(lot.getCategory_id());
       myLot.setTemplates(new ArrayList<>(lot.getTemplates()));
       myLot.setSubTemplates(new ArrayList<>(lot.getSubTemplates()));
@@ -730,6 +732,7 @@ public class UserController {
       lots = lots.stream().filter(l -> (l.getStatus().equals("Продано") || l.getStatus().equals("Возврат") || l.getStatus().equals("Подтверждение"))).collect(Collectors.toList());
     }
     List<LotsWrapper> lotss = new ArrayList<>();
+    Collections.sort(lots);
     lots.forEach(l -> {
       List<StringAndListWrapper> templates = categoryService.createTemplates(l.getCategory_id());
       Map<String, String> map = new HashMap<>();
@@ -751,16 +754,20 @@ public class UserController {
         }
       }
       if (mode.equals("Продажи")) {
-        lotss.add(new LotsWrapper(l.getId(),
+        lotss.add(new LotsWrapper(
+            l.getId(),
             l.getStatus(),
+            l.getDate(),
             userService.findById(l.getBuyer_id()).getUserName(),
             gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
             categoryService.findById(l.getCategory_id()).getName(),
             new ArrayList<String>(map.keySet()),
             new ArrayList<String>(map.values())));
       } else {
-        lotss.add(new LotsWrapper(l.getId(),
+        lotss.add(new LotsWrapper(
+            l.getId(),
             l.getStatus(),
+            l.getDate(),
             userService.findById(l.getSeller_id()).getUserName(),
             gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
             categoryService.findById(l.getCategory_id()).getName(),
@@ -768,7 +775,8 @@ public class UserController {
             new ArrayList<String>(map.values())));
       }
     });
-        modelAndView.addObject("lots", lotss);
+    Collections.reverse(lotss);
+    modelAndView.addObject("lots", lotss);
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
@@ -815,14 +823,14 @@ public class UserController {
   @GetMapping(value = "/watch/myLotsHistory")
   public ModelAndView buysHistory() {
     ModelAndView modelAndView = getMyHistory("Продажи");
-    modelAndView.setViewName("buys");
+    modelAndView.setViewName("buys2");
     modelAndView.addObject("mode","sell");
     return modelAndView;
   }
   @GetMapping(value = "/watch/myBuysHistory")
   public ModelAndView sellsHistory() {
     ModelAndView modelAndView = getMyHistory("Покупки");
-    modelAndView.setViewName("buys");
+    modelAndView.setViewName("buys2");
     modelAndView.addObject("mode","buy");
     return modelAndView;
   }

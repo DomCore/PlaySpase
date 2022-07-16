@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "lots")
-public class Lot implements Cloneable {
+public class Lot implements Comparable<Lot>, Cloneable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,10 +44,20 @@ public class Lot implements Cloneable {
   private int count;
   @Column(name = "status")
   private String status;
+  private String date;
   @ElementCollection
   private List<String> templates;
   @ElementCollection
   private List<String> subTemplates;
+
+
+@Override
+  public int compareTo(Lot m) {
+    if (getId() == null || m.getId() == null) {
+      return 0;
+    }
+    return getId().compareTo(m.getId());
+  }
 
   @Override
   public Lot clone() {
@@ -58,4 +68,5 @@ public class Lot implements Cloneable {
       throw new AssertionError();
     }
   }
+
 }

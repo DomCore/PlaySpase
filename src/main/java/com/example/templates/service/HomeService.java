@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import javax.xml.bind.DatatypeConverter;
+
 import com.example.templates.model.Category;
 import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
@@ -57,13 +61,14 @@ public class HomeService {
       }
       categories = categoryService.findByGameId(g.getId());
       if (!forAdmin && categories.size() > 0) {
-        gameWrappers.add( new GameWrapper(g,categories));
-      } else if(forAdmin) {
-        gameWrappers.add( new GameWrapper(g,categories));
+        gameWrappers.add(new GameWrapper(g, categories));
+      } else if (forAdmin) {
+        gameWrappers.add(new GameWrapper(g, categories));
       }
     });
     modelAndView.addObject("gameWrappers", gameWrappers);
   }
+
   public void fillGames(ModelAndView modelAndView, String name) {
     List<Game> games = gameService.getAllGames();
     List<GameWrapper> gameWrappers = new ArrayList<>();
@@ -83,7 +88,7 @@ public class HomeService {
       }
       categories = categoryService.findByGameId(g.getId());
       if (categories.size() > 0) {
-        gameWrappers.add( new GameWrapper(g,categories));
+        gameWrappers.add(new GameWrapper(g, categories));
       }
     });
     modelAndView.addObject("gameWrappers", gameWrappers);
@@ -107,7 +112,7 @@ public class HomeService {
       games = (games.stream().filter(g -> g.getTags().contains(name))).collect(Collectors.toList());
     }
     games.forEach(g -> {
-      gameWrappers.add( new GameWrapper(g,categoryService.findByGameId(g.getId())));
+      gameWrappers.add(new GameWrapper(g, categoryService.findByGameId(g.getId())));
     });
     modelAndView.addObject("gameWrappers", gameWrappers);
     modelAndView.setViewName("home");
@@ -117,7 +122,7 @@ public class HomeService {
   public ModelAndView goHome() {
     ModelAndView modelAndView = new ModelAndView();
     User user = userService.getUser();
-    configureHome(modelAndView,user);
+    configureHome(modelAndView, user);
     modelAndView.addObject("email", user.getEmail());
     modelAndView.addObject("password", user.getPassword());
     try {
@@ -145,8 +150,8 @@ public class HomeService {
       String balance;
       if (charge < 0) {
         balance = String.valueOf(user.getBalance() + user.getBalance_charge());
-      } else if (charge > 0){
-        balance = user.getBalance() + " (" + user.getBalance_charge()+")";
+      } else if (charge > 0) {
+        balance = user.getBalance() + " (" + user.getBalance_charge() + ")";
       } else {
         balance = String.valueOf(user.getBalance());
       }
@@ -154,8 +159,6 @@ public class HomeService {
       modelAndView.addObject("checkMessage", user.isHaveMessage());
     }
   }
-
-
 
 
   public void configureHome(ModelAndView modelAndView, User user) {
@@ -170,7 +173,7 @@ public class HomeService {
     List<GameWrapper> gameWrappers = new ArrayList<>();
     games.forEach(g -> g.setTagsArray(List.of(g.getTags().split(","))));
     games.forEach(g -> {
-      gameWrappers.add( new GameWrapper(g,categoryService.findByGameId(g.getId())));
+      gameWrappers.add(new GameWrapper(g, categoryService.findByGameId(g.getId())));
     });
     modelAndView.addObject("gameWrappers", gameWrappers);
     modelAndView.setViewName("home");

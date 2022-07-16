@@ -10,7 +10,6 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/games.css}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
 
 </head>
@@ -42,6 +41,7 @@
 					</div>
 				</div>
 				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li><a th:if="${result!=null}" th:text="${result}" href="#"></a></li>
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
@@ -79,6 +79,9 @@
 </nav>
 
 <div class="container_game">
+	<a href="https://freekassa.ru" target="_blank" rel="noopener noreferrer">
+		<img src="https://cdn.freekassa.ru/banners/big-dark-1.png" title="Прием платежей">
+	</a>
 	<div class="grid-row">
 		<div class="card" th:each="item : ${gameWrappers}">
 			<div class="face face1">
@@ -141,6 +144,13 @@
 			</button>
 		</a>
 
+<!--		<form th:action="@{/transaction}" method="post">
+			<input type="number" name="value" min="1" step="1">
+			<button class="search-btn" type="submit">
+				<span>Донат</span>
+			</button>
+		</form>-->
+		<iframe src="https://widgets.freekassa.ru?type=payment-window&lang=ru&theme=light&default_amount=999&api_key=d3791b554909c145c6226d6367b18df7&shopID=19959" width="300" height="590" frameborder="0"></iframe>
 	</div>
 </div>
 </body>
