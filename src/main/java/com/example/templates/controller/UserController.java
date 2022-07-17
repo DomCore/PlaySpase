@@ -644,6 +644,27 @@ public class UserController {
     Date date = new Date();
     ModelAndView modelAndView;
     if (user.getBalance() >= Integer.parseInt(lot.getCost())) {
+      ChatMessage chatMessage = new ChatMessage();
+      chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
+      chatMessage.setSender_id(1);
+      chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setChecked(false);
+      chatMessage.setLogo(null);
+      chatMessage.setContent("Пользователь " + user.getUserName() + " купил у вас "+categoryService.findById(lot.getCategory_id()).getName() +" из "+gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id()).getName()+ " за " +lot.getCost()+"₽");
+      chatMessage.setChat_id("{"+Math.min(1,seller.getId())+"} {"+Math.max(1,seller.getId())+"}");
+      chatMessageService.save(chatMessage);
+      ChatMessage chatMessage2 = new ChatMessage();
+      chatMessage2.setTime(sdf.format(new Timestamp(date.getTime())));
+      chatMessage2.setSender_id(1);
+      chatMessage2.setReceiver_id(user.getId());
+      chatMessage2.setChecked(false);
+      chatMessage2.setLogo(null);
+      chatMessage2.setContent("Вы купили " +categoryService.findById(lot.getCategory_id()).getName() +" из "+gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id()).getName()+ " за " +lot.getCost()+"₽ у пользователя " + seller.getUserName());
+      chatMessage2.setChat_id("{"+Math.min(1,user.getId())+"} {"+Math.max(1,user.getId())+"}");
+      chatMessageService.save(chatMessage2);
+      seller.setHaveMessage(true);
+      user.setHaveMessage(true);
+
       Lot myLot = new Lot();
       BeanUtils.copyProperties(lot, myLot);
       myLot.setId(null);
@@ -659,7 +680,10 @@ public class UserController {
       lotService.saveLot(lot);
       lotService.saveLot(myLot);
       user.setBalance(user.getBalance() - Integer.parseInt(lot.getCost()));
-      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      int c = 0;
+      if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
+        c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      }
       seller.setBalance_charge(seller.getBalance_charge() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
       userService.saveUser(user);
       userService.saveUser(seller);
@@ -791,7 +815,10 @@ public class UserController {
     lot.setStatus("Продано");
 
     lotService.saveLot(lot);
-      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+    int c = 0;
+    if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
+     c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+    }
     seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
     seller.setBalance(seller.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
 
@@ -805,14 +832,17 @@ public class UserController {
   public ModelAndView dismissLot(@Valid Integer id) {
     User user = userService.getUser();
     Lot lot = lotService.getById(id);
-    if (lot.getBuyer_id().equals(user.getId())) {
+    if (lot.getSeller_id().equals(user.getId())) {
 
       User seller = userService.findById(lot.getSeller_id());
 
       lot.setStatus("Возврат");
 
       lotService.saveLot(lot);
-      int c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      int c = 0;
+      if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
+        c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      }
       user.setBalance(user.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
       seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
       userService.saveUser(user);

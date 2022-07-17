@@ -90,6 +90,7 @@
 		<th scope="col">Статус</th>
 		<th scope="col">Информация</th>
 		<th scope="col">Дата</th>
+		<th scope="col">Вернуть средства</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -101,6 +102,8 @@
 		<td th:if="*{lot.getStatus() != null}" th:text="*{lot.getStatus()}"></td>
 		<td><p th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p></td>
 		<td th:text="*{lot.getDate()}"></td>
+		<td><a th:if="*{mode.equals('sell') && lot.getStatus().equals('Подтверждение')}" class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
+		</td>
 	</tr>
 	</tbody>
 </table>

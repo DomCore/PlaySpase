@@ -94,7 +94,6 @@
 					<p class="item" th:if="*{lot.getStatus() != null}" th:text="*{'Статус: ' + lot.getStatus()}"></p>
 					<p class="item" th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p>
 					<a  th:if="*{lot.getStatus() == null}" class="uncover green" th:href="@{/user/approve/lot(id=*{lot.id})}">Товар получен ✓</a>
-					<a  th:if="*{lot.getStatus() == null}" class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
 				</div>
 			</div>
 		</div>
