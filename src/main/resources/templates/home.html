@@ -130,6 +130,7 @@
 				<input type="file" name="file" accept="image/png, image/jpeg" placeholder="Загрузите фото" required>
 			<button class="button-user">Загрузить</button>
 		</form>
+
 	</div>
 	<div class="item" th:if="${user != null && user.equals('USER')}">
 		<form th:action="@{/user/update/email}" method="post">

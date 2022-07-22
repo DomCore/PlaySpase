@@ -86,11 +86,11 @@
 		<th scope="col">Игра</th>
 		<th scope="col">Категория</th>
 		<th scope="col" th:if="${mode != null && mode.equals('buy')}">Продавец</th>
-		<th scope="col" th:if="${mode != null && mode.equals('sell')}">Покупатель</th>
+		<th scope="col" th:if="${mode != null && mode.equals('sell') || mode.equals('active')}">Покупатель</th>
 		<th scope="col">Статус</th>
 		<th scope="col">Информация</th>
 		<th scope="col">Дата</th>
-		<th scope="col">Вернуть средства</th>
+		<th scope="col" th:if="${mode != null && mode.equals('active')}">Вернуть средства</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -98,11 +98,11 @@
 		<td th:text="*{lot.getGame()}"></td>
 		<td th:text="*{lot.getCategory()}"></td>
 		<td th:if="${mode != null && mode.equals('buy')}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
-		<td th:if="${mode != null && mode.equals('sell')}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
+		<td th:if="${mode != null && mode.equals('sell') || mode.equals('active')}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
 		<td th:if="*{lot.getStatus() != null}" th:text="*{lot.getStatus()}"></td>
 		<td><p th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p></td>
 		<td th:text="*{lot.getDate()}"></td>
-		<td><a th:if="*{mode.equals('sell') && lot.getStatus().equals('Подтверждение')}" class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
+		<td th:if="${mode != null && mode.equals('active')}"><a class="uncover red" th:href="@{/user/dismiss/lot(id=*{lot.id})}">Возврат средств ✗</a>
 		</td>
 	</tr>
 	</tbody>

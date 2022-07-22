@@ -54,8 +54,9 @@
 					</div>
 				</div>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLotsActive}" class="header__item">Продажи</a></li>
 					<div class="dropdown-content">
+						<a th:href="@{/user/watch/user/watch/myLots}">Лоты</a>
 						<a th:href="@{/user/watch/myLotsHistory}">История</a>
 					</div>
 				</div>
@@ -126,7 +127,9 @@
 					<div class="conversation-start">
 						<span th:text="${chat.time}"></span>
 					</div>
-					<div class="checked bubble" th:classappend="${(message.getSender_id() ==  me? 'me ': 'you ') + (message.checked ? 'checked': 'unchecked')}"
+					<div class="checked bubble"
+							 th:classappend="${(!message.isSystem() && message.getSender_id() ==  me? 'me ': '') + (!message.isSystem() && message.getReceiver_id() ==  me? 'you ': '')
+							 + (message.checked ? 'checked': 'unchecked') + (message.isSystem()? ' system': '') }"
 							 th:each="message : ${chat.messages}" th:text="${message.getContent()}"></div>
 				</div>
 				<div class="write">

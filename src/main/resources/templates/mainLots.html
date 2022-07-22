@@ -52,8 +52,9 @@
 					</div>
 				</div>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLotsActive}" class="header__item">Продажи</a></li>
 					<div class="dropdown-content">
+						<a th:href="@{/user/watch/user/watch/myLots}">Лоты</a>
 						<a th:href="@{/user/watch/myLotsHistory}">История</a>
 					</div>
 				</div>

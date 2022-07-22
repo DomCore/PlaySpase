@@ -33,6 +33,8 @@ public class ChatMessage implements Comparable<ChatMessage>{
   private String sender;
   private String receiver;
   private String logo;
+  @Column(name = "systemMessage")
+  private boolean system;
   @Column(name = "checked")
   private boolean checked;
   private MessageType type;
@@ -89,11 +91,19 @@ public class ChatMessage implements Comparable<ChatMessage>{
     this.checked = read;
   }
 
+  public boolean isSystem() {
+    return system;
+  }
+
+  public void setSystem(boolean system) {
+    this.system = system;
+  }
+
   @Override
   public int compareTo(ChatMessage m) {
-    if (getChat_id() == null || m.getChat_id() == null) {
+    if (getId() == null || m.getId() == null) {
       return 0;
     }
-    return getChat_id().compareTo(m.getChat_id());
+    return getId().compareTo(m.getId());
   }
 }

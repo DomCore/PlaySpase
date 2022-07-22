@@ -41,7 +41,6 @@
 					</div>
 				</div>
 				<li><a th:href="@{/}" class="header__item">Главное</a></li>
-				<li><a th:if="${result!=null}" th:text="${result}" href="#"></a></li>
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
@@ -53,11 +52,12 @@
 					</div>
 				</div>
 				<div class="dropdown">
-				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
-				<div class="dropdown-content">
-					<a th:href="@{/user/watch/myLotsHistory}">История</a>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLotsActive}" class="header__item">Продажи</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/watch/myLots}">Лоты</a>
+						<a th:href="@{/user/watch/myLotsHistory}">История</a>
+					</div>
 				</div>
-			</div>
 				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы
 					<div th:text="${userBalance} +'₽'"></div>
 				</a></li>
@@ -101,7 +101,7 @@
 		</div>
 	</div>
 	<div class="sup-buttons">
-
+		<iframe src="https://widgets.freekassa.ru?type=payment-button&currency=RUB&destination=PlaySpase&theme=light&default_amount=200&button_text=Оплатить&button_size=36px&shopId=19959&s=0dc9b3ea0810d340605ccc7aab483092" width="300" height="50" frameborder="0"></iframe>
 		<a th:href="@{/user/create/subLot}">
 			<button type="submit">
 				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shopping-cart-plus" width="44" height="44" viewBox="0 0 24 24"

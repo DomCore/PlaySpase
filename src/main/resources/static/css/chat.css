@@ -471,3 +471,20 @@ ul {
     -moz-box-shadow: -1px -7px 73px 3px #f6ab1f;
   }
 }
+
+.system {
+  background-color: var(--primaryColor);
+  color: white;
+  font-size: 12px!important;
+  animation-name: slideFromLeft;
+}
+.system:before {
+  color: white;
+  border-radius: 5px;
+  content: 'PlaySpase' !important;
+  font-size: 10px;
+  margin-top: -17px;
+  transform: rotate(0deg) skew(-35deg) !important;
+  width: fit-content !important;
+  height: fit-content !important;
+}
