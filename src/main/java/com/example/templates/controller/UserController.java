@@ -852,6 +852,8 @@ public class UserController {
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
       chatMessage.setSender_id(user.getId());
       chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setSender(user.getUserName());
+      chatMessage.setReceiver(seller.getUserName());
       chatMessage.setChecked(false);
       chatMessage.setSystem(true);
       chatMessage.setLogo(null);
@@ -860,6 +862,7 @@ public class UserController {
           .getName() + " и отправил деньги продавцу " + seller.getUserName());
       chatMessage.setChat_id("{" + Math.min(user.getId(), seller.getId()) + "} {" + Math.max(user.getId(), seller.getId()) + "}");
       chatMessageService.save(chatMessage);
+      this.template.convertAndSend("/topic/public", chatMessage);
       seller.setHaveMessage(true);
       user.setHaveMessage(true);
 
@@ -893,13 +896,16 @@ public class UserController {
       ChatMessage chatMessage = new ChatMessage();
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
       chatMessage.setSender_id(user.getId());
-      chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setReceiver_id(buyer.getId());
+      chatMessage.setSender(user.getUserName());
+      chatMessage.setReceiver(buyer.getUserName());
       chatMessage.setChecked(false);
       chatMessage.setSystem(true);
       chatMessage.setLogo(null);
       chatMessage.setContent("Продавец " + seller.getUserName() + " вернул деньги покупателю "+ buyer.getUserName());
-      chatMessage.setChat_id("{" + Math.min(user.getId(), seller.getId()) + "} {" + Math.max(user.getId(), seller.getId()) + "}");
+      chatMessage.setChat_id("{" + Math.min(user.getId(), buyer.getId()) + "} {" + Math.max(user.getId(), buyer.getId()) + "}");
       chatMessageService.save(chatMessage);
+      this.template.convertAndSend("/topic/public", chatMessage);
       seller.setHaveMessage(true);
       user.setHaveMessage(true);
       if (categoryService.findById(lot.getCategory_id()).getTax() != null) {

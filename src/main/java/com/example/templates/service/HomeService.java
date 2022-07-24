@@ -35,6 +35,8 @@ public class HomeService {
   private CategoryService categoryService;
   @Autowired
   private FileStorageService storageService;
+  @Autowired
+  private LotService lotService;
 
   public void fillGames(ModelAndView modelAndView, boolean forAdmin) {
     List<Game> games;
@@ -157,8 +159,8 @@ public class HomeService {
       }
       modelAndView.addObject("userBalance", balance);
       modelAndView.addObject("messagesCount", user.getMessages());
-      modelAndView.addObject("sellsCount", user.getSells());
-      modelAndView.addObject("buysCount", user.getBuys());
+      modelAndView.addObject("sellsCount", lotService.getSells(user.getId()));
+      modelAndView.addObject("buysCount", lotService.getBuys(user.getId()));
     }
   }
 

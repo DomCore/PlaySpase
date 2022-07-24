@@ -115,13 +115,13 @@ function onMessageReceived(payload) {
         messageElement.classList.add('me');
         document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.preview').textContent = message.content;
         document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.time').textContent = message.time;
-      } else if (message.sender === username && !message.system){
+      } else if (message.receiver === username && !message.system){
         messageElement.classList.add('you');
         check();
         smallBeep();
         document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
         document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.time').textContent = message.time;
-      } else {
+      } else if (message.sender === receiver && message.system) {
         messageElement.classList.add('system');
         check();
         smallBeep();
