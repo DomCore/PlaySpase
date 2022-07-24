@@ -126,9 +126,9 @@
 		<div class="sub" th:text="'Общая сумма покупок: '+${buyed}+'₽'"></div>
 			<div class="sub" th:text="'Общая сумма продаж: '+${sold}+'₽'"></div>
 	</div>
-	<div class="item no-bg">game_tags_array
-		<input type="hidden" id="userLogo" th:value="${userLogo}" class="form-control"/>
-		<input type="hidden" id="logo" th:value="${logo}" class="form-control"/>
+	<div class="item no-bg">
+		<input type="hidden" name="seller_logo" id="seller_logo" th:value="${seller_logo}" class="form-control"/>
+		<input type="hidden" name="my_logo" id="my_logo" th:value="${my_logo}" class="form-control"/>
 		<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 		<input type="hidden" id="receiver" th:value="${userObject.getUserName()}" class="form-control"/>
 
@@ -138,9 +138,9 @@
 
 				<div class="connecting">Connecting...</div>
 				<ul id="messageArea">
-					<li th:if="!${userObject.getUserName().equals(userName)}" th:each="message: ${messages}" class="chat-message">
-						<img th:if="${message.getSender().equals(userName)}" th:src="${userLogo}">
-						<img th:if="!${message.getSender().equals(userName)}" th:src="${logo}">
+					<li th:if="!${userObject.getUserName().equals(userName)}" th:each="message: ${messages}" th:classappend="${message.isSystem()}? system : ''" class="chat-message">
+						<img th:if="${message.getSender_id() == me}" th:src="${my_logo}">
+						<img th:if="${message.getSender_id() != me}" th:src="${seller_logo}">
 						<span th:text="${message.getSender()}"></span>
 						<p th:text="${message.getContent()}"></p>
 					</li>

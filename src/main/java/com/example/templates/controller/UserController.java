@@ -34,6 +34,10 @@ import com.example.templates.service.LotService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +64,8 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
-
+  @Autowired
+  private SimpMessagingTemplate template;
   private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM");
 
   @GetMapping(value = "/create/lot")
@@ -274,6 +279,9 @@ public class UserController {
     }
     modelAndView.addObject("me", userService.getUser().getId());
     modelAndView.setViewName("chat");
+    User user = userService.getUser();
+    user.setMessages(0);
+    userService.saveUser(user);
     return modelAndView;
   }
 
@@ -403,11 +411,11 @@ public class UserController {
         }
         try {
           if (l.getCount() > 0)
-          lotss.add(new LotsWrapper(l.getId(),
-              l.getCost(),
-              userService.findById(l.getSeller_id()).getUserName(),
-              new ArrayList<>(map.keySet()),
-              new ArrayList<>(map.values())));
+            lotss.add(new LotsWrapper(l.getId(),
+                l.getCost(),
+                userService.findById(l.getSeller_id()).getUserName(),
+                new ArrayList<>(map.keySet()),
+                new ArrayList<>(map.values())));
         } catch (Exception e) {
         }
       });
@@ -433,7 +441,7 @@ public class UserController {
   @GetMapping(value = "/watch/myLots")
   public ModelAndView watchMyLots() {
     ModelAndView modelAndView = getMyLots();
-    modelAndView.addObject("mode",1);
+    modelAndView.addObject("mode", 1);
     modelAndView.setViewName("myLots");
     return modelAndView;
   }
@@ -446,6 +454,12 @@ public class UserController {
       id = userService.findUserByUserName(name).getId();
     }
     modelAndView = getUserLots(id);
+    try {
+      modelAndView.addObject("seller_id", id);
+      modelAndView.addObject("me", userService.getUser().getId());
+      modelAndView.addObject("seller_logo", userService.getPath(userService.findById(id)));
+      modelAndView.addObject("my_logo", userService.getPath(userService.getUser()));
+    } catch (Exception e) {}
     modelAndView.addObject("logo", userService.getPath(userService.findById(id)));
     modelAndView.addObject("userObject", userService.findById(id));
     long deals = 0;
@@ -480,6 +494,7 @@ public class UserController {
     }
 
     homeService.checkAuth(modelAndView);
+
     modelAndView.setViewName("profile");
     return modelAndView;
   }
@@ -531,37 +546,37 @@ public class UserController {
     ModelAndView modelAndView = new ModelAndView();
     try {
 
-    List<Lot> lots = lotService.getBySeller_id(user.getId());
+      List<Lot> lots = lotService.getBySeller_id(user.getId());
       lots = lots.stream().filter(l -> l.getStatus().equals("Продажа") && l.getCount() > 0).collect(Collectors.toList());
-    lots = lots.stream().filter(l -> l.getCount() > 0).collect(Collectors.toList());
-    List<LotsWrapper> lotss = new ArrayList<>();
-    lots.forEach(l -> {
-      List<StringAndListWrapper> templates = categoryService.createTemplates(l.getCategory_id());
-      if (templates != null) {
-        Map<String, String> map = new HashMap<>();
-        int a = 0;
-        int b = 0;
-        map.put("Цена", l.getCost());
-        for (int i = 0; i < templates.size(); i++) {
-          if (templates.get(i).getArrString() != null) {
-            map.put(templates.get(i).string, l.getSubTemplates().get(b));
-            b++;
-          } else {
-            map.put(templates.get(i).string, l.getTemplates().get(a));
-            a++;
+      lots = lots.stream().filter(l -> l.getCount() > 0).collect(Collectors.toList());
+      List<LotsWrapper> lotss = new ArrayList<>();
+      lots.forEach(l -> {
+        List<StringAndListWrapper> templates = categoryService.createTemplates(l.getCategory_id());
+        if (templates != null) {
+          Map<String, String> map = new HashMap<>();
+          int a = 0;
+          int b = 0;
+          map.put("Цена", l.getCost());
+          for (int i = 0; i < templates.size(); i++) {
+            if (templates.get(i).getArrString() != null) {
+              map.put(templates.get(i).string, l.getSubTemplates().get(b));
+              b++;
+            } else {
+              map.put(templates.get(i).string, l.getTemplates().get(a));
+              a++;
+            }
           }
-        }
-        lotss.add(new LotsWrapper(l.getId(),
-            gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
-            categoryService.findById(l.getCategory_id()).getName(),
-            l.getCount(),
-            new ArrayList<String>(map.keySet()),
-            new ArrayList<String>(map.values())));
+          lotss.add(new LotsWrapper(l.getId(),
+              gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
+              categoryService.findById(l.getCategory_id()).getName(),
+              l.getCount(),
+              new ArrayList<String>(map.keySet()),
+              new ArrayList<String>(map.values())));
 
-        /*      lotWrapers.add(new LotWrapper(l,templates));*/
-      }
-    });
-    modelAndView.addObject("lots", lotss);
+          /*      lotWrapers.add(new LotWrapper(l,templates));*/
+        }
+      });
+      modelAndView.addObject("lots", lotss);
     } catch (Exception e) {
       modelAndView.addObject("lots", null);
     }
@@ -602,6 +617,10 @@ public class UserController {
     });
     modelAndView.addObject("messages", messages);
     modelAndView.addObject("seller", userService.findById(l.getSeller_id()).getUserName());
+    modelAndView.addObject("seller_id", l.getSeller_id());
+    modelAndView.addObject("me", userService.getUser().getId());
+    modelAndView.addObject("seller_logo", userService.getPath(userService.findById(l.getSeller_id())));
+    modelAndView.addObject("my_logo", userService.getPath(userService.getUser()));
     homeService.checkAuth(modelAndView);
     modelAndView.setViewName("watchLot");
     return modelAndView;
@@ -636,28 +655,35 @@ public class UserController {
     return modelAndView;
   }
 
+  @Autowired
+  ChatController chatController;
+
   @PostMapping(value = "/deal/buy")
   public ModelAndView buyLot(@Valid Integer id) {
     User user = userService.getUser();
     Lot lot = lotService.getById(id);
     User seller = userService.findById(lot.getSeller_id());
     Date date = new Date();
-    ModelAndView modelAndView;
+    ModelAndView modelAndView = new ModelAndView();;
     if (user.getBalance() >= Integer.parseInt(lot.getCost())) {
       ChatMessage chatMessage = new ChatMessage();
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
       chatMessage.setSender_id(user.getId());
       chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setSender(user.getUserName());
+      chatMessage.setReceiver(seller.getUserName());
       chatMessage.setChecked(false);
       chatMessage.setSystem(true);
       chatMessage.setLogo(null);
-      chatMessage.setContent("Пользователь " + user.getUserName() + " купил "+categoryService.findById(lot.getCategory_id()).getName() +
-          " из "+gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id()).getName()+ " за " +lot.getCost()+"₽ у пользователя " + seller.getUserName());
-      chatMessage.setChat_id("{"+Math.min(user.getId(),seller.getId())+"} {"+Math.max(user.getId(),seller.getId())+"}");
+      chatMessage.setContent("Пользователь " + user.getUserName() + " оплатил заказ: " + categoryService.findById(lot.getCategory_id()).getName() +
+          " из " + gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id())
+          .getName() + " за " + lot.getCost() + "₽ у пользователя " + seller.getUserName() + ", покупатель " +
+          user.getUserName() + " не забудьте перейти в раздел «Покупки» и «Подтвердить выполнение заказа»");
+      chatMessage.setChat_id("{" + Math.min(user.getId(), seller.getId()) + "} {" + Math.max(user.getId(), seller.getId()) + "}");
       chatMessageService.save(chatMessage);
       seller.setHaveMessage(true);
       user.setHaveMessage(true);
-
+      this.template.convertAndSend("/topic/public", chatMessage);
       Lot myLot = new Lot();
       BeanUtils.copyProperties(lot, myLot);
       myLot.setId(null);
@@ -677,12 +703,11 @@ public class UserController {
       if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
         c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
       }
-      seller.setBalance_charge(seller.getBalance_charge() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
+      seller.setBalance_charge(seller.getBalance_charge() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
+      seller.setSells(seller.getSells() + 1);
+      user.setBuys(user.getBuys() + 1);
       userService.saveUser(user);
       userService.saveUser(seller);
-      modelAndView = getMyBuys("Подтверждение");
-      modelAndView.setViewName("buys2");
-
     } else {
       modelAndView = getLot(id);
       modelAndView.addObject("message", "Недостаточно средств");
@@ -695,7 +720,15 @@ public class UserController {
   public ModelAndView watchMyBuys() {
     ModelAndView modelAndView = getMyBuys("Подтверждение");
     modelAndView.setViewName("buys");
+    User user = userService.getUser();
+    user.setBuys(0);
+    userService.saveUser(user);
     return modelAndView;
+  }
+
+  @SendTo("/topic/public")
+  public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+    return chatMessage;
   }
 
   public ModelAndView getMyBuys(String status) {
@@ -746,7 +779,8 @@ public class UserController {
       lots = lots.stream().filter(l -> (l.getStatus().equals("Продано") || l.getStatus().equals("Возврат"))).collect(Collectors.toList());
     } else if (mode.equals("Покупки")) {
       lots = lotService.getByBuyer_id(user.getId());
-      lots = lots.stream().filter(l -> (l.getStatus().equals("Продано") || l.getStatus().equals("Возврат") || l.getStatus().equals("Подтверждение"))).collect(Collectors.toList());
+      lots = lots.stream().filter(l -> (l.getStatus().equals("Продано") || l.getStatus().equals("Возврат") || l.getStatus().equals("Подтверждение")))
+          .collect(Collectors.toList());
     } else {
       lots = lotService.getBySeller_id(user.getId());
       lots = lots.stream().filter(l -> (l.getStatus().equals("Подтверждение"))).collect(Collectors.toList());
@@ -800,26 +834,44 @@ public class UserController {
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
+
   @GetMapping(value = "/approve/lot")
   public ModelAndView approveLot(@Valid Integer id) {
     User user = userService.getUser();
     Lot lot = lotService.getById(id);
     if (lot.getBuyer_id().equals(user.getId())) {
 
-    User seller = userService.findById(lot.getSeller_id());
+      User seller = userService.findById(lot.getSeller_id());
 
-    lot.setStatus("Продано");
+      lot.setStatus("Продано");
 
-    lotService.saveLot(lot);
-    int c = 100;
-    if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
-     c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
-    }
-    seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
-    seller.setBalance(seller.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
+      lotService.saveLot(lot);
 
-    userService.saveUser(user);
-    userService.saveUser(seller);
+      Date date = new Date();
+      ChatMessage chatMessage = new ChatMessage();
+      chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
+      chatMessage.setSender_id(user.getId());
+      chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setChecked(false);
+      chatMessage.setSystem(true);
+      chatMessage.setLogo(null);
+      chatMessage.setContent("Покупатель " + user.getUserName() + " потдвердил успешное выполнение заказа: " + categoryService.findById(lot.getCategory_id()).getName() +
+          " из " + gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id())
+          .getName() + " и отправил деньги продавцу " + seller.getUserName());
+      chatMessage.setChat_id("{" + Math.min(user.getId(), seller.getId()) + "} {" + Math.max(user.getId(), seller.getId()) + "}");
+      chatMessageService.save(chatMessage);
+      seller.setHaveMessage(true);
+      user.setHaveMessage(true);
+
+      int c = 100;
+      if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
+        c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      }
+      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
+      seller.setBalance(seller.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
+
+      userService.saveUser(user);
+      userService.saveUser(seller);
     }
     return new ModelAndView("redirect:/user/watch/myBuys");
   }
@@ -837,21 +889,35 @@ public class UserController {
 
       lotService.saveLot(lot);
       int c = 100;
+      Date date = new Date();
+      ChatMessage chatMessage = new ChatMessage();
+      chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
+      chatMessage.setSender_id(user.getId());
+      chatMessage.setReceiver_id(seller.getId());
+      chatMessage.setChecked(false);
+      chatMessage.setSystem(true);
+      chatMessage.setLogo(null);
+      chatMessage.setContent("Продавец " + seller.getUserName() + " вернул деньги покупателю "+ buyer.getUserName());
+      chatMessage.setChat_id("{" + Math.min(user.getId(), seller.getId()) + "} {" + Math.max(user.getId(), seller.getId()) + "}");
+      chatMessageService.save(chatMessage);
+      seller.setHaveMessage(true);
+      user.setHaveMessage(true);
       if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
         c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
       }
-      buyer.setBalance(buyer.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
-      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost())/100));
+      buyer.setBalance(buyer.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
+      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
       userService.saveUser(buyer);
       userService.saveUser(seller);
     }
     return new ModelAndView("redirect:/user/watch/myLotsActive");
   }
+
   @GetMapping(value = "/watch/myLotsHistory")
   public ModelAndView buysHistory() {
     ModelAndView modelAndView = getMyHistory("Продажи");
     modelAndView.setViewName("buys2");
-    modelAndView.addObject("mode","sell");
+    modelAndView.addObject("mode", "sell");
     return modelAndView;
   }
 
@@ -859,7 +925,10 @@ public class UserController {
   public ModelAndView buysActive() {
     ModelAndView modelAndView = getMyHistory("Ожидается");
     modelAndView.setViewName("buys2");
-    modelAndView.addObject("mode","active");
+    User user = userService.getUser();
+    user.setSells(0);
+    userService.saveUser(user);
+    modelAndView.addObject("mode", "active");
     return modelAndView;
   }
 
@@ -867,7 +936,7 @@ public class UserController {
   public ModelAndView sellsHistory() {
     ModelAndView modelAndView = getMyHistory("Покупки");
     modelAndView.setViewName("buys2");
-    modelAndView.addObject("mode","buy");
+    modelAndView.addObject("mode", "buy");
     return modelAndView;
   }
 }

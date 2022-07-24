@@ -468,13 +468,18 @@ li a:hover::after {
 }
 
 .ping {
+  opacity: 0.6;
+  text-align: center;
   position: relative;
-  top: -30px;
-  left: 100px;
-  width: 5px;
-  height: 5px;
+  padding: 0 5px 0 5px;
+  left: 40%;
+  width: fit-content;
+  height: fit-content;
   border-radius: 3px;
-  background-color: #f6ab1f;
+  background-color: white;
+  justify-content: center;
+  color: black;
+  font-size: 15px;
 }
 
 

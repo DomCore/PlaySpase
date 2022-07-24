@@ -39,6 +39,7 @@ public class Category {
   private String templates;
   @Column(name = "game_id")
   private Integer game_id;
+  @Column(columnDefinition = "integer default 0")
   private Integer tax;
   @ElementCollection
   private List<String> subTemplates;

@@ -77,8 +77,8 @@
 
 <input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 <input type="hidden" id="receiver" th:value="${seller}" class="form-control"/>
-<input type="hidden" id="logo" th:value="${userLogo}" class="form-control"/>
-
+<input type="hidden" name="seller_logo" id="seller_logo" th:value="${seller_logo}" class="form-control"/>
+<input type="hidden" name="my_logo" id="my_logo" th:value="${my_logo}" class="form-control"/>
 <div class="login-box">
 	<div class="info"></div>
 	<h2 th:text="${lot.category}"></h2>
@@ -102,8 +102,9 @@
 		</div>
 		<div class="connecting">Connecting...</div>
 		<ul id="messageArea">
-			<li th:each="message: ${messages}" class="chat-message">
-				<img th:src="${message.getLogo()}">
+			<li th:each="message: ${messages}" th:classappend="${message.isSystem()}? system : ''" class="chat-message">
+				<img th:if="${message.getSender_id() == me}" th:src="${my_logo}">
+				<img th:if="${message.getSender_id() != me}" th:src="${seller_logo}">
 				<span th:text="${message.getSender()}"></span>
 				<p th:text="${message.getContent()}"></p>
 			</li>

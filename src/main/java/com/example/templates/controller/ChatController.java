@@ -3,19 +3,30 @@ package com.example.templates.controller;
 import java.text.SimpleDateFormat;
 
 import com.example.templates.model.ChatMessage;
+import com.example.templates.model.Lot;
 import com.example.templates.model.User;
+import com.example.templates.service.CategoryService;
 import com.example.templates.service.ChatMessageService;
+import com.example.templates.service.GameService;
+import com.example.templates.service.LotService;
 import com.example.templates.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import java.sql.Timestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.Valid;
 
 @Controller
 public class ChatController {
@@ -24,7 +35,12 @@ public class ChatController {
   ChatMessageService chatMessageService;
   @Autowired
   UserService userService;
-
+  @Autowired
+  LotService lotService;
+  @Autowired
+  CategoryService categoryService;
+  @Autowired
+  GameService gameService;
   @MessageMapping("/chat.register")
   @SendTo("/topic/public")
   public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
@@ -45,11 +61,13 @@ public class ChatController {
     chatMessage.setSender_id(userService.findUserByUserName(chatMessage.getSender()).getId());
     chatMessage.setReceiver_id(userService.findUserByUserName(chatMessage.getReceiver()).getId());
     chatMessage.setChecked(false);
+    chatMessage.setType(ChatMessage.MessageType.CHAT);
     chatMessage.setLogo(null);
     chatMessage.setChat_id("{"+Math.min(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"} {"+Math.max(chatMessage.getSender_id(),chatMessage.getReceiver_id())+"}");
     chatMessageService.save(chatMessage);
     User user = userService.findById(chatMessage.getReceiver_id());
     user.setHaveMessage(true);
+    user.setMessages(user.getMessages() + 1);
     userService.saveUser(user);
     return chatMessage;
   }
@@ -63,6 +81,7 @@ public class ChatController {
       chatMessageService.save(msg);
     });
   }
+
   @MessageMapping("/chat.haveMessage")
   @SendTo("/topic/public")
   public void haveMessage(@Payload ChatMessage chatMessage) {

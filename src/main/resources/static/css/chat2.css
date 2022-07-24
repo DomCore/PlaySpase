@@ -201,6 +201,13 @@ button.accent {
     position: relative;
 }
 
+.system {
+    background-color: var(--primaryColor);
+    color: white;
+    font-size: 12px!important;
+    animation-name: slideFromLeft;
+}
+
 #chat-page .chat-message i {
     position: absolute;
     width: 42px;

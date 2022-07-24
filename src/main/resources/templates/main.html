@@ -44,15 +44,15 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${messagesCount > 0}" th:text="${messagesCount}" class="ping"></div></a></li>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки<div th:if="${buysCount > 0}" th:text="${buysCount}" class="ping"></div></a></li>
 					<div class="dropdown-content">
 						<a th:href="@{/user/watch/myBuysHistory}">История</a>
 					</div>
 				</div>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/watch/myLotsActive}" class="header__item">Продажи</a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLotsActive}" class="header__item">Продажи<div th:if="${sellsCount > 0}" th:text="${sellsCount}" class="ping"></div></a></li>
 					<div class="dropdown-content">
 						<a th:href="@{/user/watch/myLots}">Лоты</a>
 						<a th:href="@{/user/watch/myLotsHistory}">История</a>

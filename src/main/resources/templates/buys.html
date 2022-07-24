@@ -8,11 +8,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/games.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/buys.css}"/>
 
 </head>
-
 <body>
 <nav class="nav">
 	<div class="container">
@@ -44,7 +45,9 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения
+					<div th:if="${checkMessage}" class="ping"></div>
+				</a></li>
 				<div class="dropdown">
 					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
 					<div class="dropdown-content">
@@ -77,29 +80,34 @@
 	</div>
 </nav>
 
-<div class="container_game">
-	<div class="grid-row">
-		<div class="card" th:each="lot : *{lots}">
-			<div class="face face1 lot">
-				<div class="content content1">
-					<img th:src="@{/images/lot.png}">
-					<h3 th:utext="*{lot.getGame()}"></h3>
-					<h3 th:utext="*{lot.getCategory()}"></h3>
-				</div>
-			</div>
-			<div class="face face2 unAuto lot2">
-				<div class="content">
-					<p class="item" th:if="${mode == null || mode.equals('buy')}" ><a  th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{'Продавец: ' + lot.getSeller()}"></a></p>
-					<p class="item" th:if="${mode != null && mode.equals('sell')}" ><a  th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{'Покупатель: ' + lot.getSeller()}"></a></p>
-					<p class="item" th:if="*{lot.getStatus() != null}" th:text="*{'Статус: ' + lot.getStatus()}"></p>
-					<p class="item" th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p>
-					<a  th:if="*{lot.getStatus() == null}" class="uncover green" th:href="@{/user/approve/lot(id=*{lot.id})}">Товар получен ✓</a>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<table th:if="${lots != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Игра</th>
+		<th scope="col">Категория</th>
+		<th scope="col">Продавец</th>
+		<th scope="col">Информация</th>
+		<th scope="col">Дата</th>
+		<th scope="col">Подтвердить</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="lot : ${lots}">
+		<td th:text="*{lot.getGame()}"></td>
+		<td th:text="*{lot.getCategory()}"></td>
+		<td ><a th:href="@{/user/profile(name=*{lot.getSeller()})}" th:text="*{lot.getSeller()}"></a></td>
+		<td><p th:if="*{lot.keys.indexOf(item) < 3}" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p></td>
+		<td th:text="*{lot.getDate()}"></td>
+		<td ><a  class="uncover green" th:href="@{/user/approve/lot(id=*{lot.id})}">Товар получен ✓</a></td>
+		</td>
+	</tr>
+	</tbody>
+</table>
+
 </body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+</html>
+
 <!--Head-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/header.js}"></script>
@@ -109,10 +117,6 @@
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
-<script type="text/javascript">
-  $(document).ready(function () {
-    let box = document.querySelector('.box');
-    let width = box.offsetWidth;
-    let height = box.offsetHeight;
-  });
-</script>
+
+<script type="text/javascript" th:src="@{/scripts/lots.js}"></script>
+

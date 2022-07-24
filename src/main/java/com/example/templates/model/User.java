@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -49,6 +51,12 @@ public class User {
     private int balance_charge;
     @Column(name = "haveMessage")
     private boolean haveMessage;
+    @Column(columnDefinition = "integer default 0")
+    private Integer messages;
+    @Column(columnDefinition = "integer default 0")
+    private Integer buys;
+    @Column(columnDefinition = "integer default 0")
+    private Integer sells;
     @Transient
     private String path;
 }

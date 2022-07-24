@@ -7,8 +7,8 @@ var connectingElement = document.querySelector('.connecting');
 
 var stompClient = null;
 var username = null;
-var logo = null;
-var userLogo = null;
+var seller_logo = null;
+var my_logo = null;
 var receiver = null;
 
 connect();
@@ -16,8 +16,8 @@ messageArea.scrollTop = messageArea.scrollHeight;
 function connect() {
   username = document.querySelector('#name').value.trim();
   receiver = document.querySelector('#receiver').value.trim();
-  logo = document.querySelector('#logo').value.trim();
-  userLogo = document.querySelector('#userLogo').value.trim();
+  seller_logo = document.querySelector('#seller_logo').value.trim();
+  my_logo = document.querySelector('#my_logo').value.trim();
 
   if (username) {
     var socket = new SockJS('/javatechie');
@@ -35,7 +35,7 @@ function onConnected() {
   // Tell your username to the server
   stompClient.send("/app/chat.register",
     {},
-    JSON.stringify({sender: username, receiver: receiver, logo: logo, type: 'JOIN'})
+    JSON.stringify({sender: username, receiver: receiver, type: 'JOIN'})
   )
 
   connectingElement.classList.add('hidden');
@@ -54,7 +54,6 @@ function send(event) {
   if (messageContent && stompClient) {
     var chatMessage = {
       sender: username,
-      logo: logo,
       receiver: receiver,
       content: messageInput.value,
       type: 'CHAT'
@@ -81,9 +80,9 @@ function onMessageReceived(payload) {
       var avatarElement = document.createElement('img');
       if (message.sender === receiver) {
         smallBeep();
-        avatarElement.src = logo;
+        avatarElement.src = seller_logo;
       } else {
-        avatarElement.src = userLogo;
+        avatarElement.src = my_logo;
       }
       messageElement.appendChild(avatarElement);
       var usernameElement = document.createElement('span');

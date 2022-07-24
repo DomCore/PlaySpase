@@ -156,7 +156,9 @@ public class HomeService {
         balance = String.valueOf(user.getBalance());
       }
       modelAndView.addObject("userBalance", balance);
-      modelAndView.addObject("checkMessage", user.isHaveMessage());
+      modelAndView.addObject("messagesCount", user.getMessages());
+      modelAndView.addObject("sellsCount", user.getSells());
+      modelAndView.addObject("buysCount", user.getBuys());
     }
   }
 

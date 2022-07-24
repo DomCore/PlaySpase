@@ -17,7 +17,12 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
-
+.system {
+    background-color: var(--primaryColor);
+    color: white;
+    font-size: 12px!important;
+    animation-name: slideFromLeft;
+}
 body:before {
     height: 50%;
     width: 100%;

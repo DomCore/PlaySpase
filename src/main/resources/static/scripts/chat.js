@@ -111,12 +111,18 @@ function onMessageReceived(payload) {
     } else {
       var messageElement = document.createElement('div');
       messageElement.classList.add('bubble');
-      if (message.sender === username) {
+      if (message.sender === username && !message.system) {
         messageElement.classList.add('me');
         document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.preview').textContent = message.content;
         document.querySelector('[data-chat-friend="' + message.receiver + '"]').querySelector('.time').textContent = message.time;
-      } else {
+      } else if (message.sender === username && !message.system){
         messageElement.classList.add('you');
+        check();
+        smallBeep();
+        document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
+        document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.time').textContent = message.time;
+      } else {
+        messageElement.classList.add('system');
         check();
         smallBeep();
         document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
