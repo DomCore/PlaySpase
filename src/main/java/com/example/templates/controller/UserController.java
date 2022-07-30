@@ -715,7 +715,7 @@ public class UserController {
       myLot.setTemplates(new ArrayList<>(lot.getTemplates()));
       myLot.setSubTemplates(new ArrayList<>(lot.getSubTemplates()));
       if (count != null) {
-        String sum = String.valueOf(Double.valueOf(count) * Double.valueOf(lot.getCost()));
+        String sum = String.valueOf(Double.valueOf(count) * Double.valueOf(myLot.getCost()));
         String finalSum = sum.substring(0, sum.indexOf("."));
         myLot.setCount(Double.valueOf(count));
         lot.setCount(lot.getCount() - Double.valueOf(count));
@@ -726,7 +726,7 @@ public class UserController {
       }
       lotService.saveLot(lot);
       lotService.saveLot(myLot);
-      user.setBalance(user.getBalance() - Integer.parseInt(lot.getCost()));
+      user.setBalance(user.getBalance() - Integer.parseInt(myLot.getCost()));
       int c = 100;
       if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
         c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
