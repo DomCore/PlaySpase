@@ -109,16 +109,18 @@
 				</div>
 			</div>
 			<div class="user-box">
-				<p><label>Цена</label></p>
+				<p><label th:if="${category.subCost == null}">Цена</label></p>
+				<p><label th:if="${category.subCost != null}" th:text="${'Цена (за '+category.subCost+')'}">Цена</label></p>
 				<p><input name="cost" id="cost" type="number" min="1" step="1" required/></p>
 				<p><input type="hidden" name="tax" id="tax" th:value="${tax}"/></p>
 				<p ><label th:text="'Комиссия сервиса:' + ${tax} + '%'"></label></p>
 				<p ><label id="summary"></label></p>
 			</div>
-
 			<div class="user-box">
-				<p><label>Количество</label></p>
-				<p><input name="count" id="count" type="number" required/></p>
+				<p><label th:if="${category.subCost != null}" th:text="${'Количество (' + category.subCost+')'}"></label></p>
+				<p><label th:if="${category.subCost == null}" th:text="${'Количество'}"></label></p>
+				<p><input th:if="${!category.isAllowDecimal()}" name="count" type="number" min="0" step="1" required/></p>
+				<p><input th:if="${category.isAllowDecimal()}" name="count" id="count" type="number" min="0" step="any" required/></p>
 			</div>
 			<button type="submit">Создать лот</button>
 			<button onclick="history.back()">Отмена</button>
@@ -148,10 +150,13 @@
     $('#cost').on('change', function(e){
       var cost = document.getElementById('cost');
       var tax = document.getElementById('tax');
-      console.log(parseFloat(tax.value));
-      console.log(parseFloat(cost.value));
-
-      $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value))/100);
+      var count = document.getElementById('count');
+      console.log(count);
+      if (count) {
+        $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)* parseFloat(count.value)) /100);
+			} else {
+        $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)) /100);
+      }
     });
 
   });

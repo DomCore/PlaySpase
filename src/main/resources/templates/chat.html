@@ -119,8 +119,8 @@
 		</div>
 		<div class="right">
 			<form id="messageForm" name="messageForm" nameForm="messageForm">
-				<div class="top"><span><i class='fa fa-user-circle'></i>: <span class="name" th:if="${chats != null}"
-																																				th:text="${chats[0].user}"></span></span></div>
+				<div class="top"><span><i class='fa fa-user-circle'></i>: <a class="name" th:if="${chats != null}"
+																																		 th:href="@{/user/profile(name=${chats[0].user})}" th:text="${chats[0].user}"></a></span></div>
 
 				<div id="messageArea" class="chat" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-main="${chat.user}">
 					<input type="hidden" id="receiver" th:value="${chat.user}" class="user form-control"/>

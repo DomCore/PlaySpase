@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -70,7 +71,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     String logoutPage = "/logout";
 
       http.authorizeRequests()
-          .antMatchers("/", "/chat.register","/chat.send","/user/profile", "/login", "/oauth/**", "/user/watch/lots").permitAll()
+          .antMatchers("/","/user/rules/site", "/chat.register","/chat.send","/user/profile", "/login", "/oauth/**","/reset", "/user/watch/lots").permitAll()
           .antMatchers("/deal/**","/deal/buy", "user/create/lot", "user/create/**","/user/watch/**", "/user/watch/lots/", "/user/create/subLot","/registration","/emailExists", "/user/search" ,"/user/create/lot" ,"/user/goHome", "/user/search?**").permitAll()
           .antMatchers("/admin/**", "admin/create/manager").hasAuthority("ADMIN")
           .anyRequest().authenticated()
@@ -81,6 +82,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
           .usernameParameter("user_name")
           .passwordParameter("password")
           .defaultSuccessUrl("/")
+          .failureForwardUrl("/fail_login")
           .and()
           .oauth2Login()
           .loginPage("/login")

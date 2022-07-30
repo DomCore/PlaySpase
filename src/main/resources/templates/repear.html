@@ -33,27 +33,26 @@
 <body>
 <div class="login-box">
     <h2>PlaySpase</h2>
-    <form th:action="@{/login}" method="POST" id="login">
+    <form th:action="@{/reset}" method="POST" id="login">
         <div class="user-box">
-            <input type="text" value="2" id="user_name" name="user_name" placeholder="Имя пользователя" required="">
-            <label>Имя пользователя</label>
+            <input type="text" class="big-input" value="2" id="user_name" name="user_name" placeholder="Имя пользователя или почта" required="">
+            <label>Введите почту или логин от аккаунта и мы отправим вам письмо с новым паролем на почту</label>
         </div>
-        <div class="user-box">
-            <label >Пароль</label>
-            <input type="password"  value="1" id="password" name="password" placeholder="Пароль" required="">
+        <div class="user-box nice" th:if="${success != null && success.equals('success')}">
+            <p>Проверьте вашу почту</p>
         </div>
-        <div class="user-box error" th:if="${error}">
-            <p>Неправильный логин или пароль</p>
+        <div class="user-box error" th:if="${success != null && success.equals('error')}">
+            <p>Пользователь не найден</p>
         </div>
-        <a class="left" href="#" onclick="document.getElementById('login').submit()">Войти</a>
-        <a class="right" th:href="@{/registration}">Создать аккаунт</a>
-        <a class="right small" th:href="@{/reset}">Забыли пароль?</a>
+        <a class="left" href="#" onclick="document.getElementById('login').submit()">Отправить</a>
+        <a class="right" th:href="@{/login}">Назад</a>
+        <a class="right small" th:href="@{/registration}">Создать аккаунт</a>
 <!--        <div>
             <h4><a class="alien" th:href="@{/oauth2/authorization/google}">Войти с помощью Google</a></h4>
         </div>-->
     </form>
 </div>
-</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+</body>
 </html>
 <!--Head-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -63,4 +62,3 @@
 				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>

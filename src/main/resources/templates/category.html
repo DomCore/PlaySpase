@@ -88,8 +88,28 @@
 			<p><input th:field="*{name}" placeholder="Название категории" type="text" required/></p>
 		</div>
 		<div class="user-box">
+			<label>Заголовок</label>
+			<p><input th:field="*{header}" placeholder="Заголовок" type="text" required/></p>
+		</div>
+		<div class="user-box">
+			<label>Описание</label>
+			<p><input th:field="*{subHeader}" placeholder="Описание" type="text" required/></p>
+		</div>
+		<div class="user-box">
+			<label>Приписка к цене</label>
+			<p><input th:field="*{subCost}" placeholder="Приписка к цене" type="text" required/></p>
+		</div>
+		<div class="user-box">
 			<label>Комиссия в категории</label>
 			<p><input th:field="*{tax}" placeholder="Комиссия категории" type="number" min="0" step="1" required/></p>
+		</div>
+		<div class="user-box">
+			<label>Показывать количество товара</label>
+			<p><input th:field="*{allowDecimal}" placeholder="Показывать количество товара" type="checkbox" required/></p>
+		</div>
+		<div class="user-box">
+			<label>Возможность покупать нецелое к-ство товара</label>
+			<p><input th:field="*{allowDecimal}" placeholder="Возможность покупать нецелое к-ство товара" type="checkbox" required/></p>
 		</div>
 		<div class="user-box">
 			<label>К какой игре добавить категорию</label>

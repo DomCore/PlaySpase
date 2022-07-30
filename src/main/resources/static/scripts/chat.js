@@ -37,6 +37,7 @@ function setAciveChat(f) {
   chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat')
   friends.name = f.querySelector('.name').innerText
   chat.name.innerHTML = friends.name
+  chat.name.setAttribute("href","/user/profile?name=" + friends.name)
   chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollTop = chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollHeight
 }
 try {

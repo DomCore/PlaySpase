@@ -8,6 +8,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}"/>
 
 </head>
 <body>
@@ -33,6 +34,7 @@
 			<div class="login-box">
 				<h2>Регистрация</h2>
 				<form th:action="@{/registration}" th:object="${user}" method="POST" id="registration">
+					<input type="hidden" th:value="${code}" name="code" id="code">
 					<div class="user-box">
 						<input type="text" th:field="*{userName}" placeholder="Имя пользователя" required>
 						<label th:if="!${#fields.hasErrors('userName')}">Имя пользователя</label>
@@ -56,7 +58,14 @@
 									 placeholder="Пароль" class="form-control" required/> <span id='message'></span></label></label>
 						<label>Повторите пароль</label>
 					</div>
-
+					<div class="user-box bottom">
+						<input type="checkbox" name="check" id="check" class="rules"
+									 placeholder="Пароль"  required/>
+						<label th:if="${#fields.hasErrors('check')}" th:errors="*{check}"
+									 class="validation-message"></label>
+						<label class="label_rules" for="check">C лицензионным соглашением, включая агентский договор, <a th:href="@{/user/rules/site}">правилами сайта</a>
+						ознакомился, принимаю в полном объеме</label>
+					</div>
 					<a href="#" onclick="document.getElementById('registration').submit()">Создать аккаунт</a>
 				</form>
 			</div>

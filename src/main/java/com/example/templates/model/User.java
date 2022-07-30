@@ -12,6 +12,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -57,6 +59,13 @@ public class User {
     private Integer buys;
     @Column(columnDefinition = "integer default 0")
     private Integer sells;
+    private String date;
+    @Column(columnDefinition = "integer default 0")
+    private Integer refValue;
     @Transient
     private String path;
+    @Transient
+    private boolean check;
+    @ElementCollection
+    private List<String> referals;
 }

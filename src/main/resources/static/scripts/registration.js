@@ -8,13 +8,14 @@ $('#password, #confirm_password').on('keyup', function () {
 let input = document.querySelector("#password");
 let input2 = document.querySelector("#confirm_password");
 let button = document.querySelector("#submit");
+let check = document.querySelector("#rules");
 if (input && input2 && button) {
   button.disabled = true; //setting button state to disabled
 
   input.addEventListener("keyup", stateHandle);
   input2.addEventListener("keyup", stateHandle);
 }
-
+document.getElementById("check").required = true;
 function stateHandle() {
   if ($('#password').val() != $('#confirm_password').val()) {
     button.disabled = true; //button remains disabled

@@ -28,11 +28,10 @@ ul {
   display: none!important;
 }
 .wrapper {
-  margin-top: 100px;
+  margin-top: 65px;
   position: relative;
   left: 50%;
-  width: var(--wrapper);
-  height: 800px;
+  height: 100%;
   transform: translate(-50%, 0);
 }
 .container {
@@ -79,7 +78,7 @@ ul {
   border: none;
 }
 .wrapper .container {
-  height: 500px;
+  height: 650px;
   background-color: grey;
 }
 .container .left input:focus {

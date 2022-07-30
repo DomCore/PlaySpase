@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
 			xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<title>PlaySpase</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/watchLot.css}"/>
-	<!--	<link rel="stylesheet" type="text/css" th:href="@{/css/msger.css}"/>-->
-	<link rel="stylesheet" type="text/css" th:href="@{/css/chat2.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/buys.css}"/>
+
 </head>
 <body>
 <nav class="nav">
@@ -42,7 +45,9 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения
+					<div th:if="${checkMessage}" class="ping"></div>
+				</a></li>
 				<div class="dropdown">
 					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
 					<div class="dropdown-content">
@@ -75,66 +80,39 @@
 	</div>
 </nav>
 
-<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
-<input type="hidden" id="receiver" th:value="${seller}" class="form-control"/>
-<input type="hidden" name="seller_logo" id="seller_logo" th:value="${seller_logo}" class="form-control"/>
-<input type="hidden" name="my_logo" id="my_logo" th:value="${my_logo}" class="form-control"/>
-<div class="login-box">
-	<div class="info"></div>
-	<h2 th:text="${lot.category}"></h2>
-	<div class="user-box">
-		<h3 th:utext="*{lot.getStatus()}"></h3>
-		<h3 th:utext="*{lot.getSeller()}"></h3>
-		<h3 th:utext="*{lot.getSeller()}"></h3>
-		<h3 th:if="${decimal}" th:text="${'Доступное количество: ' + count}"></h3>
-		<h3 th:if="${decimal}" th:text="${'Рассчет цены за 1 '+ sub}"></h3>
-	</div>
-	<div class="user-box">
-		<p class="item" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p>
-	</div>
-	<form th:action="@{/user/deal/buy}" method="post">
-		<input type="hidden" name="id" id="id" th:value="*{lot.id}" class="form-control"/>
-		<h3 th:if="${decimal}">Количество</h3>
-		<input th:if="${decimal}" type="number" name="count" id="count" min="0" step="any" th:max="${count}" class="form-control"/>
-	<h3 th:if="${message != null}" class="red" th:utext="*{message}"></h3>
-	<button  type="submit" class="button-buy">Оформить заказ</button>
-	</form>
-</div>
-<div id="chat-page">
-	<div class="chat-container">
-		<div class="chat-header">
-			<h2 th:text="'Чат с ' + ${seller}"></h2>
-		</div>
-		<div class="connecting">Connecting...</div>
-		<ul id="messageArea">
-			<li th:each="message: ${messages}" th:classappend="${message.isSystem()}? system : ''" class="chat-message">
-				<img th:if="${message.getSender_id() == me}" th:src="${my_logo}">
-				<img th:if="${message.getSender_id() != me}" th:src="${seller_logo}">
-				<span th:text="${message.getSender()}"></span>
-				<p th:text="${message.getContent()}"></p>
-			</li>
-		</ul>
-		<form id="messageForm" name="messageForm" nameForm="messageForm">
-			<div class="form-group">
-				<div class="input-group clearfix">
-					<input type="text" id="message" placeholder="Введите сообщение..."
-								 autocomplete="off" class="form-control"/>
-					<button type="submit" class="primary">Отправить</button>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
+<table th:if="${users != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Пользователь</th>
+		<th scope="col">Дата регистрации</th>
+		<th scope="col">Деньги</th>
+		<th scope="col"></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="user: ${users}">
+		<td th:text="*{user.getUserName()}"></td>
+		<td th:text="*{user.getDate()}"></td>
+		<td th:text="*{user.getRefValue()}"></td>
+		<td><a th:if="${user.getRefValue() > 0}" class="uncover green" th:href="@{/user/getRef(id=*{user.getId()})}">Вывести</a>
+		</td>
+	</tr>
+	</tbody>
+</table>
+
 </body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
+
 <!--Head-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/header.js}"></script>
 <!--Head-->
-
-
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<script type="text/javascript" th:src="@{/scripts/chat-current.js}"></script>
+<script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
+
+<script type="text/javascript" th:src="@{/scripts/lots.js}"></script>
+

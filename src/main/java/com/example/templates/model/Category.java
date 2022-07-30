@@ -43,4 +43,9 @@ public class Category {
   private Integer tax;
   @ElementCollection
   private List<String> subTemplates;
+  private String header;
+  private String subHeader;
+  private String subCost;
+  private boolean allowDecimal;
+  private boolean showCount;
 }

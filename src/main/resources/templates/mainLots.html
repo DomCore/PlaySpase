@@ -77,6 +77,12 @@
 		<span class="navTrigger"><i></i><i></i></span>
 	</div>
 </nav>
+<div class="about">
+	<div class="head" th:text="${category.header}">
+	</div>
+	<div class="sub" th:text="${category.subHeader}">
+	</div>
+</div>
 <div class="buttons">
 	<form th:action="@{/user/create/lot}" method="get">
 		<input type="hidden" name="id" th:value="${category.getId()}">
@@ -90,7 +96,9 @@
 	<tr th:if="${lots.get(0).getCategory() != null}" th:each="lot : ${lots.get(0)}">
 		<th scope="col" th:each="item : *{lot.keys}" th:text="*{item}"></th>
 		<th scope="col">Продавец</th>
-		<th scope="col">Цена</th>
+		<th scope="col" th:if="${category.isShowCount()}" th:text="${'Количество ('+category.subCost+')'}"></th>
+		<th scope="col" th:if="${category.subCost == null}">Цена</th>
+		<th scope="col" th:if="${category.subCost != null}" th:text="${'Цена ('+category.subCost+')'}"></th>
 		<th scope="col"></th>
 	</tr>
 	</thead>
@@ -99,6 +107,7 @@
 		<td th:each="item : *{lot.keys}" th:text="*{lot.values.get(lot.keys.indexOf(item))}"></td>
 		<td th:if="*{!lot.getCategory().equals(userName)}"><a  th:href="@{/user/profile(name=*{lot.getCategory()})}" th:text="*{lot.getCategory()}"></a></td>
 		<td th:if="*{lot.getCategory().equals(userName)}"><a  th:href="@{/user/profile(name=*{lot.getCategory()})}" >Вы</a></td>
+		<td th:if="${category.isShowCount()}" th:text="*{lot.getCount()}"></td>
 		<td th:text="*{lot.getGame()}"></td>
 		<td class="transparent"><a th:if="*{!lot.getCategory().equals(userName)}" th:href="@{/user/watch/currentLot(id=*{lot.id})}" class="link">Просмотр</a></td>
 	</tr>

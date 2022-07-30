@@ -41,7 +41,7 @@ public class Lot implements Comparable<Lot>, Cloneable {
   @Column(name = "cost")
   private String cost;
   @Column(name = "count")
-  private int count;
+  private double count;
   @Column(name = "status")
   private String status;
   private String date;
