@@ -151,13 +151,19 @@
       var cost = document.getElementById('cost');
       var tax = document.getElementById('tax');
       var count = document.getElementById('count');
-      console.log(count);
-      if (count) {
+      if (count.value) {
         $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)* parseFloat(count.value)) /100);
 			} else {
         $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)) /100);
       }
     });
-
+    $('#count').on('change', function(e){
+      var cost = document.getElementById('cost');
+      var tax = document.getElementById('tax');
+      var count = document.getElementById('count');
+      if (count.value) {
+        $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)* parseFloat(count.value)) /100);
+      }
+    });
   });
 </script>
