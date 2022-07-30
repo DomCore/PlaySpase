@@ -766,6 +766,7 @@ public class UserController {
     if (status != null) {
       lots = lots.stream().filter(l -> l.getStatus().equals(status)).collect(Collectors.toList());
     }
+    Collections.reverse(lots);
     List<LotsWrapper> lotss = new ArrayList<>();
     lots.forEach(l -> {
       List<StringAndListWrapper> templates = categoryService.createTemplates(l.getCategory_id());
@@ -773,8 +774,8 @@ public class UserController {
       int a = 0;
       int b = 0;
       map.put("Цена", l.getCost());
-      if (l.getCount() != 1)
-      map.put("Количество", String.valueOf(l.getCount()));
+      if (categoryService.findById(l.getCategory_id()).isAllowDecimal())
+        map.put("Количество", String.valueOf(l.getCount()));
       for (int i = 0; i < templates.size(); i++) {
         if (templates.get(i).getArrString() != null) {
           map.put(templates.get(i).string, l.getSubTemplates().get(b));
@@ -790,6 +791,7 @@ public class UserController {
         }
       }
       lotss.add(new LotsWrapper(l.getId(),
+          l.getDate(),
           userService.findById(l.getSeller_id()).getUserName(),
           gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
           categoryService.findById(l.getCategory_id()).getName(),
