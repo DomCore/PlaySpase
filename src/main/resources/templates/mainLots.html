@@ -91,12 +91,22 @@
 				th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
 	</form>
 </div>
+<div class="filter-buttons" th:if="${lots != null}" >
+	<form th:action="@{/user/watch/lots}" method="get">
+		<input type="hidden" name="id" th:value="${category.id}"/>
+	<select name="filters" th:each="sub : ${subs}">
+		<option th:text="${sub.string}" selected disabled></option>
+		<option th:each="item : ${sub.arrString}" th:value="${sub.string + ' filteredValue ' + item}" th:text="${item}"></option>
+	</select>
+		<button type="submit" class="filter">Применить фильтры</button>
+	</form>
+</div>
 <table th:if="${lots != null}" id="myTable">
 	<thead>
 	<tr th:if="${lots.get(0).getCategory() != null}" th:each="lot : ${lots.get(0)}">
 		<th scope="col" th:each="item : *{lot.keys}" th:text="*{item}"></th>
 		<th scope="col">Продавец</th>
-		<th scope="col" th:if="${category.isShowCount()}" th:text="${'Количество ('+category.subCost+')'}"></th>
+		<th scope="col" th:if="${category.isShowCount()}" th:text="${'Количество'}"></th>
 		<th scope="col" th:if="${category.subCost == null}">Цена</th>
 		<th scope="col" th:if="${category.subCost != null}" th:text="${'Цена ('+category.subCost+')'}"></th>
 		<th scope="col"></th>

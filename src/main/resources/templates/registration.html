@@ -7,7 +7,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/reg.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}"/>
 
 </head>
@@ -63,7 +63,7 @@
 									 placeholder="Пароль"  required/>
 						<label th:if="${#fields.hasErrors('check')}" th:errors="*{check}"
 									 class="validation-message"></label>
-						<label class="label_rules" for="check">C лицензионным соглашением, включая агентский договор, <a th:href="@{/user/rules/site}">правилами сайта</a>
+						<label class="label_rules" for="check">C <a th:href="@{/agreement}">лицензионным соглашением</a>, включая <a th:href="@{/agent}">агентский договор</a>, <a th:href="@{/user/rules/site}">правилами сайта</a>
 						ознакомился, принимаю в полном объеме</label>
 					</div>
 					<a href="#" onclick="document.getElementById('registration').submit()">Создать аккаунт</a>

@@ -28,11 +28,10 @@ ul {
   display: none!important;
 }
 .wrapper {
-  margin-top: 65px;
-  position: relative;
-  left: 50%;
+  position: absolute;
+  top: 65px;
   height: 100%;
-  transform: translate(-50%, 0);
+  width: 100%;
 }
 .container {
 
@@ -74,12 +73,13 @@ ul {
 }
 #messageArea {
   overflow-y: scroll;
-  height: 400px;
+  height: 650px;
   border: none;
 }
 .wrapper .container {
-  height: 650px;
+  height: inherit;
   background-color: grey;
+  padding-bottom: 80px;
 }
 .container .left input:focus {
   outline: none;

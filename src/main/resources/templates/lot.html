@@ -117,8 +117,7 @@
 				<p ><label id="summary"></label></p>
 			</div>
 			<div class="user-box">
-				<p><label th:if="${category.subCost != null}" th:text="${'Количество (' + category.subCost+')'}"></label></p>
-				<p><label th:if="${category.subCost == null}" th:text="${'Количество'}"></label></p>
+				<p><label th:text="${'Количество'}"></label></p>
 				<p><input th:if="${!category.isAllowDecimal()}" name="count" type="number" min="0" step="1" required/></p>
 				<p><input th:if="${category.isAllowDecimal()}" name="count" id="count" type="number" min="0" step="any" required/></p>
 			</div>

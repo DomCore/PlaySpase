@@ -68,7 +68,7 @@
 					<div class="dropdown-content">
 						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
 						<a th:href="@{/home}">Настройки</a>
-						<a href="#">Заработать с нами</a>
+						<a th:href="@{/ref}">Заработать с нами</a>
 						<a th:href="@{/logout}">Выход</a>
 					</div>
 				</div>
@@ -117,7 +117,7 @@
 			</button>
 		</a>
 
-		<a href="#">
+		<a th:href="@{/user/ref}">
 			<button type="submit">
 				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-report-money" width="44" height="44" viewBox="0 0 24 24"
 						 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">

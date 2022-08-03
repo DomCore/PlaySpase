@@ -71,7 +71,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     String logoutPage = "/logout";
 
       http.authorizeRequests()
-          .antMatchers("/","/user/rules/site", "/chat.register","/chat.send","/user/profile", "/login", "/oauth/**","/reset", "/user/watch/lots").permitAll()
+          .antMatchers("/agent","/agreement","/","/user/rules/site", "/chat.register","/chat.send","/user/profile", "/login", "/oauth/**","/reset", "/user/watch/lots").permitAll()
           .antMatchers("/deal/**","/deal/buy", "user/create/lot", "user/create/**","/user/watch/**", "/user/watch/lots/", "/user/create/subLot","/registration","/emailExists", "/user/search" ,"/user/create/lot" ,"/user/goHome", "/user/search?**").permitAll()
           .antMatchers("/admin/**", "admin/create/manager").hasAuthority("ADMIN")
           .anyRequest().authenticated()

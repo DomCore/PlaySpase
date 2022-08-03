@@ -23,6 +23,33 @@ table.dataTable {
   top: 100px;
   margin-left: 20px;
 }
+
+.filter-buttons {
+  border: none;
+  position: absolute;
+  top: 178px;
+  left: 370px;
+  transform: translate(-50%, 50%);
+  z-index: 100000;
+}
+
+.filter-buttons form select, .filter-buttons form select option {
+  padding: 4px;
+  border-radius: 4px;
+}
+.filter {
+  background: none;
+  margin: 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  color: white;
+  font-size: 13px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  border: solid 1px white;
+}
 table.dataTable tbody th, table.dataTable tbody td {
   text-align: left!important;
   background-color: white;
@@ -189,11 +216,10 @@ td a:hover {
 }
 .about {
   text-align: center;
-  color: white;
+  color: black;
   width: 500px;
   border-radius: 15px;
   height: 170px;
-  background-color: black;
   position: absolute;
   left: 50%;
   transform: translate(-50%,0);
@@ -201,7 +227,7 @@ td a:hover {
 }
 
 .head {
-  border-top: 1px solid var(--primaryColor);
+  font-weight: 800;
   margin-top: 64px;
   padding: 10px;
 }

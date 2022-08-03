@@ -165,7 +165,7 @@
 				<p th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}" th:if="*{lot.keys.indexOf(item) < 4}"></p>
 				<a  th:if="${user != null && userObject.id == id}" class="uncover" th:href="@{/user/edit/lot(id=*{lot.id})}">Редактировать лот</a>
 				<a  th:if="${user != null && userObject.id == id}" class="uncover" th:href="@{/user/delete/lot(id=*{lot.id})}">Удалить лот</a>
-				<form th:if="${user != null && userObject.id != id}" th:action="@{/user/deal/buy}" method="post">
+				<form th:if="${user != null && userObject.id != id}" th:action="@{/user/watch/currentLot}" method="get">
 					<input type="hidden" name="id" id="id" th:value="*{lot.id}" class="form-control"/>
 					<h3 th:if="${message != null}" class="red" th:utext="*{message}"></h3>
 					<button  type="submit" class="button-buy">Купить</button>

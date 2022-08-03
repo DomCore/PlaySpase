@@ -36,7 +36,7 @@
     <form th:action="@{/reset}" method="POST" id="login">
         <div class="user-box">
             <input type="text" class="big-input" value="2" id="user_name" name="user_name" placeholder="Имя пользователя или почта" required="">
-            <label>Введите почту или логин от аккаунта и мы отправим вам письмо с новым паролем на почту</label>
+            <label>Введите почту или логин от аккаунта и мы отправим вам письмо с новым паролем на почту (Возможно письмо в спаме)</label>
         </div>
         <div class="user-box nice" th:if="${success != null && success.equals('success')}">
             <p>Проверьте вашу почту</p>

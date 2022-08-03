@@ -157,5 +157,19 @@ public class LoginController {
         return homeService.goHome();
     }
 
+    @GetMapping(value = "/agent")
+    public ModelAndView agent() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("agent");
+        modelAndView.addObject("agent", true);
+        return modelAndView;
+    }
+    @GetMapping(value = "/agreement")
+    public ModelAndView agreement() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("agent");
+        modelAndView.addObject("agreement", true);
+        return modelAndView;
+    }
 
 }

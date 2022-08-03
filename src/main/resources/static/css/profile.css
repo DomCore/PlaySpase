@@ -9,6 +9,21 @@
   transform: translate(-50%,0);
   width: 80%;
 }
+.button-buy{
+  background-color: white;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 5px 10px;
+  color: var(--primaryColor);
+  font-size: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  margin-top: 10px;
+  letter-spacing: 4px
+}
+
 .item {
   padding: 2px;
   background: rgba(0,0,0,.8)!important;

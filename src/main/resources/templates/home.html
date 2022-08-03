@@ -55,7 +55,7 @@
 					<div class="dropdown-content">
 						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
 						<a th:href="@{/home}">Настройки</a>
-						<a href="#">Заработать с нами</a>
+						<a th:href="@{/ref}">Заработать с нами</a>
 						<a th:href="@{/logout}">Выход</a>
 					</div>
 				</div>
@@ -123,16 +123,6 @@
 		<p th:text="${balance}"></p>
 		<button class="button-user">Вывести баланс</button>
 		<button class="button-user">Пополнить баланс</button>
-	</div>
-	<div class="item">
-		<p>Ваша реферальная ссылка</p>
-		<p th:text="${'http://playspase.ru/registration?code='+id}"></p>
-		<form th:action="@{/user/referals}" method="get">
-			<button class="button-user">Мои рефералы</button>
-		</form>
-		<form th:action="@{/user/referalsHistory}" method="get">
-			<button class="button-user">История</button>
-		</form>
 	</div>
 	<div class="item" th:if="${user != null && user.equals('USER')}">
 		<form th:action="@{/upload}" method="post"  enctype="multipart/form-data">

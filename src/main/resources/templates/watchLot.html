@@ -87,9 +87,10 @@
 		<h3 th:utext="*{lot.getSeller()}"></h3>
 		<h3 th:utext="*{lot.getSeller()}"></h3>
 		<h3 th:if="${decimal}" th:text="${'Доступное количество: ' + count}"></h3>
-		<h3 th:if="${decimal}" th:text="${'Рассчет цены за 1 '+ sub}"></h3>
+		<input type="hidden" id="cost" th:value="${cost}"/>
 	</div>
 	<div class="user-box">
+		<p th:if="${decimal}" th:text="${sub}"></p>
 		<p class="item" th:each="item : *{lot.keys}" th:text="*{item+ ': '+lot.values.get(lot.keys.indexOf(item))}"></p>
 	</div>
 	<form th:action="@{/user/deal/buy}" method="post">
@@ -97,6 +98,7 @@
 		<h3 th:if="${decimal}">Количество</h3>
 		<input th:if="${decimal}" type="number" name="count" id="count" min="0" step="any" th:max="${count}" class="form-control"/>
 	<h3 th:if="${message != null}" class="red" th:utext="*{message}"></h3>
+		<p><label id="summary"></label></p>
 	<button  type="submit" class="button-buy">Оформить заказ</button>
 	</form>
 </div>
@@ -138,3 +140,22 @@
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/chat-current.js}"></script>
+<script type="text/javascript">
+  jQuery(document).ready(function($){
+    $('#id').on('change', function(e){
+      var className = e.target.value;
+      $('#category option').prop('disabled', true);
+      $('#category').find('option.' + className).prop('disabled', false);
+    });
+
+    $('#count').on('change', function(e){
+      var cost = document.getElementById('cost');
+      var count = document.getElementById('count');
+      if (count.value) {
+        $('#summary').html('К оплате: ' + parseFloat(cost.value) * parseFloat(count.value) +'₽');
+      } else {
+        $('#summary').html('К оплате: ' + parseFloat(cost.value) + '₽');
+      }
+    });
+  });
+</script>
