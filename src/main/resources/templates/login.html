@@ -45,6 +45,9 @@
         <div class="user-box error" th:if="${error}">
             <p>Неправильный логин или пароль</p>
         </div>
+        <div class="user-box success" th:if="${success}">
+            <p>Поздравляем с успешной регистрацией , войдите под своим логином и паролем</p>
+        </div>
         <a class="left" href="#" onclick="document.getElementById('login').submit()">Войти</a>
         <a class="right" th:href="@{/registration}">Создать аккаунт</a>
         <a class="right small" th:href="@{/reset}">Забыли пароль?</a>

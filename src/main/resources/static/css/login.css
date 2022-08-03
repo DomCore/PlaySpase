@@ -15,7 +15,9 @@
 input[type=text]:focus {
   border-bottom: 2px solid var(--primaryColor) !important;
 }
-
+.success {
+  color: #78ea3b;
+}
 input[type=password]:focus {
   border-bottom: 2px solid var(--primaryColor) !important;
 }

@@ -954,7 +954,6 @@ public class UserController {
       lot.setStatus("Возврат");
 
       lotService.saveLot(lot);
-      int c = 100;
       Date date = new Date();
       ChatMessage chatMessage = new ChatMessage();
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
@@ -971,11 +970,8 @@ public class UserController {
       this.template.convertAndSend("/topic/public", chatMessage);
       seller.setHaveMessage(true);
       user.setHaveMessage(true);
-      if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
-        c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
-      }
-      buyer.setBalance(buyer.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
-      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
+      buyer.setBalance(buyer.getBalance() + Integer.valueOf(lot.getCost()));
+      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(lot.getCost()));
       userService.saveUser(buyer);
       userService.saveUser(seller);
     }

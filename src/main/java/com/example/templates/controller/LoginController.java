@@ -141,13 +141,14 @@ public class LoginController {
             userService.saveUser(user, "USER");
             modelAndView.addObject("successMessage", "Аккаунт успешно создан");
             modelAndView.addObject("user", new User());
-            if (code != null) {
+            if (code != null && code.length() > 0) {
                 User ref = userService.findById(Integer.valueOf(code));
                 ref.getReferals().add(String.valueOf(user.getId()));
                 userService.saveUser(ref);
             }
             homeService.configureHome(modelAndView,user);
-            modelAndView.setViewName("home");
+            modelAndView.addObject("success", true);
+            modelAndView.setViewName("login");
         }
         return modelAndView;
     }
