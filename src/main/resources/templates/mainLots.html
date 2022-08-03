@@ -91,7 +91,7 @@
 				th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
 	</form>
 </div>
-<div class="filter-buttons" th:if="${lots != null}" >
+<div class="filter-buttons" th:if="${lots != null && subs != null}" >
 	<form th:action="@{/user/watch/lots}" method="get">
 		<input type="hidden" name="id" th:value="${category.id}"/>
 	<select name="filters" th:each="sub : ${subs}">

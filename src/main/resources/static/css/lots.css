@@ -25,11 +25,12 @@ table.dataTable {
 }
 
 .filter-buttons {
+  float: left;
   border: none;
   position: absolute;
-  top: 178px;
-  left: 370px;
-  transform: translate(-50%, 50%);
+  top: 177px;
+  left: 230px;
+  transform: translate(0, 50%);
   z-index: 100000;
 }
 
