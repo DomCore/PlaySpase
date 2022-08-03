@@ -140,13 +140,13 @@
 
 <script type="text/javascript">
   jQuery(document).ready(function($){
-    $('#id').on('change', function(e){
+    $('#id').on('keydown', function(e){
       var className = e.target.value;
       $('#category option').prop('disabled', true);
       $('#category').find('option.' + className).prop('disabled', false);
     });
 
-    $('#cost').on('change', function(e){
+    $('#cost').on('keydown', function(e){
       var cost = document.getElementById('cost');
       var tax = document.getElementById('tax');
       var count = document.getElementById('count');
@@ -156,7 +156,7 @@
         $('#summary').html('Итог: '+((100-parseFloat(tax.value)) * parseFloat(cost.value)) /100);
       }
     });
-    $('#count').on('change', function(e){
+    $('#count').on('keydown', function(e){
       var cost = document.getElementById('cost');
       var tax = document.getElementById('tax');
       var count = document.getElementById('count');

@@ -700,7 +700,12 @@ public class UserController {
     User seller = userService.findById(lot.getSeller_id());
     Date date = new Date();
     ModelAndView modelAndView = new ModelAndView();
-    if (user.getBalance() >= Integer.parseInt(lot.getCost())) {
+    String finalSum = lot.getCost();
+    if (count != null) {
+      String sum = String.valueOf(Double.valueOf(count) * Double.valueOf(lot.getCost()));
+      finalSum = sum.substring(0, sum.indexOf("."));
+    }
+    if (user.getBalance() >= Integer.parseInt(finalSum)) {
       ChatMessage chatMessage = new ChatMessage();
       chatMessage.setTime(sdf.format(new Timestamp(date.getTime())));
       chatMessage.setSender_id(user.getId());
@@ -740,8 +745,6 @@ public class UserController {
       myLot.setTemplates(new ArrayList<>(lot.getTemplates()));
       myLot.setSubTemplates(new ArrayList<>(lot.getSubTemplates()));
       if (count != null) {
-        String sum = String.valueOf(Double.valueOf(count) * Double.valueOf(myLot.getCost()));
-        String finalSum = sum.substring(0, sum.indexOf("."));
         myLot.setCount(Double.valueOf(count));
         lot.setCount(lot.getCount() - Double.valueOf(count));
         myLot.setCost(finalSum);
