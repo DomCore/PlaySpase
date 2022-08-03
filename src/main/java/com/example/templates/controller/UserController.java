@@ -204,7 +204,7 @@ public class UserController {
 
   @PostMapping(value = "/create/lot")
   public ModelAndView addLot(@Valid String cost,
-                             @Valid int count,
+                             @Valid double count,
                              @Valid String templates,
                              @Valid String subTemplates,
                              @Valid Integer category_id) {
