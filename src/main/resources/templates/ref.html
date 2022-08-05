@@ -138,7 +138,6 @@
 		<th scope="col">Пользователь</th>
 		<th scope="col">Дата регистрации</th>
 		<th scope="col">Деньги</th>
-		<th scope="col"></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -146,8 +145,6 @@
 		<td th:text="*{user.getUserName()}"></td>
 		<td th:text="*{user.getDate()}"></td>
 		<td th:text="*{user.getRefValue()}"></td>
-		<td><a th:if="${user.getRefValue() > 0}" class="uncover green" th:href="@{/user/getRef(id=*{user.getId()})}">Вывести</a>
-		</td>
 	</tr>
 	</tbody>
 </table>
