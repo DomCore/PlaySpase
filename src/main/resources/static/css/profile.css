@@ -68,6 +68,9 @@
   top: 15px;
   color: #a9ff2b;
 }
+.off {
+  color: rgba(255, 0, 77, 0.99) !important;
+}
 .msger {
   color: black;
   z-index: 1;

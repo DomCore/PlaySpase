@@ -92,7 +92,7 @@
 	</form>
 </div>
 <div class="filter-buttons" >
-	<form th:if="${lots != null && subs != null}" th:action="@{/user/watch/lots}" method="get">
+	<form th:if="${lots != null && lots.size() > 0 && subs != null}" th:action="@{/user/watch/lots}" method="get">
 		<input type="hidden" name="id" th:value="${category.id}"/>
 	<select name="filters" th:each="sub : ${subs}">
 		<option th:text="${sub.string}" selected disabled></option>
@@ -100,8 +100,9 @@
 	</select>
 		<button type="submit" class="filter">Применить фильтры</button>
 	</form>
-	<form th:if="${lots != null}" th:action="@{/user/watch/online}" method="get">
+	<form th:if="${lots != null && lots.size() > 0}" th:action="@{/user/watch/lots}" method="get">
 		<input type="hidden" name="id" th:value="${category.id}"/>
+		<input type="hidden" name="online" value="true"/>
 		<button type="submit" class="filter">Продавцы онлайн</button>
 	</form>
 </div>

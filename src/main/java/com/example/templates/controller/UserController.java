@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
 import javax.validation.Valid;
 
 import com.example.templates.configuration.FileUploadUtil;
+import com.example.templates.model.ActiveUserStore;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
 import com.example.templates.model.CheckOutHistory;
@@ -40,11 +42,13 @@ import com.example.templates.service.RefService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +78,13 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
+
+  @Autowired
+  ActiveUserStore activeUserStore;
+
+  public List<String> getLoggedUsers() {
+    return activeUserStore.getUsers();
+  }
   @Autowired
   private SimpMessagingTemplate template;
   private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM");
@@ -402,7 +413,8 @@ public class UserController {
   @GetMapping(value = "/watch/lots")
   public ModelAndView watchLots(@RequestParam(value = "id", required = false) Integer id,
                                 @RequestParam(value = "filters", required = false) List<String> filters,
-                                @RequestParam(value = "value", required = false) String filterValue
+                                @RequestParam(value = "value", required = false) String filterValue,
+                                @RequestParam(value = "online", required = false) Boolean online
                                ) {
     ModelAndView modelAndView = new ModelAndView();
     List<Lot> lots = lotService.getByCategoryId(id);
@@ -456,7 +468,17 @@ public class UserController {
       });
 
       if (lotss.stream().anyMatch(l -> l.getCategory() != null)) {
-        modelAndView.addObject("lots", lotss);
+        if (online != null && online) {
+          List<String> onlineUsers = getLoggedUsers();
+          List<LotsWrapper> finalLots = new ArrayList<>();
+          lotss.forEach(l -> {
+            if (onlineUsers.contains(l.getCategory()))
+            finalLots.add(l);
+          });
+          modelAndView.addObject("lots", finalLots);
+        } else {
+          modelAndView.addObject("lots", lotss);
+        }
         modelAndView.addObject("category", categoryService.findById(id));
         modelAndView.addObject("categories", categoryService.findByGameId(categoryService.findById(id).getGame_id()));
       } else {
@@ -491,6 +513,9 @@ public class UserController {
     }
     modelAndView = getUserLots(id);
     try {
+      if (getLoggedUsers().contains(userService.findById(id).getUserName())) {
+        modelAndView.addObject("online", true);
+      }
       modelAndView.addObject("seller_id", id);
       modelAndView.addObject("me", userService.getUser().getId());
       modelAndView.addObject("seller_logo", userService.getPath(userService.findById(id)));

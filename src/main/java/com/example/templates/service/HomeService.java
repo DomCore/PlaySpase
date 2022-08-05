@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
 import com.example.templates.configuration.SessionCounter;
+import com.example.templates.model.ActiveUserStore;
 import com.example.templates.model.Category;
 import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
@@ -20,6 +22,7 @@ import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Role;
 import com.example.templates.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
@@ -40,6 +43,10 @@ public class HomeService {
   @Autowired
   private LotService lotService;
 
+  @Bean
+  public ActiveUserStore activeUserStore(){
+    return new ActiveUserStore();
+  }
   public void fillGames(ModelAndView modelAndView, boolean forAdmin) {
     List<Game> games;
     if (forAdmin) {

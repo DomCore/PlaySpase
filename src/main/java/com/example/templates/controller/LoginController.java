@@ -2,6 +2,7 @@ package com.example.templates.controller;
 
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import com.example.templates.EMail;
+import com.example.templates.model.ActiveUserStore;
 import com.example.templates.model.User;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
@@ -36,6 +38,7 @@ public class LoginController {
     private EMail eMail;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @GetMapping(value =  "/login")
     public ModelAndView login(){
         ModelAndView modelAndView = new ModelAndView();
@@ -80,6 +83,14 @@ public class LoginController {
 
     @GetMapping(value="/")
     public ModelAndView main(){
+        ModelAndView modelAndView = new ModelAndView();
+        homeService.fillGames(modelAndView,false);
+        homeService.checkAuth(modelAndView);
+        modelAndView.setViewName("main");
+        return modelAndView;
+    }
+    @GetMapping(value="/landing")
+    public ModelAndView maind(){
         ModelAndView modelAndView = new ModelAndView();
         homeService.fillGames(modelAndView,false);
         homeService.checkAuth(modelAndView);

@@ -4,12 +4,17 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.example.templates.OAuth2.CustomOAuth2User;
 import com.example.templates.OAuth2.CustomOAuth2UserService;
+import com.example.templates.model.ActiveUserStore;
+import com.example.templates.model.LoggedUser;
 import com.example.templates.service.HomeService;
 import com.example.templates.service.MyUserDetailsService;
 import com.example.templates.service.UserService;
+import com.example.templates.store.MyLogoutSuccessHandler;
+import com.example.templates.store.MySimpleUrlAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +48,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Autowired
   private MyUserDetailsService userDetailsService;
 
+  @Autowired
+  private MyLogoutSuccessHandler myLogoutSuccessHandler;
+  @Autowired
+  private MySimpleUrlAuthenticationSuccessHandler mySimpleUrlAuthenticationSuccessHandler;
+  @Autowired
+  ActiveUserStore activeUserStore;
 
   @Autowired
   private HomeService homeService;
@@ -81,7 +92,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
           .failureUrl("/login")
           .usernameParameter("user_name")
           .passwordParameter("password")
-          .defaultSuccessUrl("/")
+          .successHandler(mySimpleUrlAuthenticationSuccessHandler)
           .failureForwardUrl("/fail_login")
           .and()
           .oauth2Login()
@@ -90,11 +101,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
           .userService(oauthUserService)
           .and()
           .successHandler(new AuthenticationSuccessHandler() {
-
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                                 Authentication authentication) throws IOException, ServletException {
               DefaultOidcUser oauthUser = (DefaultOidcUser) authentication.getPrincipal();
+              HttpSession session = request.getSession(false);
+              if (session != null) {
+                LoggedUser user = new LoggedUser(authentication.getName(), activeUserStore);
+                session.setAttribute("user", user);
+              }
               if (!userService.processOAuthPostLogin(oauthUser)) {
                 response.sendRedirect("/user/goHome");
               } else {
@@ -104,6 +119,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             }
           })
           .and().logout()
+          .logoutSuccessHandler(myLogoutSuccessHandler)
           .logoutRequestMatcher(new AntPathRequestMatcher(logoutPage))
           .logoutSuccessUrl(loginPage).and().exceptionHandling();
     }

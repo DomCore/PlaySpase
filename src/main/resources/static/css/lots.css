@@ -25,6 +25,7 @@ table.dataTable {
 }
 
 .filter-buttons {
+  display: flex;
   float: left;
   border: none;
   position: absolute;

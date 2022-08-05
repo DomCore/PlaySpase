@@ -85,8 +85,11 @@
 		<div class="about">
 			<h2 th:text="${userObject.getUserName()}"></h2>
 		</div>
-		<div class="about status">
+		<div th:if="${online != null && online}" class="about status">
 			<h2>Online</h2>
+		</div>
+		<div th:if="${online == null}" class="about status off">
+			<h2>Offline</h2>
 		</div>
 	</div>
 	<div class="item no-bg">
