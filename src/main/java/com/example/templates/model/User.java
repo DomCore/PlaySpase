@@ -68,4 +68,14 @@ public class User {
     private boolean check;
     @ElementCollection
     private List<String> referals;
+
+    public Integer getSells() {
+        return sells != null? sells: 0;
+    }
+    public Integer getBuys() {
+        return buys != null? buys: 0;
+    }
+    public Integer getRefValue() {
+        return refValue != null? refValue: 0;
+    }
 }

@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Target;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import javax.validation.Valid;
@@ -18,6 +20,7 @@ import javax.validation.Valid;
 import com.example.templates.configuration.FileUploadUtil;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
+import com.example.templates.model.CheckOutHistory;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Lot;
@@ -28,6 +31,7 @@ import com.example.templates.model.StringAndListWrapper;
 import com.example.templates.model.User;
 import com.example.templates.service.CategoryService;
 import com.example.templates.service.ChatMessageService;
+import com.example.templates.service.CheckService;
 import com.example.templates.service.FileStorageService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
@@ -62,6 +66,8 @@ public class UserController {
   private HomeService homeService;
   @Autowired
   private RefService refService;
+  @Autowired
+  private CheckService checkService;
   @Autowired
   private GameService gameService;
   @Autowired
@@ -932,10 +938,34 @@ public class UserController {
       if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
         c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
       }
+      Optional<User> target = userService.getAll().stream().filter(u -> u.getReferals().contains(String.valueOf(user.getId()))).findFirst();
+      if (target.isPresent()) {
+        User targetUser = target.get();
+        RefHistory refHistory = new RefHistory();
+        refHistory.setTarget_id(targetUser.getId());
+        refHistory.setUserName(user.getUserName());
+        refHistory.setRefValue(Integer.valueOf(Integer.valueOf(lot.getCost())) / 50);
+        refHistory.setDate(sdf.format(new Timestamp(date.getTime())));
+        refHistory.setGame(gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id())
+            .getName());
+        refService.saveRefHistory(refHistory);
+      }
+      Optional<User> target2 = userService.getAll().stream().filter(u -> u.getReferals().contains(String.valueOf(seller.getId()))).findFirst();
+      if (target2.isPresent()) {
+        User targetUser = target2.get();
+        RefHistory refHistory = new RefHistory();
+        refHistory.setTarget_id(targetUser.getId());
+        refHistory.setUserName(seller.getUserName());
+        refHistory.setRefValue(Integer.valueOf(Integer.valueOf(lot.getCost())) / 100);
+        refHistory.setDate(sdf.format(new Timestamp(date.getTime())));
+        refHistory.setGame(gameService.findById(categoryService.findById(lot.getCategory_id()).getGame_id())
+            .getName());
+        refService.saveRefHistory(refHistory);
+      }
       seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
       seller.setBalance(seller.getBalance() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100));
-      seller.setRefValue(user.getRefValue() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100) / 100);
-      user.setRefValue(user.getRefValue() + Integer.valueOf(c * Integer.valueOf(lot.getCost()) / 100) / 50);
+      seller.setRefValue(user.getRefValue() + Integer.valueOf(Integer.valueOf(lot.getCost())) / 100);
+      user.setRefValue(user.getRefValue() + Integer.valueOf(Integer.valueOf(lot.getCost())) / 50);
       userService.saveUser(user);
       userService.saveUser(seller);
     }
@@ -1008,11 +1038,16 @@ public class UserController {
   @GetMapping(value = "/referals")
   public ModelAndView referals() {
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("referals");
+    modelAndView.setViewName("ref");
     List<User> users = new ArrayList<>();
     User user = userService.getUser();
     user.getReferals().forEach(r ->
         users.add(userService.findById(Integer.valueOf(r))));
+    Integer avaliable = 0;
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+    }
+    modelAndView.addObject("avaliableRef", avaliable);
     modelAndView.addObject("users", users);
     homeService.checkAuth(modelAndView);
     return modelAndView;
@@ -1021,33 +1056,62 @@ public class UserController {
   @GetMapping(value = "/referalsHistory")
   public ModelAndView referalsHistory() {
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("referalsHistory");
+    modelAndView.setViewName("ref");
     User user = userService.getUser();
     List<RefHistory> reports = refService.findByTargetId(user.getId());
+    Integer avaliable = 0;
+    List<User> users = new ArrayList<>();
+    user.getReferals().forEach(r ->
+        users.add(userService.findById(Integer.valueOf(r))));
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+    }
+    modelAndView.addObject("avaliableRef", avaliable);
     modelAndView.addObject("reports", reports);
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
-
-  @GetMapping(value = "/getRef")
-  public ModelAndView getRef(@Valid Integer id) {
+  @GetMapping(value = "/referalsCheckOutHistory")
+  public ModelAndView referalsCheckOutHistory() {
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("referals");
+    modelAndView.setViewName("ref");
     User user = userService.getUser();
-    User target = userService.findById(id);
-    user.setBalance(user.getBalance() + target.getRefValue());
-    RefHistory refHistory = new RefHistory();
-    refHistory.setTarget_id(user.getId());
-    refHistory.setUserName((user.getUserName()));
-    refHistory.setDate(target.getDate());
-    refHistory.setRefValue(target.getRefValue());
-    target.setRefValue(0);
-    userService.saveUser(user);
-    userService.saveUser(target);
-    refService.saveRefHistory(refHistory);
+    List<CheckOutHistory> reports = checkService.findByTargetId(user.getId());
+    Integer avaliable = 0;
     List<User> users = new ArrayList<>();
     user.getReferals().forEach(r ->
         users.add(userService.findById(Integer.valueOf(r))));
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+    }
+    modelAndView.addObject("avaliableRef", avaliable);
+    modelAndView.addObject("reportsCheck", reports);
+    homeService.checkAuth(modelAndView);
+    return modelAndView;
+  }
+  @GetMapping(value = "/getRef")
+  public ModelAndView getRef(@Valid Integer id) {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("ref");
+    User user = userService.getUser();
+    User target = userService.findById(id);
+    user.setBalance(user.getBalance() + target.getRefValue());
+    CheckOutHistory checkOutHistory = new CheckOutHistory();
+    checkOutHistory.setTarget_id(user.getId());
+    checkOutHistory.setDate(target.getDate());
+    checkOutHistory.setRefValue(target.getRefValue());
+    target.setRefValue(0);
+    userService.saveUser(user);
+    userService.saveUser(target);
+    checkService.saveCheckHistory(checkOutHistory);
+    List<User> users = new ArrayList<>();
+    user.getReferals().forEach(r ->
+        users.add(userService.findById(Integer.valueOf(r))));
+    Integer avaliable = 0;
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+    }
+    modelAndView.addObject("avaliableRef", avaliable);
     modelAndView.addObject("users", users);
     homeService.checkAuth(modelAndView);
     return modelAndView;
@@ -1057,8 +1121,49 @@ public class UserController {
   public ModelAndView ref() {
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("ref");
+    List<User> users = new ArrayList<>();
+    userService.getUser().getReferals().forEach(r ->
+        users.add(userService.findById(Integer.valueOf(r))));
+    Integer avaliable = 0;
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+    }
+    User user = userService.getUser();
+    List<RefHistory> reports = refService.findByTargetId(user.getId());
+    modelAndView.addObject("reports", reports);
+    modelAndView.addObject("avaliableRef", avaliable);
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
 
+  @PostMapping(value = "/ref")
+  public ModelAndView refFull() {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("ref");
+    Integer avaliable = 0;
+    List<User> users = new ArrayList<>();
+    userService.getUser().getReferals().forEach(r ->
+        users.add(userService.findById(Integer.valueOf(r))));
+    for (int i = 0; i < users.size(); i++) {
+      avaliable += users.get(i).getRefValue();
+      users.get(i).setRefValue(0);
+      userService.saveUser(users.get(i));
+    }
+    User user = userService.getUser();
+    List<RefHistory> reports = refService.findByTargetId(user.getId());
+    modelAndView.addObject("reports", reports);
+    if (avaliable > 0) {
+      user.setBalance(user.getBalance() + avaliable);
+      userService.saveUser(user);
+      CheckOutHistory checkOutHistory = new CheckOutHistory();
+      Date date = new Date();
+      checkOutHistory.setDate(sdf.format(new Timestamp(date.getTime())));
+      checkOutHistory.setRefValue(avaliable);
+      checkOutHistory.setTarget_id(user.getId());
+      checkService.saveCheckHistory(checkOutHistory);
+    }
+    modelAndView.addObject("avaliableRef", 0);
+    homeService.checkAuth(modelAndView);
+    return modelAndView;
+  }
 }

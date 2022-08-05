@@ -78,7 +78,7 @@
 	</div>
 </nav>
 <div class="about">
-	<div class="head" th:text="${category.header}">
+	<div class="head" th:text="${counter}">
 	</div>
 	<div class="sub" th:text="${category.subHeader}">
 	</div>
@@ -91,14 +91,18 @@
 				th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
 	</form>
 </div>
-<div class="filter-buttons" th:if="${lots != null && subs != null}" >
-	<form th:action="@{/user/watch/lots}" method="get">
+<div class="filter-buttons" >
+	<form th:if="${lots != null && subs != null}" th:action="@{/user/watch/lots}" method="get">
 		<input type="hidden" name="id" th:value="${category.id}"/>
 	<select name="filters" th:each="sub : ${subs}">
 		<option th:text="${sub.string}" selected disabled></option>
 		<option th:each="item : ${sub.arrString}" th:value="${sub.string + ' filteredValue ' + item}" th:text="${item}"></option>
 	</select>
 		<button type="submit" class="filter">Применить фильтры</button>
+	</form>
+	<form th:if="${lots != null}" th:action="@{/user/watch/online}" method="get">
+		<input type="hidden" name="id" th:value="${category.id}"/>
+		<button type="submit" class="filter">Продавцы онлайн</button>
 	</form>
 </div>
 <table th:if="${lots != null}" id="myTable">

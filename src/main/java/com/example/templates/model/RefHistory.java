@@ -41,6 +41,7 @@ public class RefHistory {
     private Integer id;
     private Integer target_id;
     private String userName;
+    private String game;
     private String date;
     private Integer refValue;
 }

@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
+import com.example.templates.configuration.SessionCounter;
 import com.example.templates.model.Category;
 import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;

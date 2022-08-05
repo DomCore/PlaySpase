@@ -7,12 +7,13 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
-
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/ref.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/reftable.css}"/>
 </head>
 
 <body>
@@ -51,7 +52,9 @@
 				<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
 				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы</a></li>
 				<div class="dropdown">
-					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user" width="60" height="60" class="user-pic"/></a></li>
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user"
+																																																								width="60" height="60"
+																																																								class="user-pic"/></a></li>
 					<div class="dropdown-content">
 						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
 						<a th:href="@{/home}">Настройки</a>
@@ -69,16 +72,88 @@
 <div class="user-wrapper" th:if="${user != null && user.equals('USER')}">
 	<div class="item">
 		<p>Ваша реферальная ссылка</p>
-		<p th:text="${'http://playspase.ru/registration?code='+id}"></p>
+		<input type="hidden" id="href" th:value="${'http://playspase.ru/registration?code='+id}"/>
+		<div class="refHref"><p class="js-copytextarea" th:text="${'http://playspase.ru/registration?code='+id}"></p>
+			<button class="copy_link_mess" onclick="copytext()"><i class="fa fa-copy" style="font-size:24px;"></i></button>
+			<p><label id="summary"></label></p>
+		</div>
+		<p th:text="${'Баланс: ' + avaliableRef +'₽'}"></p>
+		<div class="refHref">
+		<form th:action="@{/user/ref}" method="post">
+			<button class="button-user">Вывести в финансы</button>
+		</form>
+		<form th:action="@{/user/referalsCheckOutHistory}" method="get">
+			<button class="button-user">История вывода</button>
+		</form>
+		</div>
+		<br>
+		<div class="refHref left">
 		<form th:action="@{/user/referals}" method="get">
 			<button class="button-user">Мои рефералы</button>
 		</form>
 		<form th:action="@{/user/referalsHistory}" method="get">
 			<button class="button-user">История</button>
 		</form>
+		</div>
 	</div>
-
 </div>
+
+<table th:if="${reportsCheck != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Дата операции</th>
+		<th scope="col">Деньги</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="user: ${reportsCheck}">
+		<td th:text="*{user.getDate()}"></td>
+		<td th:text="*{user.getRefValue() +'₽'}"></td>
+	</tr>
+	</tbody>
+</table>
+
+<table th:if="${reports != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Пользователь</th>
+		<th scope="col">Дата операции</th>
+		<th scope="col">Игра</th>
+		<th scope="col">Деньги</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="user: ${reports}">
+		<td th:text="*{user.getUserName()}"></td>
+		<td th:text="*{user.getDate()}"></td>
+		<td th:text="*{user.getGame()}"></td>
+		<td th:text="*{user.getRefValue() +'₽'}"></td>
+	</tr>
+	</tbody>
+</table>
+
+<table th:if="${users != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Пользователь</th>
+		<th scope="col">Дата регистрации</th>
+		<th scope="col">Деньги</th>
+		<th scope="col"></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="user: ${users}">
+		<td th:text="*{user.getUserName()}"></td>
+		<td th:text="*{user.getDate()}"></td>
+		<td th:text="*{user.getRefValue()}"></td>
+		<td><a th:if="${user.getRefValue() > 0}" class="uncover green" th:href="@{/user/getRef(id=*{user.getId()})}">Вывести</a>
+		</td>
+	</tr>
+	</tbody>
+</table>
+
+
+
 </body>
 </html>
 
@@ -91,3 +166,11 @@
 <script type="text/javascript"
 				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
+
+<script type="text/javascript" th:src="@{/scripts/ref.js}"></script>
+<script>
+  function copytext() {
+    navigator.clipboard.writeText(document.getElementById("href").value);
+    $('#summary').html("✓");
+  }
+</script>
