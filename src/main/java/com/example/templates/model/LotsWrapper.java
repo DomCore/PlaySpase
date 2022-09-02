@@ -1,5 +1,6 @@
 package com.example.templates.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
@@ -14,11 +15,138 @@ public class LotsWrapper {
   public String status;
   public double count;
   public String seller;
+  public String sellerLogo;
+  public Integer stars;
+  public String feedback;
   public String game;
   public String date;
   public String category;
   public String header;
   public String subHeader;
+  public int feedbackCount;
+
+  public LotsWrapper(Integer id, String status, double count, String seller, String sellerLogo, Integer stars, String feedback, String game, String date, String category, String header, String subHeader, int feedbackCount, String subCost, boolean allowDecimal, boolean showCount, List<String> keys, List<String> values) {
+    this.id = id;
+    this.status = status;
+    this.count = count;
+    this.seller = seller;
+    this.sellerLogo = sellerLogo;
+    this.stars = stars;
+    this.feedback = feedback;
+    this.game = game;
+    this.date = date;
+    this.category = category;
+    this.header = header;
+    this.subHeader = subHeader;
+    this.feedbackCount = feedbackCount;
+    this.subCost = subCost;
+    this.allowDecimal = allowDecimal;
+    this.showCount = showCount;
+    this.keys = keys;
+    this.values = values;
+  }
+
+  public String getSellerLogo() {
+    return sellerLogo;
+  }
+
+  public void setSellerLogo(String sellerLogo) {
+    this.sellerLogo = sellerLogo;
+  }
+
+  public LotsWrapper(Integer id, String status, double count, String seller, Integer stars, String feedback, String game, String date, String category, String header, String subHeader, int feedbackCount, String subCost, boolean allowDecimal, boolean showCount, List<String> keys, List<String> values) {
+    this.id = id;
+    this.status = status;
+    this.count = count;
+    this.seller = seller;
+    this.stars = stars;
+    this.feedback = feedback;
+    this.game = game;
+    this.date = date;
+    this.category = category;
+    this.header = header;
+    this.subHeader = subHeader;
+    this.feedbackCount = feedbackCount;
+    this.subCost = subCost;
+    this.allowDecimal = allowDecimal;
+    this.showCount = showCount;
+    this.keys = keys;
+    this.values = values;
+  }
+
+  public LotsWrapper(Integer id, double count, String seller, String sellerLogo, Integer stars, int feedbackCount, String game, List<String> keys, List<String> values) {
+    this.id = id;
+    this.count = count;
+    this.seller = seller;
+    this.sellerLogo = sellerLogo;
+    this.stars = stars;
+    this.feedbackCount = feedbackCount;
+    this.game = game;
+    this.keys = keys;
+    this.values = values;
+  }
+
+  public LotsWrapper(Integer id, String status, double count, String seller, Integer stars, String feedback, String game, String date, String category, String header, String subHeader, String subCost, boolean allowDecimal, boolean showCount, List<String> keys, List<String> values) {
+    this.id = id;
+    this.status = status;
+    this.count = count;
+    this.seller = seller;
+    this.stars = stars;
+    this.feedback = feedback;
+    this.game = game;
+    this.date = date;
+    this.category = category;
+    this.header = header;
+    this.subHeader = subHeader;
+    this.subCost = subCost;
+    this.allowDecimal = allowDecimal;
+    this.showCount = showCount;
+    this.keys = keys;
+    this.values = values;
+  }
+
+
+  public LotsWrapper(Integer id, String status, String seller, Integer stars, String feedback, String game, String date, String category, List<String> keys, List<String> values) {
+    this.id = id;
+    this.status = status;
+    this.seller = seller;
+    this.stars = stars;
+    this.feedback = feedback;
+    this.game = game;
+    this.date = date;
+    this.category = category;
+    this.keys = keys;
+    this.values = values;
+  }
+
+  public Integer getStars() {
+    return stars;
+  }
+
+  public void setStars(Integer stars) {
+    this.stars = stars;
+  }
+
+  public String getFeedback() {
+    return feedback;
+  }
+
+  public void setStars(int stars) {
+    this.stars = stars;
+  }
+
+  public int getFeedbackCount() {
+    return feedbackCount;
+  }
+
+  public void setFeedbackCount(int feedbackCount) {
+    this.feedbackCount = feedbackCount;
+  }
+
+  public void setFeedback(String feedback) {
+    this.feedback = feedback;
+  }
+
   public String subCost;
   public boolean allowDecimal;
   public boolean showCount;
@@ -53,6 +181,7 @@ public class LotsWrapper {
     this.keys = keys;
     this.values = values;
   }
+
 
   public LotsWrapper(Integer id, String status, String seller, String game, String category, List<String> keys, List<String> values) {
     this.id = id;
@@ -97,6 +226,8 @@ public class LotsWrapper {
     this.keys = keys;
     this.values = values;
   }
+
+  //ds
   public LotsWrapper(Integer id, String game, String category, double count, List<String> keys, List<String> values) {
     this.id = id;
     this.game = game;

@@ -16,6 +16,7 @@ import javax.xml.bind.DatatypeConverter;
 import com.example.templates.configuration.SessionCounter;
 import com.example.templates.model.ActiveUserStore;
 import com.example.templates.model.Category;
+import com.example.templates.model.Feedback;
 import com.example.templates.model.FileDB;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
@@ -42,7 +43,8 @@ public class HomeService {
   private FileStorageService storageService;
   @Autowired
   private LotService lotService;
-
+  @Autowired
+  private FeedbackService feedbackService;
   @Bean
   public ActiveUserStore activeUserStore(){
     return new ActiveUserStore();
@@ -145,6 +147,25 @@ public class HomeService {
     return modelAndView;
   }
 
+  public int getStars(Integer id) {
+    List<Feedback> feedbacks = feedbackService.findByTargetId(id);
+    if (feedbacks != null && feedbacks.size() > 0) {
+      Integer stars = 0;
+      for (int i = 0; i < feedbacks.size(); i++) {
+        stars += feedbacks.get(i).getStars();
+      }
+      return stars / feedbacks.size();
+    }
+    return 0;
+  }
+
+  public int getFeedsCount(Integer id) {
+    List<Feedback> feedbacks = feedbackService.findByTargetId(id);
+    return feedbacks != null && feedbacks.size() > 0 ? feedbacks.size() : 0;
+  }
+
+
+
   public void checkAuth(ModelAndView modelAndView) {
     User user = userService.getUser();
     if (user != null) {
@@ -153,23 +174,26 @@ public class HomeService {
         modelAndView.addObject("userLogo", userService.getPath(user));
       } catch (Exception e) {
 
-      }
-      modelAndView.addObject("user", role);
-      modelAndView.addObject("id", user.getId());
-      modelAndView.addObject("userName", user.getUserName());
-      int charge = user.getBalance_charge();
-      String balance;
-      if (charge < 0) {
-        balance = String.valueOf(user.getBalance() + user.getBalance_charge());
-      } else if (charge > 0) {
-        balance = user.getBalance() + " (" + user.getBalance_charge() + ")";
+      }if (user.isBan()) {
+
       } else {
-        balance = String.valueOf(user.getBalance());
+        modelAndView.addObject("user", role);
+        modelAndView.addObject("id", user.getId());
+        modelAndView.addObject("userName", user.getUserName());
+        int charge = user.getBalance_charge();
+        String balance;
+        if (charge < 0) {
+          balance = String.valueOf(user.getBalance() + user.getBalance_charge());
+        } else if (charge > 0) {
+          balance = user.getBalance() + " (" + user.getBalance_charge() + ")";
+        } else {
+          balance = String.valueOf(user.getBalance());
+        }
+        modelAndView.addObject("userBalance", balance);
+        modelAndView.addObject("messagesCount", user.getMessages());
+        modelAndView.addObject("sellsCount", lotService.getSells(user.getId()));
+        modelAndView.addObject("buysCount", lotService.getBuys(user.getId()));
       }
-      modelAndView.addObject("userBalance", balance);
-      modelAndView.addObject("messagesCount", user.getMessages());
-      modelAndView.addObject("sellsCount", lotService.getSells(user.getId()));
-      modelAndView.addObject("buysCount", lotService.getBuys(user.getId()));
     }
   }
 

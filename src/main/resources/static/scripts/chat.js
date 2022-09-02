@@ -5,6 +5,8 @@ var username = null;
 var logo = null;
 var checked = false;
 var receiver = document.querySelector('.user').value.trim();
+var file = document.querySelector('#file');
+var fileData = null;
 
 let friends = {
     list: document.querySelector('ul.people'),
@@ -85,24 +87,54 @@ function onError(error) {
   connectingElement.style.color = 'red';
 }
 
+if (window.File && window.FileReader && window.FileList && window.Blob) {
+  file.addEventListener('change', handleFileSelect, false);
+} else {
+  alert('The File APIs are not fully supported in this browser.');
+}
+
 
 function send(event) {
   var messageContent = messageInput.value.trim();
 
-  if (messageContent && stompClient) {
+  if ((messageContent || fileData) && stompClient) {
     var chatMessage = {
       sender: username,
       receiver: receiver,
       content: messageInput.value,
-      type: 'CHAT'
+      type: 'CHAT',
+      file: fileData
     };
 
     stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
     messageInput.value = '';
+    fileData = null;
+
   }
-  event.preventDefault();
+  try {
+    event.preventDefault();
+  } catch (e) {
+
+  }
 }
 
+function handleFileSelect(evt) {
+  var f = evt.target.files[0]; // FileList object
+  var reader = new FileReader();
+  // Closure to capture the file information.
+  reader.onload = (function(theFile) {
+    return function(e) {
+      var binaryData = e.target.result;
+      //Converting Binary Data to base 64
+      var base64String = window.btoa(binaryData);
+      //showing file converted to base64
+      fileData = base64String;
+      messageInput.value = '';
+      send();
+    };
+  })(f);
+  reader.readAsBinaryString(f);
+}
 
 function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
@@ -110,7 +142,13 @@ function onMessageReceived(payload) {
     if (message.type === 'JOIN') {
     } else if (message.type === 'LEAVE') {
     } else {
-      var messageElement = document.createElement('div');
+      if (message.file != null && message.file.length > 0) {
+        var messageElement = document.createElement('img');
+        messageElement.classList.add('user_image');
+        messageElement.src = 'data:image/png;base64,' + message.file;
+      } else {
+        var messageElement = document.createElement('div');
+      }
       messageElement.classList.add('bubble');
       if (message.sender === username && !message.system) {
         messageElement.classList.add('me');
@@ -132,6 +170,7 @@ function onMessageReceived(payload) {
       var messageText = document.createTextNode(message.content);
       messageElement.appendChild(messageText);
       try {
+        chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollTop = chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollHeight;
         chat.container.querySelector('[data-chat="' + chat.person + '"]').appendChild(messageElement);
         chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollTop = chat.container.querySelector('[data-chat="' + chat.person + '"]').scrollHeight;
       } catch (e) {
@@ -145,18 +184,26 @@ function onMessageReceived(payload) {
     beep();
     document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.preview').textContent = message.content;
     document.querySelector('[data-chat-friend="' + message.sender + '"]').querySelector('.time').textContent = message.time;
-    var messageElement = document.createElement('div');
-    messageElement.classList.add('bubble');
+
+    if (message.file != null && message.file.length > 0) {
+      var messageElement = document.createElement('img');
+      messageElement.classList.add('user_image');
+      messageElement.src = 'data:image/png;base64,' + message.file;
+    } else {
+      var messageElement = document.createElement('div');
+      messageElement.classList.add('bubble');
+      var messageText = document.createTextNode(message.content);
+      messageElement.appendChild(messageText);
+    }
     messageElement.classList.add('you');
-    var messageText = document.createTextNode(message.content);
-    messageElement.appendChild(messageText);
+
     document.querySelector('[data-chat-main="' + message.sender + '"]').appendChild(messageElement);
     document.querySelector('[data-chat-main="' + message.sender + '"]').scrollTop = chat.container.querySelector('[data-chat-main="' + chat.person + '"]').scrollHeight;
   }
 }
 
 
-messageForm.addEventListener('submit', send, true)
+messageForm.addEventListener('submit', send, true);
 
 function check() {
   var chatMessage = {

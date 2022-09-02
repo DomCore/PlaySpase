@@ -1,8 +1,10 @@
 package com.example.templates.model;
 
 
+import java.util.Date;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -10,8 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,11 +52,18 @@ public class Lot implements Comparable<Lot>, Cloneable {
 
 
 @Override
-  public int compareTo(Lot m) {
-    if (getId() == null || m.getId() == null) {
+  public int compareTo(Lot m){
+  try {
+    Date date = new SimpleDateFormat("HH:mm dd.MM").parse(m.date);
+    Date current = new SimpleDateFormat("HH:mm dd.MM").parse(getDate());
+    if (current == null || date == null) {
       return 0;
     }
-    return getId().compareTo(m.getId());
+    return current.compareTo(date);
+  } catch (Exception e) {
+
+  }
+return 0;
   }
 
   @Override

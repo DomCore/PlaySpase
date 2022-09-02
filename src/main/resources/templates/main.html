@@ -44,6 +44,7 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/lists}" class="header__item">Заявки</a></li>
 				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${messagesCount > 0}" th:text="${messagesCount}" class="ping"></div></a></li>
 				<div class="dropdown">
 					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки<div th:if="${buysCount > 0}" th:text="${buysCount}" class="ping"></div></a></li>
@@ -58,7 +59,7 @@
 						<a th:href="@{/user/watch/myLotsHistory}">История</a>
 					</div>
 				</div>
-				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы
+				<li th:if="${user != null && user.equals('USER')}"><a th:href="@{/user/finances}" class="header__item">Финансы
 					<div th:text="${userBalance} +'₽'"></div>
 				</a></li>
 				<div class="dropdown">

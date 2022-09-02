@@ -4,8 +4,14 @@
     background: rgba(0,0,0,.3)!important;
     border-radius: 2px;
     padding: 5px 10px 5px 5px;
+    width: 40%;
 }
 
+.right {
+    float: right;
+    width: 50%;
+
+}
 .small {
     font-size: 15px!important;
 }

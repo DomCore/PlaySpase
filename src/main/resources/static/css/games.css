@@ -7,7 +7,7 @@
 .grid-row {
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .container_game .card{
   margin: 0 0 200px 0;

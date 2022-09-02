@@ -9,6 +9,19 @@
   transform: translate(-50%,0);
   width: 80%;
 }
+.banned {
+  background-color: rgba(0,0,0,.8);
+  font-size: 12px!important;
+  border-radius: 10px;
+  border-right: solid 1px rgba(255, 0, 77, 0.99);
+  border-bottom: solid 1px rgba(255, 0, 77, 0.99);
+}
+.blocked {
+  pointer-events: none;
+  opacity: unset!important;
+  padding: 5px;
+  margin-top: -20px;
+}
 .button-buy{
   background-color: white;
   border-radius: 2px;

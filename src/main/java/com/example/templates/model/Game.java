@@ -44,7 +44,6 @@ public class Game implements Comparable<Game>{
   private List<String> tagsArray;
   @Transient
   private String path;
-  @Transient
 
   @Override
   public int compareTo(Game g) {

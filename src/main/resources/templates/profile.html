@@ -85,43 +85,48 @@
 		<div class="about">
 			<h2 th:text="${userObject.getUserName()}"></h2>
 		</div>
-		<div th:if="${online != null && online}" class="about status">
+		<div th:if="${userObject.isBan()}" class="about status off banned">
+			<h2>Ваш аккаунт Временно заблокирован </h2>
+			<h3 th:text="${'Причина :' + userObject.getBanText()}"></h3>
+			<a href="https://vk.com/im?sel=-197097187" style="pointer-events: unset!important;">Если Ваш аккаунт заблокирован без причины, или по ошибке напишите нам.</a>
+		</div>
+		<div th:if="${!userObject.isBan() && online != null && online}" class="about status">
 			<h2>Online</h2>
 		</div>
-		<div th:if="${online == null}" class="about status off">
+		<div th:if="${!userObject.isBan() && online == null}" class="about status off">
 			<h2>Offline</h2>
 		</div>
 	</div>
-	<div class="item no-bg">
-		<div class="stars">
-			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+	<div class="item no-bg" >
+		<div class="stars" th:if="${stars != null}">
+			<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${stars >=  1}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
 					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
 			</svg>
-			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+			<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${stars >=  2}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
 					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
 			</svg>
-			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+			<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${stars >=  3}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
 					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
 			</svg>
-			<svg xmlns="http://www.w3.org/2000/svg" class="filled icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+			<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${stars >=  4}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
 					 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
 			</svg>
-			<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5"
+			<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${stars >=  5}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5"
 					 stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
 			</svg>
 		</div>
-		<div class="about-mark">
-			4.7/5
+		<div class="about-mark" th:if="${stars != null}">
+			<p th:text="${stars + '/5 (' + feedbacksCount + ')'}">
 		</div>
 	</div>
 	<div class="item suber">
@@ -136,8 +141,8 @@
 		<input type="hidden" id="receiver" th:value="${userObject.getUserName()}" class="form-control"/>
 
 
-		<div th:classappend="${userObject.getUserName().equals(userName) || userName == null}? blocked : common" id="chat-page">
-			<div class="chat-container">
+		<div th:classappend="${userObject.getUserName().equals(userName) || userName == null}? blocked : common" id="chat-page" >
+			<div class="chat-container"  th:classappend="${userObject.isBan()}? 'blocked' : ''">
 
 				<div class="connecting">Connecting...</div>
 				<ul id="messageArea">
@@ -160,7 +165,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="item card no-bg">
+	<div class="item card no-bg"  th:classappend="${userObject.isBan()}? 'blocked' : ''">
 			<div class="lot" th:each="lot : *{lots}">
 				<img th:src="@{/images/lot.png}">
 				<h3 th:utext="*{lot.getGame()}"></h3>

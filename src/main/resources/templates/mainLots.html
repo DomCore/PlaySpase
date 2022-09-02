@@ -9,6 +9,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
 	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.4/tailwind.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
 
@@ -44,7 +45,9 @@
 				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
 				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
 				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
-				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения<div th:if="${checkMessage}" class="ping"></div></a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения
+					<div th:if="${checkMessage}" class="ping"></div>
+				</a></li>
 				<div class="dropdown">
 					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
 					<div class="dropdown-content">
@@ -87,28 +90,43 @@
 	<form th:action="@{/user/create/lot}" method="get">
 		<input type="hidden" name="id" th:value="${category.getId()}">
 		<button class="button main-b" th:text="'Продать ' + ${category.getName()}"></button>
-		<a  class="button sub" th:each="cat : ${categories}"  th:if="${categories != null && cat != category}"
-				th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
+		<a class="button sub" th:each="cat : ${categories}" th:if="${categories != null && cat != category}"
+			 th:href="@{/user/watch/lots(id=${cat.getId()})}" th:utext="${cat.getName()}"></a>
 	</form>
 </div>
-<div class="filter-buttons" >
-	<form th:if="${lots != null && lots.size() > 0 && subs != null}" th:action="@{/user/watch/lots}" method="get">
+<div class="filter-buttons">
+	<form th:if="${lots != null && lots.size() > 0 && subs != null}" th:action="@{/user/watch/lots}" method="get" id="onlineUsers" style="display: -webkit-inline-box;">
 		<input type="hidden" name="id" th:value="${category.id}"/>
-	<select name="filters" th:each="sub : ${subs}">
-		<option th:text="${sub.string}" selected disabled></option>
-		<option th:each="item : ${sub.arrString}" th:value="${sub.string + ' filteredValue ' + item}" th:text="${item}"></option>
-	</select>
-		<button type="submit" class="filter">Применить фильтры</button>
-	</form>
-	<form th:if="${lots != null && lots.size() > 0}" th:action="@{/user/watch/lots}" method="get">
-		<input type="hidden" name="id" th:value="${category.id}"/>
-		<input type="hidden" name="online" value="true"/>
-		<button type="submit" class="filter">Продавцы онлайн</button>
+		<input type="hidden" name="online" th:value="${online != null? online: false}"/>
+		<input type="hidden" id="check" name="check"/>
+		<select name="filters" th:each="sub : ${subs}">
+			<option th:text="${sub.string}" selected disabled></option>
+			<option th:each="item : ${sub.arrString}" th:value="${sub.string + ' filteredValue ' + item}" th:text="${item}"></option>
+		</select>
+		<button type="submit" class="filter" th:if="${lots != null && lots.size() > 0 && subs != null}">Применить фильтры</button>
+		<!-- Toggle B -->
+		<div class="flex items-center w-full">
+
+			<label for="checker" class="flex items-center cursor-pointer">
+				<!-- toggle -->
+				<div class="ml-3 text-gray-700 font-medium">
+					Продавцы онлайн
+				</div>
+				<div class="relative">
+					<!-- input -->
+					<input type="checkbox" name="checker" th:checked="${online != null? online: false}" value="false" id="checker" class="sr-only" onchange="boxDisable();">
+					<!-- line -->
+					<div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+					<!-- dot -->
+					<div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+				</div>
+			</label>
+		</div>
 	</form>
 </div>
-<table th:if="${lots != null}" id="myTable">
+<table th:if="${lots != null && lots.size() > 0}" id="myTable">
 	<thead>
-	<tr th:if="${lots.get(0).getCategory() != null}" th:each="lot : ${lots.get(0)}">
+	<tr th:if="${lots.get(0).getSeller() != null}" th:each="lot : ${lots.get(0)}">
 		<th scope="col" th:each="item : *{lot.keys}" th:text="*{item}"></th>
 		<th scope="col">Продавец</th>
 		<th scope="col" th:if="${category.isShowCount()}" th:text="${'Количество'}"></th>
@@ -118,18 +136,55 @@
 	</tr>
 	</thead>
 	<tbody>
-	<tr  th:each="lot : ${lots}">
+	<tr th:each="lot : ${lots}">
 		<td th:each="item : *{lot.keys}" th:text="*{lot.values.get(lot.keys.indexOf(item))}"></td>
-		<td th:if="*{!lot.getCategory().equals(userName)}"><a  th:href="@{/user/profile(name=*{lot.getCategory()})}" th:text="*{lot.getCategory()}"></a></td>
-		<td th:if="*{lot.getCategory().equals(userName)}"><a  th:href="@{/user/profile(name=*{lot.getCategory()})}" >Вы</a></td>
+		<td th:if="*{!lot.getSeller().equals(userName)}">
+			<p><div class="userBlock">
+			<a th:href="@{/user/profile(name=*{lot.getSeller()})}" style="display: inherit;">
+			<img th:src="${lot.getSellerLogo()}" alt="user"
+					 width="25" height="25"/>
+				<div class="stars" th:if="${lot.getStars() != null}">
+					<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${lot.getStars() >=  1}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+							 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+					</svg>
+					<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${lot.getStars() >=  2}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+							 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+					</svg>
+					<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${lot.getStars() >=  3}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+							 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+					</svg>
+					<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${lot.getStars() >=  4}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24"
+							 stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+					</svg>
+					<svg xmlns="http://www.w3.org/2000/svg" th:classappend="${lot.getStars() >=  5}? filled: ''" class="icon icon-tabler icon-tabler-star" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5"
+							 stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+					</svg>
+				<div style="margin-top: 7px;" th:text="${' '+lot.feedbackCount}"></div>
+				</div></a>
+		</div>
+			</p>
+		</td>
+		<td th:if="*{lot.getSeller().equals(userName)}"><a th:href="@{/user/profile(name=*{lot.getSeller()})}">Вы</a></td>
 		<td th:if="${category.isShowCount()}" th:text="*{lot.getCount()}"></td>
 		<td th:text="*{lot.getGame()}"></td>
-		<td class="transparent"><a th:if="*{!lot.getCategory().equals(userName)}" th:href="@{/user/watch/currentLot(id=*{lot.id})}" class="link">Просмотр</a></td>
+		<td class="transparent"><a th:if="*{!lot.getSeller().equals(userName)}" th:href="@{/user/watch/currentLot(id=*{lot.id})}"
+															 class="link">Просмотр</a></td>
 	</tr>
 	</tbody>
 </table>
 
-</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+</body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 </html>
 
 <!--Head-->
@@ -144,3 +199,9 @@
 
 <script type="text/javascript" th:src="@{/scripts/lots.js}"></script>
 
+<script>
+  function boxDisable() {
+   document.getElementById('check').value = true;
+   document.getElementById('onlineUsers').submit();
+  }
+</script>

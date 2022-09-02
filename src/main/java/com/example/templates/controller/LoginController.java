@@ -86,6 +86,10 @@ public class LoginController {
         ModelAndView modelAndView = new ModelAndView();
         homeService.fillGames(modelAndView,false);
         homeService.checkAuth(modelAndView);
+        if (userService.getUser() != null && userService.getUser().isBan()) {
+            modelAndView.setViewName("login");
+            return modelAndView;
+        }
         modelAndView.setViewName("main");
         return modelAndView;
     }
@@ -149,6 +153,7 @@ public class LoginController {
                 "Успешная регистрация");
             Date date = new Date();
             user.setDate(sdf.format(new Timestamp(date.getTime())));
+            user.setRefValue(0);
             userService.saveUser(user, "USER");
             modelAndView.addObject("successMessage", "Аккаунт успешно создан");
             modelAndView.addObject("user", new User());

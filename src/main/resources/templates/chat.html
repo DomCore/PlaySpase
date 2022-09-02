@@ -87,7 +87,7 @@
 				<form th:action="@{/user/watch/selectedChats}" method="post">
 					<input type="search" id="chatName" name="chatName" pattern=".*\S.*">
 					<button class="search" type="submit">
-						<span></span>
+						🔍
 					</button>
 				</form>
 			</div>
@@ -118,23 +118,38 @@
 			</ul>
 		</div>
 		<div class="right">
-			<form id="messageForm" name="messageForm" nameForm="messageForm">
+			<form id="messageForm" name="messageForm" nameForm="messageForm" enctype="multipart/form-data">
 				<div class="top"><span><i class='fa fa-user-circle'></i>: <a class="name" th:if="${chats != null}"
 																																		 th:href="@{/user/profile(name=${chats[0].user})}" th:text="${chats[0].user}"></a></span></div>
 
 				<div id="messageArea" class="chat" th:each="chat: ${chats}" th:data-chat="${chat.user}" th:data-chat-main="${chat.user}">
 					<input type="hidden" id="receiver" th:value="${chat.user}" class="user form-control"/>
-					<div class="conversation-start">
+					<div class="conversation-start" >
 						<span th:text="${chat.time}"></span>
 					</div>
-					<div class="checked bubble"
+					<div th:each="message : ${chat.messages}">
+					<div class="checked bubble" th:if="${!message.getContent().equals('')}"
+
 							 th:classappend="${(!message.isSystem() && message.getSender_id() ==  me? 'me ': '') + (!message.isSystem() && message.getReceiver_id() ==  me? 'you ': '')
 							 + (message.checked ? 'checked': 'unchecked') + (message.isSystem()? ' system': '') }"
-							 th:each="message : ${chat.messages}" th:text="${message.getContent()}"></div>
+
+							 th:text="${message.getContent()}">
+
+					</div>
+						<img th:if="${message.getContent().equals('') && message.file != null}" th:src="${'data:image/png;base64,' + message.file}"
+								 th:classappend="${(!message.isSystem() && message.getSender_id() ==  me? 'me': '') + (!message.isSystem() && message.getReceiver_id() ==  me? 'you': '')}"
+								 class="user_image">
+
+					</div>
 				</div>
 				<div class="write">
 					<input type="text" id="message"
 								 autocomplete="off" class="form-control"/>
+					<label for="file">
+						<img th:src="@{/images/attach.svg}" class="attach" width="32" height="32"/>
+					</label>
+					<input type="file" id="file" style="display: none" accept="image/png, image/jpeg">
+
 					<button type="submit" class="send primary">Отправить</button>
 				</div>
 			</form>

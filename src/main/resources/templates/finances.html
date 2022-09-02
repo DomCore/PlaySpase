@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>PlaySpase</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Mulish&display=swap" rel="stylesheet">
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/lots.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/buys.css}"/>
+
+</head>
+<body>
+<nav class="nav">
+	<div class="container">
+		<div class="logo">
+			<a href="/" class="header__logo-link">
+				<img th:src="@{/images/logo.png}" alt="logo" width="64" height="64" class="logo header__logo-pic"/>
+			</a>
+		</div>
+		<div class="search_box">
+			<form th:action="@{/user/search}" method="post">
+				<input type="search" name="name" pattern=".*\S.*">
+				<button class="search-btn" type="submit">
+					<span>Поиск</span>
+				</button>
+			</form>
+		</div>
+		<div id="mainListDiv" class="main_list">
+			<ul class="navlinks">
+				<div class="dropdown near-input">
+					<li th:if="${user != null}"><a href="#" class=" header__item dropbtn">Помощь</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/rules/site}">Правила сайта</a>
+						<a th:href="@{/user/rules/buy}">Правила покупки</a>
+						<a th:href="@{/user/rules/sell}">Правила продажи</a>
+						<a th:href="@{/user/help}">Обратиться в поддержку</a>
+					</div>
+				</div>
+				<li><a th:href="@{/}" class="header__item">Главное</a></li>
+				<li th:if="${user == null}"><a th:href="@{/login}" class="header__item">Вход</a></li>
+				<li th:if="${user == null}"><a th:href="@{/registration}" class="header__item">Регистрация</a></li>
+				<li th:if="${user != null && user.equals('ADMIN')}"><a th:href="@{/user/goHome}" class="header__item">Админ панель</a></li>
+				<li th:if="${user != null}"><a th:href="@{/user/watch/chats}" class="header__item">Сообщения
+					<div th:if="${checkMessage}" class="ping"></div>
+				</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myBuys}" class="header__item">Покупки</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/watch/myBuysHistory}">История</a>
+					</div>
+				</div>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/watch/myLots}" class="header__item">Продажи</a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/watch/myLotsHistory}">История</a>
+					</div>
+				</div>
+				<li th:if="${user != null && user.equals('USER')}"><a href="#" class="header__item">Финансы
+					<div th:text="${userBalance} +'₽'"></div>
+				</a></li>
+				<div class="dropdown">
+					<li th:if="${user != null}"><a th:href="@{/user/profile(id=${id})}" class="header__item dropbtn"><img th:src="${userLogo}" alt="user"
+																																																								width="60" height="60"
+																																																								class="user-pic"/></a></li>
+					<div class="dropdown-content">
+						<a th:href="@{/user/profile(id=${id})}">Профиль</a>
+						<a th:href="@{/home}">Настройки</a>
+						<a href="#">Заработать с нами</a>
+						<a th:href="@{/logout}">Выход</a>
+					</div>
+				</div>
+			</ul>
+		</div>
+		<span class="navTrigger"><i></i><i></i></span>
+	</div>
+</nav>
+<div class="fin">
+	<a th:href="@{/user/finances(type=0)}">Пополнить баланс</a>
+	<a th:href="@{/user/finances(type=1)}">Вывести деньги</a>
+</div>
+<div class="feedback-container login-box" th:if="${add != null && add}">
+	<h2>Пополнение кошелька</h2>
+<!--	<form th:action="@{/user/add}" id="add" method="post">
+		<div class="user-box">
+			<label>Сумма</label>
+			<input type="number" name="value" min="1" step="1" required>
+		</div>-->
+	<form th:action="@{/user/instr}" id="add" method="get">
+		<iframe src="https://widgets.freekassa.ru?type=payment-button&currency=RUB&destination=PlaySpase&theme=light&default_amount=200&button_text=Пополнить&button_size=36px&shopId=19959&s=0dc9b3ea0810d340605ccc7aab483092" width="300" height="50" frameborder="0"></iframe>
+		<div class="comm">
+			Комиссия: 3% - 9%
+		</div>
+		<p style="display: flex"><img th:src="@{/images/logo.png}" alt="logo" width="36" height="36" class="logo header__logo-pic"/>
+			<button class="emRRKe" type="submit">Пополнить через Payeer</button>
+		<div class="comm">
+			Комиссия: 3% - 9%
+		</div></p>
+		<p style="display: flex"><img th:src="@{/images/logo.png}" alt="logo" width="36" height="36" class="logo header__logo-pic"/>
+			<button class="emRRKe" type="submit">Пополнить напрямую</button>
+		<div class="comm">
+			Комиссия: 0%
+		</div></p>
+	</form>
+</div>
+<div class="feedback-container login-box no-width" th:if="${instr != null && instr}">
+	<h2>Пополнение кошелька</h2>
+	<h3>Для того чтобы не платить комиссию сервиса, существует есть возможность пополнить сайт на прямую без %</h3>
+	<h3>Для того чтобы пополнить баланс отправите средства на указанные кошельки и в описании оплаты укажите свой логин на сайте: (Пополнение происходит от 5 минут до 15 минут)</h3>
+	<h3 th:text="${'Ваш логин: '+login}"></h3>
+	<h3>Cбербанк: 0000 0000 0000 000  </h3>
+	<h3>Оплата через СПБ на Сбербанк:  +780000000000  </h3>
+	<h3>Ваш логин: Тут отображался логин пользователя </h3>
+	<h3>QIWI: +780000000000 </h3>
+	<h3>Payeer: P1073170498	</h3>
+	<h4>Данный способ пополнения создан для экономии Ваших средств. Если есть вопросы не стесняйтесь обращаться в поддержку Playspase.</h4>
+
+
+</div>
+<div class="feedback-container login-box" th:if="${withdraw != null && withdraw}">
+	<h2>Вывод средств</h2>
+	<form th:action="@{/user/withdraw}" id="withdraw" method="post">
+	<div class="user-box">
+		<label>Сумма</label>
+		<input type="number" name="value" min="1" step="1" th:max="${max}" required>
+	</div>
+		<div class="user-box">
+			<label>Ваша карта</label>
+			<input type="number" name="card" min="1" step="1" required>
+		</div>
+		<iframe src="https://widgets.freekassa.ru?type=payment-button&currency=RUB&destination=PlaySpase&theme=light&default_amount=200&button_text=Запросить вывод&button_size=36px&shopId=19959&s=0dc9b3ea0810d340605ccc7aab483092" width="300" height="50" frameborder="0"></iframe>
+		<div class="comm">
+			Комиссия: 5% - 9%
+		</div>
+		<p style="display: flex"><img th:src="@{/images/logo.png}" alt="logo" width="36" height="36" class="logo header__logo-pic"/>
+		<button class="emRRKe" type="submit">Запросить вывод</button>
+		<div class="comm">
+			Комиссия: 0%
+		</div></p>
+	</form>
+</div>
+<table th:if="${transactions != null}" id="myTable">
+	<thead>
+	<tr>
+		<th scope="col">Дата</th>
+		<th scope="col">Описание</th>
+		<th scope="col">Статус</th>
+		<th scope="col">Сумма</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="tr : ${transactions}">
+		<td th:text="*{tr.getDate()}"></td>
+		<td th:text="*{tr.getType()}"></td>
+		<td th:if="*{tr.getStatus().equals('Завершено')}" class="green" th:text="*{tr.getStatus()}"></td>
+		<td th:if="*{tr.getStatus().equals('Ожидается')}" class="yellow" th:text="*{tr.getStatus()}"></td>
+		<td th:if="*{tr.getStatus().equals('Отмена')}" class="red" th:text="*{tr.getStatus()}"></td>
+		<td th:text="*{tr.getValue() +'₽'}"></td>
+	</tr>
+	</tbody>
+</table>
+</body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+</html>
+
+<!--Head-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/header.js}"></script>
+<!--Head-->
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/wait-message.js}"></script>
+
+<script type="text/javascript" th:src="@{/scripts/fin.js}"></script>
+

@@ -47,6 +47,7 @@ a {
   display: flex;
   list-style: none;
   padding: 0;
+  margin: revert;
 }
 
 .nav div.main_list ul li {
@@ -59,7 +60,6 @@ a {
 .nav div.main_list ul li a {
   text-decoration: none;
   color: #fff;
-  font-size: 18px;
 }
 
 .navTrigger {

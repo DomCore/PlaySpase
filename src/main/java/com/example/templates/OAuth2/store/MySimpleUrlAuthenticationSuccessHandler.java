@@ -1,4 +1,4 @@
-package com.example.templates.store;
+package com.example.templates.OAuth2.store;
 
 import java.util.concurrent.TimeUnit;
 

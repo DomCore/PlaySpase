@@ -73,8 +73,20 @@ ul {
 }
 #messageArea {
   overflow-y: scroll;
-  height: 650px;
+  height: 620px;
   border: none;
+}
+.user_image {
+  max-width: 400px;
+  max-height: 400px;
+}
+
+.me {
+  float: right;
+}
+
+img {
+  background: none!important;
 }
 .wrapper .container {
   height: inherit;
@@ -92,12 +104,12 @@ ul {
   margin-left: 10px;
   border: 1px solid var(--light);
   background-color: var(--blue);
-  background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/name-type.png');
   background-repeat: no-repeat;
   background-position: top 12px left 14px;
   border-radius: 50%;
   cursor: pointer;
   opacity: 0.8;
+  color: white;
 }
 .container .left button.search:hover {
   opacity: 1;
@@ -285,7 +297,7 @@ ul {
   border-radius: 10px;
   font-size: 16px;
   float: left;
-  width: 347px;
+  width: 85%;
   height: 40px;
   padding: 0 10px;
   color: var(--dark);
@@ -486,4 +498,8 @@ ul {
   transform: rotate(0deg) skew(-35deg) !important;
   width: fit-content !important;
   height: fit-content !important;
+}
+
+.attach {
+  margin-top: 4px;
 }

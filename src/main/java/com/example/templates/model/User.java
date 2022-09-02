@@ -53,6 +53,8 @@ public class User {
     private int balance_charge;
     @Column(name = "haveMessage")
     private boolean haveMessage;
+    @Column(name = "ban")
+    private boolean ban;
     @Column(columnDefinition = "integer default 0")
     private Integer messages;
     @Column(columnDefinition = "integer default 0")
@@ -60,12 +62,15 @@ public class User {
     @Column(columnDefinition = "integer default 0")
     private Integer sells;
     private String date;
+    private String banText;
     @Column(columnDefinition = "integer default 0")
     private Integer refValue;
     @Transient
     private String path;
     @Transient
     private boolean check;
+    @Transient
+    private boolean online;
     @ElementCollection
     private List<String> referals;
 

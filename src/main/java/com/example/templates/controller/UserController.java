@@ -23,6 +23,7 @@ import com.example.templates.model.ActiveUserStore;
 import com.example.templates.model.ChatMessage;
 import com.example.templates.model.ChatWrapper;
 import com.example.templates.model.CheckOutHistory;
+import com.example.templates.model.Feedback;
 import com.example.templates.model.Game;
 import com.example.templates.model.GameWrapper;
 import com.example.templates.model.Lot;
@@ -30,15 +31,18 @@ import com.example.templates.model.LotWrapper;
 import com.example.templates.model.LotsWrapper;
 import com.example.templates.model.RefHistory;
 import com.example.templates.model.StringAndListWrapper;
+import com.example.templates.model.Transaction;
 import com.example.templates.model.User;
 import com.example.templates.service.CategoryService;
 import com.example.templates.service.ChatMessageService;
 import com.example.templates.service.CheckService;
+import com.example.templates.service.FeedbackService;
 import com.example.templates.service.FileStorageService;
 import com.example.templates.service.GameService;
 import com.example.templates.service.HomeService;
 import com.example.templates.service.LotService;
 import com.example.templates.service.RefService;
+import com.example.templates.service.TransactionService;
 import com.example.templates.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +82,10 @@ public class UserController {
   private UserService userService;
   @Autowired
   private CategoryService categoryService;
-
+  @Autowired
+  private FeedbackService feedbackService;
+  @Autowired
+  private TransactionService transactionService;
   @Autowired
   ActiveUserStore activeUserStore;
 
@@ -215,10 +222,84 @@ public class UserController {
     User user = userService.getUser();
     modelAndView.addObject("email", user.getEmail());
     modelAndView.addObject("password", user.getPassword());
+
+    List<User> users = userService.getAll();
+    List<String> onlineUsers = getLoggedUsers();
+    users.forEach(u -> {
+      u.setLogo(userService.getPath(u));
+      if (onlineUsers.contains(u.getUserName()))
+        u.setOnline(true);
+    });
+
+    modelAndView.addObject("users", users);
+
     modelAndView.setViewName("home");
     return modelAndView;
   }
 
+  @GetMapping(value = "/edit")
+  public ModelAndView edit(@Valid Integer id) {
+
+    ModelAndView modelAndView = new ModelAndView();
+    homeService.fillGames(modelAndView, true);
+    homeService.checkAuth(modelAndView);
+    User user = userService.getUser();
+    modelAndView.addObject("email", user.getEmail());
+    modelAndView.addObject("password", user.getPassword());
+
+    List<User> users = userService.getAll();
+    List<String> onlineUsers = getLoggedUsers();
+    users.forEach(u -> {
+      u.setLogo(userService.getPath(u));
+      if (onlineUsers.contains(u.getUserName()))
+        u.setOnline(true);
+    });
+
+    modelAndView.addObject("users", users);
+    modelAndView.addObject("target", userService.findById(id));
+
+
+    modelAndView.setViewName("home");
+    return modelAndView;
+  }
+
+  @PostMapping(value = "/edit")
+  public ModelAndView edit(@Valid Integer id,
+                           @Valid Integer balance,
+                           @Valid boolean ban,
+                           @Valid String banText) {
+    User user = userService.findById(id);
+    Integer value = 0;
+    boolean greater = false;
+    if (user.getBalance() - balance < 0) {
+      value = -(user.getBalance() - balance);
+      greater = true;
+    } else {
+      value = (user.getBalance() - balance);
+    }
+    if (user.getBalance() != balance) {
+      Date date = new Date();
+
+      Transaction transaction = new Transaction();
+
+      transaction.setValue(String.valueOf(value));
+      transaction.setDate(sdf.format(new Timestamp(date.getTime())));
+      transaction.setStatus("Завершено");
+      if (greater)
+        transaction.setType("Пополнение");
+      transaction.setUser_id(id);
+      transactionService.save(transaction);
+
+      user.setBalance(balance);
+    }
+    user.setBan(ban);
+    if (banText != null) {
+      user.setBanText(banText);
+    }
+    userService.saveUser(user);
+
+    return new ModelAndView("redirect:/user/goHome");
+  }
   @PostMapping(value = "/create/lot")
   public ModelAndView addLot(@Valid String cost,
                              @Valid double count,
@@ -255,7 +336,7 @@ public class UserController {
   @GetMapping(value = "/delete/lot")
   public ModelAndView deleteLot(@Valid Integer id) {
     User user = userService.getUser();
-    if (Objects.equals(lotService.getById(id).getSeller_id(), user.getId())) {
+    if (Objects.equals(lotService.getById(id).getSeller_id(), user.getId()) || user.getId() == 1) {
       lotService.deleteById(id);
     }
     return new ModelAndView("redirect:/user/watch/myLots");
@@ -356,11 +437,11 @@ public class UserController {
     ModelAndView modelAndView = new ModelAndView();
     homeService.checkAuth(modelAndView);
     List<ChatMessage> messages = chatMessageService.findByUser(userService.getUser().getId());
-    if (!messages.stream().anyMatch(m -> m.getSender_id().equals(364))) {
+    if (!messages.stream().anyMatch(m -> m.getSender_id().equals(1))) {
       ChatMessage chatMessage = new ChatMessage();
       Date date = new Date();
       chatMessage.setSender("Поддержка");
-      chatMessage.setSender_id(364);
+      chatMessage.setSender_id(1);
       chatMessage.setReceiver(userService.getUser().getUserName());
       chatMessage.setReceiver_id(userService.getUser().getId());
       chatMessage.setContent("Здравствуйте, опишите вашу проблему");
@@ -379,10 +460,7 @@ public class UserController {
       finalChatsNames.add(m.getChat_id());
     });
     chatsNames = finalChatsNames.stream().distinct().collect(Collectors.toList());
-    int index = chatsNames.indexOf("{" + userService.getUser().getId() + "} {364}");
-    if (index == -1) {
-      index = chatsNames.indexOf("{364} {" + userService.getUser().getId() + "}");
-    }
+    int index = chatsNames.indexOf("{1} {" + userService.getUser().getId() + "}");
     if (chatsNames.size() > 1)
       Collections.swap(chatsNames, 0, index);
     chatsNames.forEach(n -> {
@@ -414,10 +492,12 @@ public class UserController {
   public ModelAndView watchLots(@RequestParam(value = "id", required = false) Integer id,
                                 @RequestParam(value = "filters", required = false) List<String> filters,
                                 @RequestParam(value = "value", required = false) String filterValue,
-                                @RequestParam(value = "online", required = false) Boolean online
+                                @RequestParam(value = "online", required = false) Boolean online,
+                                @RequestParam(value = "check", required = false) Boolean check
                                ) {
     ModelAndView modelAndView = new ModelAndView();
     List<Lot> lots = lotService.getByCategoryId(id);
+    lots = lots.stream().filter(l -> !userService.findById(l.getSeller_id()).isBan()).collect(Collectors.toList());
     lots = lots.stream().filter(l -> l.getStatus().equals("Продажа")).collect(Collectors.toList());
     if (lots.size() > 0) {
       List<StringAndListWrapper> templates = categoryService.createTemplates(id);
@@ -427,7 +507,6 @@ public class UserController {
       if (filters != null)
         filters.forEach(f -> {
           filtersMap.put(f.split(" filteredValue ")[0], f.split(" filteredValue ")[1]);
-          ;
         });
       List<LotsWrapper> lotss = new ArrayList<>();
       lots.forEach(l -> {
@@ -447,18 +526,25 @@ public class UserController {
           if (l.getCount() > 0) {
             if (filtersMap.size() > 0) {
               if (map.keySet().containsAll(filtersMap.keySet()) && map.values().containsAll(filtersMap.values())) {
-                lotss.add(new LotsWrapper(l.getId(),
-                    l.getCost(),
-                    userService.findById(l.getSeller_id()).getUserName(),
+                lotss.add(new LotsWrapper(
+                    l.getId(),
                     l.getCount(),
+                    userService.findById(l.getSeller_id()).getUserName(),
+                    userService.getPath(userService.findById(l.getSeller_id())),
+                    homeService.getStars(l.getSeller_id()),
+                    homeService.getFeedsCount(l.getSeller_id()),
+                    l.getCost(),
                     new ArrayList<>(map.keySet()),
                     new ArrayList<>(map.values())));
               }
             } else {
               lotss.add(new LotsWrapper(l.getId(),
-                  l.getCost(),
-                  userService.findById(l.getSeller_id()).getUserName(),
                   l.getCount(),
+                  userService.findById(l.getSeller_id()).getUserName(),
+                  userService.getPath(userService.findById(l.getSeller_id())),
+                  homeService.getStars(l.getSeller_id()),
+                  homeService.getFeedsCount(l.getSeller_id()),
+                  l.getCost(),
                   new ArrayList<>(map.keySet()),
                   new ArrayList<>(map.values())));
             }
@@ -467,12 +553,14 @@ public class UserController {
         }
       });
 
-      if (lotss.stream().anyMatch(l -> l.getCategory() != null)) {
+      if (lotss.stream().anyMatch(l -> l.getSeller()!= null)) {
+        if (online != null && (check != null && check))
+          online = !online;
         if (online != null && online) {
           List<String> onlineUsers = getLoggedUsers();
           List<LotsWrapper> finalLots = new ArrayList<>();
           lotss.forEach(l -> {
-            if (onlineUsers.contains(l.getCategory()))
+            if (onlineUsers.contains(l.getSeller()))
             finalLots.add(l);
           });
           modelAndView.addObject("lots", finalLots);
@@ -491,6 +579,7 @@ public class UserController {
       modelAndView.addObject("category", categoryService.findById(id));
       modelAndView.addObject("categories", categoryService.findByGameId(categoryService.findById(id).getGame_id()));
     }
+    modelAndView.addObject("online", online);
     modelAndView.setViewName("mainLots");
     homeService.checkAuth(modelAndView);
     return modelAndView;
@@ -498,12 +587,19 @@ public class UserController {
 
   @GetMapping(value = "/watch/myLots")
   public ModelAndView watchMyLots() {
-    ModelAndView modelAndView = getMyLots();
+    ModelAndView modelAndView = getMyLots(null);
     modelAndView.addObject("mode", 1);
     modelAndView.setViewName("myLots");
     return modelAndView;
   }
 
+  @GetMapping(value = "/watch/hisLots")
+  public ModelAndView watchHisLots(@RequestParam(value = "id", required = false) Integer id) {
+    ModelAndView modelAndView = getMyLots(id);
+    modelAndView.addObject("mode", 1);
+    modelAndView.setViewName("myLots");
+    return modelAndView;
+  }
 
   @GetMapping(value = "/profile")
   public ModelAndView watchProfile(@RequestParam(value = "id", required = false) Integer id, @RequestParam(value = "name", required = false) String name) throws UnsupportedEncodingException {
@@ -542,6 +638,15 @@ public class UserController {
     modelAndView.addObject("deals", deals);
     modelAndView.addObject("sold", sumSold);
     modelAndView.addObject("buyed", sumBuyed);
+    List<Feedback> feedbacks = feedbackService.findByTargetId(id);
+    if (feedbacks != null && feedbacks.size() > 0) {
+      Integer stars = 0;
+      for (int i=0; i< feedbacks.size(); i++) {
+        stars+= feedbacks.get(i).getStars();
+      }
+      modelAndView.addObject("feedbacksCount", feedbacks.size());
+      modelAndView.addObject("stars", stars/feedbacks.size());
+    }
     if (userService.getUser() != null) {
       List<ChatMessage> messages = chatMessageService.findByUsers(userService.getUser().getId(), id);
       Integer finalId = id;
@@ -568,8 +673,13 @@ public class UserController {
         getLot(id);
   }
 
-  public ModelAndView getMyLots() {
-    User user = userService.getUser();
+  public ModelAndView getMyLots(Integer id) {
+    User user = new User();
+    if (id == null) {
+      user = userService.getUser();
+    } else {
+      user = userService.findById(id);
+    }
     ModelAndView modelAndView = new ModelAndView();
     List<Lot> lots = lotService.getBySeller_id(user.getId());
     lots = lots.stream().filter(l -> l.getStatus().equals("Продажа") && l.getCount() > 0).collect(Collectors.toList());
@@ -598,7 +708,14 @@ public class UserController {
 
       /*      lotWrapers.add(new LotWrapper(l,templates));*/
     });
+    List<String> games = new ArrayList<>();
+    lotss.stream().forEach( l-> {
+      if (!games.contains(l.getGame())) {
+        games.add(l.getGame());
+      }
+    });
     modelAndView.addObject("lots", lotss);
+    modelAndView.addObject("games", games);
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }
@@ -910,12 +1027,20 @@ public class UserController {
             new ArrayList<String>(map.keySet()),
             new ArrayList<String>(map.values())));
       } else {
+        Feedback feedback = feedbackService.findByLotId(l.getId());
+        if (feedback == null) {
+          feedback  = new Feedback();
+          feedback.setStars(null);
+          feedback.setText(null);
+        }
         lotss.add(new LotsWrapper(
             l.getId(),
             l.getStatus(),
-            l.getDate(),
             userService.findById(l.getSeller_id()).getUserName(),
+            feedback.getStars(),
+            feedback.getText(),
             gameService.findById(categoryService.findById(l.getCategory_id()).getGame_id()).getName(),
+            l.getDate(),
             categoryService.findById(l.getCategory_id()).getName(),
             new ArrayList<String>(map.keySet()),
             new ArrayList<String>(map.values())));
@@ -993,8 +1118,34 @@ public class UserController {
       user.setRefValue(user.getRefValue() + Integer.valueOf(Integer.valueOf(lot.getCost())) / 50);
       userService.saveUser(user);
       userService.saveUser(seller);
+
+      Transaction transaction = new Transaction();
+      transaction.setLot_id(lot.getId());
+      transaction.setType("Покупка");
+      transaction.setStatus("Завершено");
+      transaction.setDate(sdf.format(new Timestamp(date.getTime())));
+      transaction.setUser_id(user.getId());
+      transaction.setValue(lot.getCost());
+      transactionService.save(transaction);
+
+      Transaction transaction2 = new Transaction();
+      transaction2.setLot_id(lot.getId());
+      transaction2.setType("Продажа");
+      transaction2.setStatus("Завершено");
+      transaction2.setDate(sdf.format(new Timestamp(date.getTime())));
+      transaction2.setUser_id(seller.getId());
+      transaction2.setValue(lot.getCost());
+      transactionService.save(transaction2);
+
     }
-    return new ModelAndView("redirect:/user/watch/myBuys");
+    ModelAndView modelAndView = getMyBuys("Подтверждение");
+    modelAndView.setViewName("buys");
+    if (user.getBuys() > 0) {
+      user.setBuys(user.getBuys() - 1);
+      userService.saveUser(user);
+    }
+    modelAndView.addObject("oldLot", lot);
+    return modelAndView;
   }
 
   @GetMapping(value = "/dismiss/lot")
@@ -1007,7 +1158,10 @@ public class UserController {
       User buyer = userService.findById(lot.getBuyer_id());
 
       lot.setStatus("Возврат");
-
+      int c = 100;
+      if (categoryService.findById(lot.getCategory_id()).getTax() != null) {
+        c = (100 - categoryService.findById(lot.getCategory_id()).getTax());
+      }
       lotService.saveLot(lot);
       Date date = new Date();
       ChatMessage chatMessage = new ChatMessage();
@@ -1026,9 +1180,27 @@ public class UserController {
       seller.setHaveMessage(true);
       user.setHaveMessage(true);
       buyer.setBalance(buyer.getBalance() + Integer.valueOf(lot.getCost()));
-      seller.setBalance_charge(seller.getBalance_charge() - Integer.valueOf(lot.getCost()));
+      seller.setBalance_charge(seller.getBalance_charge() - (c*Integer.valueOf(lot.getCost()))/100);
       userService.saveUser(buyer);
       userService.saveUser(seller);
+
+      Transaction transaction = new Transaction();
+      transaction.setLot_id(lot.getId());
+      transaction.setType("Покупка");
+      transaction.setStatus("Отмена");
+      transaction.setDate(sdf.format(new Timestamp(date.getTime())));
+      transaction.setUser_id(buyer.getId());
+      transaction.setValue(lot.getCost());
+      transactionService.save(transaction);
+
+      Transaction transaction2 = new Transaction();
+      transaction2.setLot_id(lot.getId());
+      transaction2.setType("Продажа");
+      transaction2.setStatus("Отмена");
+      transaction2.setDate(sdf.format(new Timestamp(date.getTime())));
+      transaction2.setUser_id(seller.getId());
+      transaction2.setValue(lot.getCost());
+      transactionService.save(transaction2);
     }
     return new ModelAndView("redirect:/user/watch/myLotsActive");
   }
@@ -1055,6 +1227,20 @@ public class UserController {
   @GetMapping(value = "/watch/myBuysHistory")
   public ModelAndView sellsHistory() {
     ModelAndView modelAndView = getMyHistory("Покупки");
+    modelAndView.setViewName("buys2");
+    modelAndView.addObject("mode", "buy");
+    return modelAndView;
+  }
+  @GetMapping(value = "/watch/myBuysHistoryFeedback")
+  public ModelAndView sellsHistory2(Integer targetLot) {
+    ModelAndView modelAndView = getMyHistory("Покупки");
+    Feedback feedback = feedbackService.findByLotId(targetLot);
+    if (feedback == null) {
+      feedback = new Feedback();
+      feedback.setLot_id(targetLot);
+    }
+    modelAndView.addObject("oldLot", feedback);
+    modelAndView.addObject("feedback", true);
     modelAndView.setViewName("buys2");
     modelAndView.addObject("mode", "buy");
     return modelAndView;
@@ -1188,6 +1374,122 @@ public class UserController {
       checkService.saveCheckHistory(checkOutHistory);
     }
     modelAndView.addObject("avaliableRef", 0);
+    homeService.checkAuth(modelAndView);
+    return modelAndView;
+  }
+  @PostMapping(value = "/feedback/lot")
+  public ModelAndView feed(@Valid Integer lotId, @Valid String text, @Valid Integer rating) {
+
+    Lot lot = lotService.getById(lotId);
+    Feedback feedback = new Feedback();
+    feedback.setLot_id(lot.getId());
+    feedback.setTarget_id(lot.getSeller_id());
+    feedback.setSource_id(lot.getBuyer_id());
+    feedback.setStars(rating);
+    feedback.setText(text);
+    feedbackService.saveFeedback(feedback);
+    return new ModelAndView("redirect:/user/watch/myBuys");
+  }
+  @PostMapping(value = "/feedback/lotHistory")
+  public ModelAndView feed2(@Valid Integer lotId, @Valid String text, @Valid Integer rating) {
+
+    Lot lot = lotService.getById(lotId);
+    Feedback feedback = feedbackService.findByLotId(lotId);
+    if (feedback == null) {
+      feedback = new Feedback();
+    }
+    feedback.setLot_id(lot.getId());
+    feedback.setTarget_id(lot.getSeller_id());
+    feedback.setSource_id(lot.getBuyer_id());
+    feedback.setStars(rating);
+    feedback.setText(text);
+    feedbackService.saveFeedback(feedback);
+    return new ModelAndView("redirect:/user/watch/myBuysHistory");
+  }
+
+  @GetMapping(value = "/finances")
+  public ModelAndView finances(@Valid Integer type) {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("finances");
+    List<Transaction> transactions = transactionService.findByTargetId(userService.getUser().getId());
+    Collections.sort(transactions);
+    modelAndView.addObject("transactions", transactions);
+    if (type != null && type == 0) {
+      modelAndView.addObject("add", true);
+    }
+    if (type != null && type == 1) {
+      modelAndView.addObject("withdraw", true);
+      modelAndView.addObject("max", userService.getUser().getBalance() + userService.getUser().getBalance_charge());
+    }
+    homeService.checkAuth(modelAndView);
+    return modelAndView;
+  }
+
+  @PostMapping(value = "/withdraw")
+  public ModelAndView withdraw(@Valid Integer value, @Valid String card) {
+    Date date = new Date();
+    User user = userService.getUser();
+    if (value != null && value <= (user.getBalance() + user.getBalance_charge())) {
+      Transaction transaction = new Transaction();
+      transaction.setUser_id(user.getId());
+      transaction.setStatus("Ожидается");
+      transaction.setType("Вывод средств");
+      transaction.setValue(value.toString());
+      transaction.setCard(card);
+      transaction.setDate(sdf.format(new Timestamp(date.getTime())));
+      transactionService.save(transaction);
+
+      user.setBalance_charge(user.getBalance_charge() - value);
+      userService.saveUser(user);
+    }
+    return new ModelAndView("redirect:/user/finances");
+  }
+  @PostMapping(value = "/add")
+  public ModelAndView add(@Valid Integer value) {
+    Date date = new Date();
+    Transaction transaction = new Transaction();
+    transaction.setUser_id(userService.getUser().getId());
+    transaction.setStatus("Ожидается");
+    transaction.setType("Пополнение баланса");
+    transaction.setValue(value.toString());
+    transaction.setDate(sdf.format(new Timestamp(date.getTime())));
+    transactionService.save(transaction);
+    return new ModelAndView("redirect:/user/finances");
+  }
+
+  @GetMapping(value = "/approve")
+  public ModelAndView approve(@Valid Integer id) {
+    Transaction transaction = transactionService.findById(id);
+    transaction.setStatus("Завершено");
+    transactionService.save(transaction);
+
+/*    User user = userService.findById(transaction.getUser_id());
+    user.setBalance(user.getBalance() + Integer.valueOf(transaction.getValue()));
+    userService.saveUser(user);*/
+
+    return new ModelAndView("redirect:/user/lists");
+  }
+
+  @GetMapping(value = "/instr")
+  public ModelAndView instr() {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("finances");
+    modelAndView.addObject("instr", true);
+    modelAndView.addObject("login", userService.getUser().getUserName());
+    homeService.checkAuth(modelAndView);
+    return modelAndView;
+  }
+
+  @GetMapping(value = "/lists")
+  public ModelAndView lists() {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("lists");
+    List<Transaction> transactions = transactionService.findAll().stream().filter(t -> t.getStatus().equals("Ожидается") && t.getType().equals("Вывод средств")).collect(Collectors.toList());
+    Collections.reverse(transactions);
+    transactions.forEach(t  -> {
+      t.setUser(userService.findById(t.getUser_id()));
+    });
+    modelAndView.addObject("transactions", transactions);
     homeService.checkAuth(modelAndView);
     return modelAndView;
   }

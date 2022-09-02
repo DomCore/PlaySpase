@@ -10,9 +10,11 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/admin_lots.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/buys.css}"/>
 	<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Raleway:400,700" rel="stylesheet">
-
+	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
 </head>
 
 <body>
@@ -116,7 +118,51 @@
 		</div>
 	</div>
 </div>
-</body><input type="hidden" id="name" th:value="${userName}" class="form-control"/>
+<div class="feedback-container login-box big" th:if="${target != null && user.equals('ADMIN')}">
+	<h3 th:text="${target.getUserName()}"></h3>
+	<h3 th:text="${target.getEmail()}"></h3>
+	<a class="left" th:href="@{/user/watch/hisLots(id=${target.getId()})}">Просмотр лотов</a>
+	<br>
+	<h3>Баланс</h3>
+	<form th:action="@{/user/edit}" id="edit" method="post">
+		<input type="hidden" name="id" th:value="${target.getId()}"/>
+	<input type="number" name="balance" th:value="${target.getBalance()}" min="0" step="1"/>
+		<h3>Бан</h3>
+	<input type="checkbox" name="ban" th:checked="${target.isBan()}"/>
+		<h3>Причина</h3>
+	<input type="text" style="width: 90%" name="banText" th:value="${target.getBanText()}"/>
+		<a class="left" href="#" onclick="document.getElementById('edit').submit()">Подтвердить</a>
+		<a class="left" th:href="@{/user/goHome}">Закрыть</a>
+	</form>
+</div>
+<div class="menu right" th:if="${user != null && user.equals('ADMIN')}">
+	<table id="myTable">
+		<thead>
+		<tr>
+			<th scope="col">Имя</th>
+			<th scope="col">Почта</th>
+			<th scope="col">Профиль</th>
+			<th scope="col">Онлайн</th>
+			<th scope="col">В бане</th>
+			<th scope="col">Настройка</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="user: ${users}">
+			<td th:text="*{user.getUserName()}"></td>
+			<td th:text="*{user.getEmail()}"></td>
+			<td><a th:href="@{/user/profile(name=*{user.getUserName()})}" style="display: inherit;">
+				<img th:src="*{user.getLogo()}" alt="user"
+						 width="25" height="25"/></a></td>
+			<td th:text="*{user.isOnline()} ? 'Online': 'Offline'"></td>
+			<td th:text="*{user.isBan()} ? 'Бан!': '-'"></td>
+			<td ><a th:href="@{/user/edit(id=*{user.getId()})}" style="display: inherit;">Настройка</a></td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+<input type="hidden" id="name" th:value="${userName}" class="form-control"/>
 
 <div class="user-wrapper" th:if="${user != null && user.equals('USER')}">
 	<div class="item">
@@ -186,3 +232,6 @@
 <!--Registration-->
 <script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
 <!--Registration-->
+<script type="text/javascript"
+				src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/scripts/home.js}"></script>
